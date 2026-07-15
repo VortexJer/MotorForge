@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   ASPIRATIONS,
   BLOCKS,
+  COOLING,
   CRANKS,
   FUELS,
   FUEL_PUMPS,
@@ -15,7 +16,8 @@ import {
   resolveEngine,
   runDyno
 } from '@sim/index'
-import type { OverlayCategory } from '@sim/index'
+import type { OverlayCategory, WearState } from '@sim/index'
+import { freshWear } from '@sim/index'
 import type {
   AspirationPart,
   DynoResult,
@@ -42,6 +44,7 @@ interface Selection {
   injector: string
   fuelPump: string
   aspiration: string
+  cooling: string
 }
 
 const CATALOG_SLOTS: Array<{ key: keyof Selection; label: string; options: Part[] }> = [
@@ -52,39 +55,125 @@ const CATALOG_SLOTS: Array<{ key: keyof Selection; label: string; options: Part[
   { key: 'head', label: 'Culata', options: HEADS },
   { key: 'injector', label: 'Inyectores', options: INJECTORS },
   { key: 'fuelPump', label: 'Bomba de combustible', options: FUEL_PUMPS },
-  { key: 'aspiration', label: 'Admisión', options: ASPIRATIONS }
+  { key: 'aspiration', label: 'Admisión', options: ASPIRATIONS },
+  { key: 'cooling', label: 'Refrigeración y aceite', options: COOLING }
 ]
 
+const DEFAULT_SELECTION: Selection = {
+  block: 'block-alu-2.0',
+  crank: 'crank-cast-86',
+  rod: 'rod-stock-139',
+  piston: 'piston-cast-86',
+  head: 'head-sport-42',
+  injector: 'inj-310',
+  fuelPump: 'pump-stock-110',
+  aspiration: 'asp-na',
+  cooling: 'cool-stock'
+}
+
+/** Fichero de proyecto / sesión: todo lo que define el estado del taller. */
+interface ProjectData {
+  version: 1
+  name?: string
+  selection: Selection
+  tune: Tune
+  fuelId: string
+  wear: WearState
+  imported: Part[]
+}
+
 export default function App(): React.JSX.Element {
-  const [sel, setSel] = useState<Selection>({
-    block: 'block-alu-2.0',
-    crank: 'crank-cast-86',
-    rod: 'rod-stock-139',
-    piston: 'piston-cast-86',
-    head: 'head-sport-42',
-    injector: 'inj-310',
-    fuelPump: 'pump-stock-110',
-    aspiration: 'asp-na'
-  })
+  const [sel, setSel] = useState<Selection>(DEFAULT_SELECTION)
   const [tune, setTune] = useState<Tune>(() => defaultTune())
   const [fuelId, setFuelId] = useState('gasolina95')
   const [hoverRpm, setHoverRpm] = useState<number | null>(null)
   const fuel = FUELS[fuelId] ?? FUELS.gasolina95!
   const [imported, setImported] = useState<Part[]>([])
   const [importFile, setImportFile] = useState<{ name: string; data: ArrayBuffer } | null>(null)
+  /** Desgaste acumulado del motor montado: sobrevive entre tandas y sesiones. */
+  const [wear, setWear] = useState<WearState>(() => freshWear())
+  const [projectName, setProjectName] = useState<string | null>(null)
+  const [restored, setRestored] = useState(false)
+
+  /** Aplica un proyecto/sesión validando que cada id de pieza exista. */
+  const applyProject = useCallback((data: ProjectData, parts: Part[]): void => {
+    const known = (id: string): boolean =>
+      parts.some((p) => p.id === id) || CATALOG_SLOTS.some((s) => s.options.some((p) => p.id === id))
+    const selection = { ...DEFAULT_SELECTION }
+    for (const key of Object.keys(selection) as Array<keyof Selection>) {
+      const id = data.selection?.[key]
+      if (typeof id === 'string' && known(id)) selection[key] = id
+    }
+    setSel(selection)
+    if (data.tune?.fuelMap && data.tune?.sparkMap) setTune(data.tune)
+    if (typeof data.fuelId === 'string' && FUELS[data.fuelId]) setFuelId(data.fuelId)
+    setWear(data.wear ? { ...freshWear(), ...data.wear } : freshWear())
+  }, [])
 
   useEffect(() => {
-    window.motorforge
-      .loadImportedParts()
-      .then((json) => {
-        if (!json) return
-        const parts: unknown = JSON.parse(json)
-        if (Array.isArray(parts)) setImported(parts as Part[])
-      })
-      .catch(() => {
+    void (async () => {
+      let parts: Part[] = []
+      try {
+        const json = await window.motorforge.loadImportedParts()
+        const parsed: unknown = json ? JSON.parse(json) : null
+        if (Array.isArray(parsed)) parts = parsed as Part[]
+      } catch {
         /* fichero corrupto: se ignora y se parte de cero */
-      })
-  }, [])
+      }
+      setImported(parts)
+      try {
+        const session = await window.motorforge.loadSession()
+        if (session) applyProject(JSON.parse(session) as ProjectData, parts)
+      } catch {
+        /* sesión corrupta: se parte del motor por defecto */
+      }
+      setRestored(true)
+    })()
+  }, [applyProject])
+
+  // Autosave de sesión: el taller queda como lo dejaste
+  useEffect(() => {
+    if (!restored) return
+    const data: ProjectData = { version: 1, selection: sel, tune, fuelId, wear, imported }
+    const t = setTimeout(() => void window.motorforge.saveSession(JSON.stringify(data)), 600)
+    return () => clearTimeout(t)
+  }, [restored, sel, tune, fuelId, wear, imported])
+
+  const saveProjectAs = async (): Promise<void> => {
+    const data: ProjectData = {
+      version: 1,
+      name: projectName ?? undefined,
+      selection: sel,
+      tune,
+      fuelId,
+      wear,
+      imported
+    }
+    const saved = await window.motorforge.saveProject(
+      JSON.stringify(data, null, 2),
+      projectName ?? 'motor'
+    )
+    if (saved) setProjectName(saved.replace(/\.mforge\.json$|\.json$/i, ''))
+  }
+
+  const openProjectFile = async (): Promise<void> => {
+    const file = await window.motorforge.openProject()
+    if (!file) return
+    try {
+      const data = JSON.parse(file.json) as ProjectData
+      const parts = Array.isArray(data.imported) ? data.imported : []
+      const merged = [...imported]
+      for (const p of parts) if (!merged.some((m) => m.id === p.id)) merged.push(p)
+      if (merged.length !== imported.length) {
+        setImported(merged)
+        void window.motorforge.saveImportedParts(JSON.stringify(merged))
+      }
+      applyProject(data, merged)
+      setProjectName(file.name.replace(/\.mforge\.json$|\.json$/i, ''))
+    } catch {
+      window.alert('El fichero no es un proyecto MotorForge válido.')
+    }
+  }
 
   const findPart = useCallback(
     <T extends Part>(id: string): T => {
@@ -112,7 +201,8 @@ export default function App(): React.JSX.Element {
       head: findPart(sel.head),
       injector: findPart(sel.injector),
       fuelPump: findPart(sel.fuelPump),
-      aspiration: findPart(sel.aspiration)
+      aspiration: findPart(sel.aspiration),
+      cooling: findPart(sel.cooling)
     }
     return resolveEngine(assembly)
   }, [sel, findPart])
@@ -124,6 +214,44 @@ export default function App(): React.JSX.Element {
     if (hasErrors) return null
     return runDyno(engine, tune, fuel)
   }, [engine, tune, fuel, hasErrors])
+
+  /** Comparador A/B: snapshot de las curvas actuales como referencia discontinua. */
+  const [reference, setReference] = useState<{
+    label: string
+    peakPower: number
+    power: Array<{ rpm: number; value: number }>
+    torque: Array<{ rpm: number; value: number }>
+  } | null>(null)
+
+  const pinReference = (): void => {
+    if (!dyno) return
+    setReference({
+      label: `${(dyno.peakPower.power / CV).toFixed(0)} CV · ${fuel.name}${isTurbo ? ` · ${(tune.boostTarget / 1e5).toFixed(1)} bar` : ''}`,
+      peakPower: dyno.peakPower.power,
+      power: dyno.points.map((p) => ({ rpm: p.rpm, value: p.power / CV })),
+      torque: dyno.points.map((p) => ({ rpm: p.rpm, value: p.torque }))
+    })
+  }
+
+  const exportCsv = async (): Promise<void> => {
+    if (!dyno) return
+    const header = 'rpm,potencia_cv,par_nm,boost_bar,lambda_real,avance_deg,rail_bar,picado,corona_c,escape_c'
+    const rows = dyno.points.map((p) =>
+      [
+        p.rpm,
+        (p.power / CV).toFixed(1),
+        p.torque.toFixed(1),
+        (p.boost / 1e5).toFixed(2),
+        p.lambdaActual.toFixed(3),
+        p.sparkAdvance.toFixed(1),
+        (p.railPressure / 1e5).toFixed(2),
+        p.knockIndex.toFixed(3),
+        (p.crownTemp - 273.15).toFixed(0),
+        (p.exhaustTemp - 273.15).toFixed(0)
+      ].join(',')
+    )
+    await window.motorforge.exportText('dyno-motorforge.csv', [header, ...rows].join('\n'))
+  }
 
   const [overlayMode, setOverlayMode] = useState<'normal' | OverlayCategory>('normal')
   const overlay = useMemo(
@@ -164,7 +292,18 @@ export default function App(): React.JSX.Element {
     <>
       <header className="topbar">
         <h1>MotorForge</h1>
-        <span className="sub">Banco de potencia · Fase 4 — desgaste acumulado, fatiga, overlays 3D y FEA vóxel</span>
+        <span className="sub">
+          Banco de potencia · Fase 5 — proyectos, refrigeración y desgaste persistente
+          {projectName ? ` · ${projectName}` : ''}
+        </span>
+        <div className="topbar-actions">
+          <button className="btn" onClick={() => void openProjectFile()}>
+            Abrir proyecto…
+          </button>
+          <button className="btn" onClick={() => void saveProjectAs()}>
+            Guardar proyecto…
+          </button>
+        </div>
       </header>
 
       <div className="layout">
@@ -366,6 +505,33 @@ export default function App(): React.JSX.Element {
 
           {dyno && (
             <>
+              <div className="dyno-toolbar">
+                {reference ? (
+                  <>
+                    <span className="ref-chip">
+                      A/B contra <strong>{reference.label}</strong>
+                      <span
+                        className={
+                          dyno.peakPower.power >= reference.peakPower ? 'ref-delta good' : 'ref-delta bad'
+                        }
+                      >
+                        {dyno.peakPower.power >= reference.peakPower ? '+' : ''}
+                        {((dyno.peakPower.power - reference.peakPower) / CV).toFixed(0)} CV
+                      </span>
+                    </span>
+                    <button className="btn" onClick={() => setReference(null)}>
+                      Quitar referencia
+                    </button>
+                  </>
+                ) : (
+                  <button className="btn" onClick={pinReference}>
+                    Fijar como referencia (A/B)
+                  </button>
+                )}
+                <button className="btn" onClick={() => void exportCsv()}>
+                  Exportar CSV
+                </button>
+              </div>
               <DynoChart
                 title="Potencia (CV)"
                 unit="CV"
@@ -375,6 +541,8 @@ export default function App(): React.JSX.Element {
                 failedAtRpm={dyno.failedAtRpm}
                 hoverRpm={hoverRpm}
                 onHover={setHoverRpm}
+                reference={reference?.power}
+                referenceLabel={reference?.label}
               />
               <DynoChart
                 title="Par (Nm)"
@@ -385,6 +553,8 @@ export default function App(): React.JSX.Element {
                 failedAtRpm={dyno.failedAtRpm}
                 hoverRpm={hoverRpm}
                 onHover={setHoverRpm}
+                reference={reference?.torque}
+                referenceLabel={reference?.label}
               />
 
               <details className="map-card">
@@ -416,7 +586,7 @@ export default function App(): React.JSX.Element {
 
               <TransientPanel engine={engine} tune={tune} fuel={fuel} />
 
-              <EndurancePanel engine={engine} tune={tune} fuel={fuel} />
+              <EndurancePanel engine={engine} tune={tune} fuel={fuel} wear={wear} onWear={setWear} />
 
               <section>
                 <h2 className="section-title">Eventos de la simulación</h2>

@@ -1,6 +1,7 @@
 import type {
   AspirationPart,
   BlockPart,
+  CoolingPart,
   CrankPart,
   FuelPumpPart,
   FuelSpec,
@@ -370,6 +371,34 @@ export const FUEL_PUMPS: FuelPumpPart[] = [
   }
 ]
 
+export const COOLING: CoolingPart[] = [
+  {
+    id: 'cool-stock',
+    kind: 'cooling',
+    name: 'Radiador y aceite de serie',
+    source: 'catalog',
+    // referencia de calibración: efecto nulo (los modelos ya lo asumen)
+    spec: { crownCooling: 0, exhaustCooling: 0, oilProtection: 1.0 },
+    limits: []
+  },
+  {
+    id: 'cool-sport',
+    kind: 'cooling',
+    name: 'Radiador grande + enfriador de aceite',
+    source: 'catalog',
+    spec: { crownCooling: 18, exhaustCooling: 10, oilProtection: 0.7 },
+    limits: []
+  },
+  {
+    id: 'cool-race',
+    kind: 'cooling',
+    name: 'Refrigeración de competición (agua-aceite dedicado)',
+    source: 'catalog',
+    spec: { crownCooling: 35, exhaustCooling: 20, oilProtection: 0.45 },
+    limits: []
+  }
+]
+
 export const ASPIRATIONS: AspirationPart[] = [
   {
     id: 'asp-na',
@@ -421,7 +450,8 @@ export const CATALOG: Part[] = [
   ...HEADS,
   ...INJECTORS,
   ...FUEL_PUMPS,
-  ...ASPIRATIONS
+  ...ASPIRATIONS,
+  ...COOLING
 ]
 
 export function partById<T extends Part>(id: string): T {

@@ -15,6 +15,9 @@ interface Props {
   hoverRpm: number | null
   onHover: (rpm: number | null) => void
   formatValue?: (v: number) => string
+  /** Curva de referencia (comparador A/B) en línea discontinua. */
+  reference?: ChartPoint[]
+  referenceLabel?: string
 }
 
 const MARGIN = { top: 16, right: 18, bottom: 26, left: 48 }
@@ -42,7 +45,9 @@ export default function DynoChart({
   failedAtRpm,
   hoverRpm,
   onHover,
-  formatValue = (v) => v.toFixed(0)
+  formatValue = (v) => v.toFixed(0),
+  reference,
+  referenceLabel
 }: Props): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null)
   const [width, setWidth] = useState(600)
@@ -76,7 +81,7 @@ export default function DynoChart({
   const plotH = HEIGHT - MARGIN.top - MARGIN.bottom
   const xMin = first.rpm
   const xMax = last.rpm
-  const yMax0 = Math.max(...points.map((p) => p.value), 1)
+  const yMax0 = Math.max(...points.map((p) => p.value), ...(reference ?? []).map((p) => p.value), 1)
   const yStep = niceStep(yMax0 * 1.1, 4)
   const yMax = Math.ceil((yMax0 * 1.1) / yStep) * yStep
 
@@ -119,6 +124,7 @@ export default function DynoChart({
       <h3>
         <span className="swatch" style={{ background: `var(${colorVar})` }} />
         {title}
+        {reference && referenceLabel && <span className="chart-sub"> · discontinua: {referenceLabel}</span>}
       </h3>
       <svg width={width} height={HEIGHT} role="img" aria-label={`${title} frente a RPM`}>
         <defs>
@@ -150,6 +156,21 @@ export default function DynoChart({
           stroke="var(--baseline)"
           strokeWidth="1"
         />
+
+        {/* referencia A/B */}
+        {reference && reference.length > 1 && (
+          <path
+            d={reference
+              .filter((p) => p.rpm >= xMin && p.rpm <= xMax)
+              .map((p, i) => `${i === 0 ? 'M' : 'L'}${x(p.rpm).toFixed(1)},${y(Math.min(p.value, yMax)).toFixed(1)}`)
+              .join(' ')}
+            fill="none"
+            stroke={`var(${colorVar})`}
+            strokeWidth="1.4"
+            strokeDasharray="5 4"
+            opacity="0.55"
+          />
+        )}
 
         {/* serie */}
         <path d={areaPath} fill={`url(#${gradId})`} />

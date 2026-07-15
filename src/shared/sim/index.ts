@@ -6,7 +6,7 @@ export { runDyno, checkLimits, measuredValue } from './dyno'
 export { computeUtilization } from './utilization'
 export type { OverlayCategory } from './utilization'
 export { runTransient } from './transient'
-export { runEndurance, WEAR_LABELS } from './wear'
+export { runEndurance, freshWear, WEAR_LABELS } from './wear'
 export type {
   WearState,
   EnduranceResult,
@@ -31,7 +31,8 @@ export function stockEngine(): EngineAssembly {
     head: partById('head-sport-42'),
     injector: partById('inj-310'),
     fuelPump: partById('pump-stock-110'),
-    aspiration: partById('asp-na')
+    aspiration: partById('asp-na'),
+    cooling: partById('cool-stock')
   }
 }
 

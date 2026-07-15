@@ -316,6 +316,86 @@ body {
   color: var(--ink);
 }
 
+.topbar-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.dyno-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ref-chip {
+  font-size: 11.5px;
+  color: var(--ink-2);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 5px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ref-delta {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.ref-delta.good {
+  color: var(--series-torque);
+}
+
+.ref-delta.bad {
+  color: var(--status-critical);
+}
+
+.broken-note {
+  color: var(--status-critical);
+  font-size: 12.5px;
+  background: rgba(208, 59, 59, 0.08);
+  border: 1px solid rgba(208, 59, 59, 0.35);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.endurance-history {
+  margin-top: 14px;
+}
+
+.endurance-history table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+}
+
+.endurance-history th {
+  text-align: left;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.endurance-history td {
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.hist-fail {
+  color: var(--status-critical);
+}
+
+.hist-ok {
+  color: var(--series-torque);
+}
+
 .endurance-controls {
   display: flex;
   align-items: center;

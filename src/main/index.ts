@@ -14,8 +14,17 @@ const CAD_FILTERS = [
   { name: 'Todos', extensions: ['*'] }
 ]
 
+const PROJECT_FILTERS = [
+  { name: 'Proyecto MotorForge', extensions: ['mforge.json', 'json'] },
+  { name: 'Todos', extensions: ['*'] }
+]
+
 function importedPartsPath(): string {
   return join(app.getPath('userData'), 'imported-parts.json')
+}
+
+function sessionPath(): string {
+  return join(app.getPath('userData'), 'session.json')
 }
 
 function registerIpc(): void {
@@ -41,6 +50,52 @@ function registerIpc(): void {
     } catch {
       return null
     }
+  })
+
+  // ---- Proyectos: guardar/abrir con diálogo nativo ----
+  ipcMain.handle('save-project', async (_e, json: string, suggestedName: string) => {
+    const result = await dialog.showSaveDialog({
+      defaultPath: `${suggestedName || 'motor'}.mforge.json`,
+      filters: PROJECT_FILTERS
+    })
+    if (result.canceled || !result.filePath) return null
+    await writeFile(result.filePath, json, 'utf8')
+    return basename(result.filePath)
+  })
+
+  ipcMain.handle('open-project', async () => {
+    const result = await dialog.showOpenDialog({ properties: ['openFile'], filters: PROJECT_FILTERS })
+    const filePath = result.filePaths[0]
+    if (result.canceled || !filePath) return null
+    return { name: basename(filePath), json: await readFile(filePath, 'utf8') }
+  })
+
+  // ---- Sesión: autosave silencioso en userData ----
+  ipcMain.handle('save-session', async (_e, json: string) => {
+    await mkdir(app.getPath('userData'), { recursive: true })
+    await writeFile(sessionPath(), json, 'utf8')
+  })
+
+  ipcMain.handle('load-session', async () => {
+    try {
+      return await readFile(sessionPath(), 'utf8')
+    } catch {
+      return null
+    }
+  })
+
+  // ---- Exportar texto (CSV de curvas) ----
+  ipcMain.handle('export-text', async (_e, defaultName: string, content: string) => {
+    const result = await dialog.showSaveDialog({
+      defaultPath: defaultName,
+      filters: [
+        { name: 'CSV', extensions: ['csv'] },
+        { name: 'Todos', extensions: ['*'] }
+      ]
+    })
+    if (result.canceled || !result.filePath) return null
+    await writeFile(result.filePath, content, 'utf8')
+    return basename(result.filePath)
   })
 }
 

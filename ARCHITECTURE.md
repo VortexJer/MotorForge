@@ -50,6 +50,10 @@ por tipo de pieza aporta las condiciones de contorno → se derivan límites:
 4. **Hecha**: banco de resistencia (desgaste acumulado: fatiga Miner de biela/cigüeñal, ringland
    por picado, fluencia térmica, cojinetes, segmentos como fallo progresivo que roba par),
    FEA vóxel (nivel B) para piezas importadas, overlays 3D de utilización térmica/estructural.
+5. **Hecha**: proyectos (guardar/abrir `.mforge.json` con diálogo nativo + autosave de sesión en
+   userData), desgaste persistente entre tandas y sesiones (motor "usado" hasta reconstruir),
+   slot de refrigeración/aceite (baja corona/escape y protege cojinetes), comparador A/B de
+   curvas de dyno, histórico de tandas y exportación CSV.
 
 ## Estructura
 

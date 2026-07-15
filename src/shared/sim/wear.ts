@@ -66,6 +66,19 @@ export interface EnduranceResult {
 export interface EnduranceOptions {
   minutes?: number
   style?: EnduranceStyle
+  /** Desgaste con el que arranca la tanda (motor "usado"): permite acumular entre tandas. */
+  initialWear?: WearState
+}
+
+export function freshWear(): WearState {
+  return {
+    rodFatigue: 0,
+    crankFatigue: 0,
+    ringlandKnock: 0,
+    pistonThermal: 0,
+    bearings: 0,
+    ringsWear: 0
+  }
 }
 
 /** Perfil de uso: fracciones del corte y peso temporal de cada tramo. */
@@ -136,8 +149,11 @@ function damageRates(engine: ResolvedEngine, p: OperatingPointResult): WearState
     if (over > 0) rates.pistonThermal = Math.pow(over / 60, 2) / 120
   }
 
-  // Cojinetes: presión de combustión × régimen (adelgaza la película)
-  rates.bearings = (Math.pow(p.peakPressure / 1.6e7, 2) * (p.rpm / 8000)) / 3600
+  // Cojinetes: presión de combustión × régimen (adelgaza la película);
+  // un enfriador de aceite mantiene la viscosidad y protege
+  rates.bearings =
+    ((Math.pow(p.peakPressure / 1.6e7, 2) * (p.rpm / 8000)) / 3600) *
+    engine.assembly.cooling.spec.oilProtection
 
   // Segmentos/camisa: velocidad media de pistón (2 h de vida a 20 m/s)
   const meanPistonSpeed = (2 * engine.geometry.stroke * p.rpm) / 60
@@ -188,7 +204,7 @@ export function runEndurance(
     throw new Error(`El motor no es montable: ${blocking.map((i) => i.message).join('; ')}`)
   }
 
-  const { minutes = 30, style = 'deportivo' } = options
+  const { minutes = 30, style = 'deportivo', initialWear } = options
   const profile = PROFILES[style]
 
   // Puntos únicos del perfil (el desgaste no altera las cargas en v0)
@@ -198,14 +214,7 @@ export function runEndurance(
   })
   const refPoint = segments.reduce((a, b) => (b.point.torque > a.point.torque ? b : a)).point
 
-  const wear: WearState = {
-    rodFatigue: 0,
-    crankFatigue: 0,
-    ringlandKnock: 0,
-    pistonThermal: 0,
-    bearings: 0,
-    ringsWear: 0
-  }
+  const wear: WearState = initialWear ? { ...initialWear } : freshWear()
   const rates = segments.map(({ point, dwell }) => ({ rates: damageRates(engine, point), dwell, point }))
 
   const samples: EnduranceSample[] = []

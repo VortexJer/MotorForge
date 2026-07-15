@@ -258,11 +258,20 @@ export function simulateOperatingPoint(
   // menos el enfriamiento por mezcla rica (el motivo por el que se engorda con turbo)
   const gammaExh = 1.3
   const richCooling = fuel.richCooling * richness
+  const cooling = engine.assembly.cooling.spec
   const exhaustTemp =
-    T * Math.pow(pExh / Math.max(P, pExh), (gammaExh - 1) / gammaExh) - richCooling
-  // Corona de pistón: flujo de calor medio × resistencia térmica corona→aceite/camisa
+    T * Math.pow(pExh / Math.max(P, pExh), (gammaExh - 1) / gammaExh) -
+    richCooling -
+    cooling.exhaustCooling
+  // Corona de pistón: flujo de calor medio × resistencia térmica corona→aceite/camisa,
+  // menos lo que arranque el sistema de refrigeración/aceite elegido
   const heatFlux = (qHeatTransfer * (rpm / 120)) / areaHt
-  const crownTemp = 385 + 4.4e-4 * heatFlux - 0.3 * richCooling + Math.min(150, 1400 * knockExcess)
+  const crownTemp =
+    385 +
+    4.4e-4 * heatFlux -
+    0.3 * richCooling +
+    Math.min(150, 1400 * knockExcess) -
+    cooling.crownCooling
 
   const fuelFlow = (mFuel * g.cylinders * rpm) / 120
   const bsfc = power > 0 ? fuelFlow / power : Number.POSITIVE_INFINITY

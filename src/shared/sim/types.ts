@@ -13,6 +13,7 @@ export type PartKind =
   | 'injector'
   | 'fuelPump'
   | 'aspiration'
+  | 'cooling'
 
 export type Provenance = 'catalog' | 'derived-analytic' | 'derived-fea' | 'manual'
 
@@ -119,6 +120,18 @@ export interface AspirationPart extends BasePart {
   }
 }
 
+export interface CoolingPart extends BasePart {
+  kind: 'cooling'
+  spec: {
+    /** K que resta a la temperatura de corona a plena carga (0 = radiador de serie). */
+    crownCooling: number
+    /** K que resta a la temperatura de escape (culata mejor refrigerada). */
+    exhaustCooling: number
+    /** Factor sobre el daño de cojinetes: 1 = aceite de serie, <1 protege. */
+    oilProtection: number
+  }
+}
+
 export type Part =
   | BlockPart
   | CrankPart
@@ -128,6 +141,7 @@ export type Part =
   | InjectorPart
   | FuelPumpPart
   | AspirationPart
+  | CoolingPart
 
 /** Selección de piezas: un slot por tipo (motor de un solo banco, v0). */
 export interface EngineAssembly {
@@ -139,6 +153,7 @@ export interface EngineAssembly {
   injector: InjectorPart
   fuelPump: FuelPumpPart
   aspiration: AspirationPart
+  cooling: CoolingPart
 }
 
 export interface CompatIssue {
