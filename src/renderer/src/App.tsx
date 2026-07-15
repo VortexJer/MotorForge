@@ -31,7 +31,10 @@ import EndurancePanel from './components/EndurancePanel'
 import EventCard from './components/EventCard'
 import ImportDialog from './components/ImportDialog'
 import MapEditor from './components/MapEditor'
+import SettingsDialog from './components/SettingsDialog'
 import TransientPanel from './components/TransientPanel'
+import { applyTheme, loadTheme, saveTheme } from './lib/theme'
+import type { ThemeSettings } from './lib/theme'
 
 const PhysicsLab = lazy(() => import('./physics/PhysicsLab'))
 
@@ -98,6 +101,14 @@ export default function App(): React.JSX.Element {
   const [restored, setRestored] = useState(false)
   /** Vista activa: banco (dyno/tandas) o laboratorio físico (Rapier). */
   const [view, setView] = useState<'banco' | 'fisica'>('banco')
+
+  // Tema: modo oscuro/claro + acento configurable, persistido en localStorage
+  const [theme, setTheme] = useState<ThemeSettings>(() => loadTheme())
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  useEffect(() => {
+    applyTheme(theme)
+    saveTheme(theme)
+  }, [theme])
 
   /** Aplica un proyecto/sesión validando que cada id de pieza exista. */
   const applyProject = useCallback((data: ProjectData, parts: Part[]): void => {
@@ -321,6 +332,9 @@ export default function App(): React.JSX.Element {
           </button>
           <button className="btn" onClick={() => void saveProjectAs()}>
             Guardar proyecto…
+          </button>
+          <button className="btn" onClick={() => setSettingsOpen(true)} aria-label="Ajustes">
+            Ajustes
           </button>
         </div>
       </header>
@@ -683,6 +697,10 @@ export default function App(): React.JSX.Element {
 
       {importFile && (
         <ImportDialog file={importFile} onCancel={() => setImportFile(null)} onSave={saveImported} />
+      )}
+
+      {settingsOpen && (
+        <SettingsDialog theme={theme} onChange={setTheme} onClose={() => setSettingsOpen(false)} />
       )}
     </>
   )

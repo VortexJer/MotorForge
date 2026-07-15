@@ -34,7 +34,8 @@ export default function MapEditor({
   const cellBg = (v: number): string => {
     let t = (v - min) / (max - min || 1)
     t = Math.min(1, Math.max(0, invertScale ? 1 - t : t))
-    return `rgba(57, 135, 229, ${(0.06 + 0.34 * t).toFixed(3)})`
+    // sigue el color de acento del tema del usuario
+    return `color-mix(in srgb, var(--accent) ${(6 + 34 * t).toFixed(1)}%, transparent)`
   }
 
   return (

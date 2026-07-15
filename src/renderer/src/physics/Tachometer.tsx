@@ -88,12 +88,12 @@ export default function Tachometer({ rpm, redline, max = 13000 }: Props): React.
         y1={by}
         x2={nx}
         y2={ny}
-        stroke="#f5b942"
+        stroke="var(--accent)"
         strokeWidth="2.2"
         strokeLinecap="round"
         style={{ transition: 'x1 0.1s linear, y1 0.1s linear, x2 0.1s linear, y2 0.1s linear' }}
       />
-      <circle cx={CX} cy={CY} r="5.5" fill="#0a0d14" stroke="#f5b942" strokeWidth="1.6" />
+      <circle cx={CX} cy={CY} r="5.5" fill="#0a0d14" stroke="var(--accent)" strokeWidth="1.6" />
       <text x={CX} y={CY + 26} textAnchor="middle" fontSize="9" fill="#6f7888" fontFamily="inherit" letterSpacing="2">
         ×1000 RPM
       </text>

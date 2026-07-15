@@ -159,6 +159,11 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
 
   const originalRodLength = g.rodLength
   const originalRodArea = 3.0e-4
+  // color de acento del tema del usuario (para los pulsos de inyector)
+  const accentColor = useMemo(
+    () => getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#e10600',
+    []
+  )
 
   // ---- construcción del mundo: cuerpos, juntas y mallas ----
   useEffect(() => {
@@ -549,7 +554,7 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
               if (light) light.intensity = 70
               sparkTimers.current[i] = 0.015 // 15 ms (§5)
               const inj = injectorMats.current[i]
-              if (inj) inj.emissive.set('#3987e5')
+              if (inj) inj.emissive.set(accentColor)
             }
           }
         }
