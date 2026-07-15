@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js'
 import { CRANK_PHASE } from './sockets'
 import type { EngineSockets } from './sockets'
 
@@ -27,8 +28,18 @@ export const PULSE_INTENSITY = 4.5
 
 const CAD_GRAY = '#565e6b'
 
-function cad(color: string): THREE.MeshStandardMaterial {
-  return new THREE.MeshStandardMaterial({ color, metalness: 0.05, roughness: 0.9 })
+function cad(color: string, metalness = 0.45, roughness = 0.5): THREE.MeshStandardMaterial {
+  return new THREE.MeshStandardMaterial({ color, metalness, roughness })
+}
+
+/** Cota del suelo de la celda bajo la bancada (r = radio de muñequilla). */
+export function engineFloorY(crankRadius: number): number {
+  return -crankRadius - 2.0
+}
+
+/** Caja de fundición: cantos redondeados para que la luz dibuje las aristas. */
+function casting(w: number, h: number, d: number): RoundedBoxGeometry {
+  return new RoundedBoxGeometry(w, h, d, 2, Math.min(0.05, w * 0.2, h * 0.2, d * 0.2))
 }
 
 /** Acumula geometrías transformadas y las fusiona en una malla por material. */
@@ -137,12 +148,14 @@ export function buildEngineDetail(sockets: EngineSockets, cylinders: number): En
   const root = new THREE.Group()
   root.name = 'engine-detail'
 
-  const mAlu = cad('#6d7684')
-  const mDark = cad('#394049')
-  const mSteel = cad(CAD_GRAY)
-  const mCast = cad('#4e4a45')
-  const mHose = cad('#22262d')
-  const mBrass = cad('#8a7a55')
+  // materiales PBR diferenciados: aluminio mecanizado, chapa lacada, acero,
+  // fundición rugosa, goma y latón — con el mapa de entorno cobran volumen
+  const mAlu = cad('#8891a0', 0.55, 0.38)
+  const mDark = cad('#2e343d', 0.25, 0.6)
+  const mSteel = cad('#aab3c0', 0.8, 0.32)
+  const mCast = cad('#5a544c', 0.3, 0.72)
+  const mHose = cad('#1e2228', 0.05, 0.9)
+  const mBrass = cad('#a08b58', 0.85, 0.42)
 
   const closed = new Merger() // carcasas cerradas: SOLO vista global
   const cut = new Merger() // carcasa seccionada: inspección y banco
@@ -153,8 +166,8 @@ export function buildEngineDetail(sockets: EngineSockets, cylinders: number): En
   // ===================================================== BLOQUE (cutaway)
   const blockH = deckY - panTop
   // cerrado (silueta): bloque completo + tapa de distribución frontal
-  closed.add(new THREE.BoxGeometry(halfW * 2, blockH, blockD), mAlu, mat4(0, panTop + blockH / 2, 0))
-  closed.add(new THREE.BoxGeometry(0.5, blockH * 0.9, blockD * 0.9), mAlu, mat4(frontX, panTop + blockH / 2, 0))
+  closed.add(casting(halfW * 2, blockH, blockD), mAlu, mat4(0, panTop + blockH / 2, 0))
+  closed.add(casting(0.5, blockH * 0.9, blockD * 0.9), mAlu, mat4(frontX, panTop + blockH / 2, 0))
   // seccionado: pared trasera, dos testeros, faldón frontal bajo y banda del deck
   cut.add(new THREE.BoxGeometry(halfW * 2, blockH, 0.14), mAlu, mat4(0, panTop + blockH / 2, -wallZ + 0.07))
   for (const ex of [-halfW, halfW]) {
@@ -183,13 +196,23 @@ export function buildEngineDetail(sockets: EngineSockets, cylinders: number): En
 
   // Cárter: bañera fijada a la base del bloque (siempre visible)
   always.add(new THREE.BoxGeometry(halfW * 2, 0.1, blockD), mDark, mat4(0, panTop - 0.05, 0))
-  always.add(new THREE.BoxGeometry(halfW * 1.7, panTop - panBottom, blockD * 0.72), mDark, mat4(0, (panTop + panBottom) / 2, 0))
+  always.add(casting(halfW * 1.7, panTop - panBottom, blockD * 0.72), mDark, mat4(0, (panTop + panBottom) / 2, 0))
+
+  // ---- bancada de ensayo: el motor está MONTADO, no flotando ----
+  const floorY = engineFloorY(r)
+  for (const ex of [-1, 1]) {
+    const colX = ex * (halfW + 0.34)
+    always.add(casting(0.5, deckY * 0.4 - floorY, 0.8), mDark, mat4(colX, (deckY * 0.4 + floorY) / 2, 0))
+    always.add(casting(1.1, 0.12, 1.3), mDark, mat4(colX, floorY + 0.06, 0)) // pie
+    always.add(casting(0.5, 0.16, 0.6), mSteel, mat4(ex * (halfW + 0.06), deckY * 0.36, 0)) // brazo de anclaje
+  }
+  always.add(casting(halfW * 2 + 1.4, 0.14, 0.5), mDark, mat4(0, floorY + 0.07, 0)) // travesaño
   detail.add(new THREE.BoxGeometry(halfW * 1.72, 0.04, blockD * 0.74), mHose, mat4(0, panTop - 0.11, 0)) // junta de cárter
 
   // ===================================================== CULATA (cutaway)
   const headH = 1.15
   const headTop = deckY + 0.05 + headH
-  closed.add(new THREE.BoxGeometry(halfW * 2, headH, blockD * 0.93), mAlu, mat4(0, deckY + 0.05 + headH / 2, 0))
+  closed.add(casting(halfW * 2, headH, blockD * 0.93), mAlu, mat4(0, deckY + 0.05 + headH / 2, 0))
   // seccionada: pared trasera, testeros, placa portalevas y murete frontal bajo
   cut.add(new THREE.BoxGeometry(halfW * 2, headH, 0.14), mAlu, mat4(0, deckY + 0.05 + headH / 2, -wallZ * 0.93 + 0.07))
   for (const ex of [-halfW, halfW]) {
@@ -206,8 +229,16 @@ export function buildEngineDetail(sockets: EngineSockets, cylinders: number): En
       cut.add(new THREE.BoxGeometry(0.16, headTop - 0.16 - camY + 0.12, 0.3), mAlu, mat4(x, (camY + headTop - 0.16) / 2 - 0.02, z))
     }
   }
-  // tapa de balancines (siempre) + su junta
-  always.add(new THREE.BoxGeometry(halfW * 2, 0.32, blockD * 0.88), mDark, mat4(0, headTop + 0.16, 0))
+  // tapa de balancines nervada + tapón de aceite + su junta
+  always.add(casting(halfW * 2, 0.32, blockD * 0.88), mDark, mat4(0, headTop + 0.16, 0))
+  for (let rb = 0; rb < 5; rb++) {
+    always.add(
+      casting(halfW * 1.7, 0.06, 0.13),
+      mDark,
+      mat4(0, headTop + 0.34, -blockD * 0.32 + rb * blockD * 0.16)
+    )
+  }
+  always.add(new THREE.CylinderGeometry(0.16, 0.17, 0.1, 12), mHose, mat4(-halfW * 0.62, headTop + 0.37, blockD * 0.2))
   detail.add(new THREE.BoxGeometry(halfW * 1.96, 0.035, blockD * 0.86), mHose, mat4(0, headTop + 0.005, 0))
   // junta de culata multicapa sobre el deck
   detail.add(new THREE.BoxGeometry(halfW * 2, 0.035, blockD * 0.95), mBrass, mat4(0, deckY + 0.025, 0))
@@ -309,7 +340,7 @@ export function buildEngineDetail(sockets: EngineSockets, cylinders: number): En
       8
     )
   }
-  detail.add(new THREE.BoxGeometry(0.55, 0.42, 0.45), mCast, mat4(colX, colY, colZ)) // caja colectora
+  detail.add(casting(0.55, 0.42, 0.45), mCast, mat4(colX, colY, colZ)) // caja colectora
   const turbX = colX + 0.75
   const turbY = colY
   const turbZ = colZ
@@ -453,13 +484,16 @@ export function buildEngineDetail(sockets: EngineSockets, cylinders: number): En
     coilTop.name = 'lod-detail'
     root.add(injTip, coilTop)
   }
-  const injBodies = instancedPair(new THREE.CylinderGeometry(0.065, 0.05, 0.3, 8), mDark, injBodyMs, 0.8)
+  // actuadores: no son tornillería — en nivel banco siguen enteros
+  const injBodies = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.065, 0.05, 0.3, 8), mDark, injBodyMs.length)
+  injBodyMs.forEach((m, i) => injBodies.setMatrixAt(i, m))
   const coilGeo = mergeGeometries([
     new THREE.CylinderGeometry(0.085, 0.085, 0.44, 8),
     new THREE.BoxGeometry(0.19, 0.22, 0.19).translate(0, 0.32, 0)
   ])!
-  const coilBodies = instancedPair(coilGeo, mDark, coilBodyMs, 0.9)
-  root.add(injBodies.fine, injBodies.proxy, coilBodies.fine, coilBodies.proxy)
+  const coilBodies = new THREE.InstancedMesh(coilGeo, mDark, coilBodyMs.length)
+  coilBodyMs.forEach((m, i) => coilBodies.setMatrixAt(i, m))
+  root.add(injBodies, coilBodies)
 
   // ============================================ CIGÜEÑAL: volante y piñón
   const crankAttach = new THREE.Group()
@@ -503,7 +537,7 @@ export function buildEngineDetail(sockets: EngineSockets, cylinders: number): En
   detailMeshes.forEach((m) => root.add(m))
   fineMeshes.forEach((m) => root.add(m))
 
-  const finePairs = [headBolts, mainBolts, periBolts, injBodies, coilBodies]
+  const finePairs = [headBolts, mainBolts, periBolts]
 
   const d: EngineDetail = {
     root,
@@ -555,6 +589,8 @@ export function buildEngineDetail(sockets: EngineSockets, cylinders: number): En
       springs.visible = fineOn
       buckets.visible = fineOn
       teeth.visible = fineOn
+      injBodies.visible = detailOn
+      coilBodies.visible = detailOn
       camIntake.visible = detailOn
       camExhaust.visible = detailOn
       root.traverse((o) => {

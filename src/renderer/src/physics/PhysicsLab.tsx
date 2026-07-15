@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
+import { Grid, OrbitControls } from '@react-three/drei'
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 import * as THREE from 'three'
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import RAPIER from '@dimforge/rapier3d-compat'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
@@ -21,7 +22,7 @@ import {
 } from './engineMath'
 import type { FailureMode, PhysMaterial } from './engineMath'
 import { EngineAudio } from './audio'
-import { PULSE_COLOR, buildEngineDetail, setActuatorPulse } from './engineDetail'
+import { PULSE_COLOR, buildEngineDetail, engineFloorY, setActuatorPulse } from './engineDetail'
 import type { EngineDetail, LodTier } from './engineDetail'
 import SocketEditor from './SocketEditor'
 import Tachometer from './Tachometer'
@@ -92,9 +93,9 @@ const BOLT_KITS = {
   arp: { diameter: 0.009, yield: 1200e6, label: 'Pernos ARP M9' }
 } as const
 
-/** Material CAD mate (pliego §7): sin brillo especular, estilo SolidWorks. */
-function cadMat(color: string): THREE.MeshStandardMaterial {
-  return new THREE.MeshStandardMaterial({ color, metalness: 0.05, roughness: 0.9 })
+/** Metal técnico: responde al entorno PBR sin llegar a espejo. */
+function cadMat(color: string, metalness = 0.55, roughness = 0.42): THREE.MeshStandardMaterial {
+  return new THREE.MeshStandardMaterial({ color, metalness, roughness })
 }
 
 function neonRed(mat: THREE.MeshStandardMaterial): void {
@@ -164,6 +165,24 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
   const originalRodLength = g.rodLength
   const originalRodArea = 3.0e-4
 
+  // entorno PBR + tone mapping cinematográfico: sin esto los metales salen
+  // planos y toda la escena parece de plástico gris
+  useEffect(() => {
+    const pmrem = new THREE.PMREMGenerator(gl)
+    const envMap = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
+    scene.environment = envMap
+    scene.environmentIntensity = 0.55
+    scene.fog = new THREE.FogExp2('#05070c', 0.0085)
+    gl.toneMapping = THREE.ACESFilmicToneMapping
+    gl.toneMappingExposure = 1.12
+    return () => {
+      scene.environment = null
+      scene.fog = null
+      envMap.dispose()
+      pmrem.dispose()
+    }
+  }, [gl, scene])
+
   // ---- construcción del mundo: cuerpos, juntas y mallas ----
   useEffect(() => {
     const world = new RAPIER.World({ x: 0, y: -9.81 * S * 0.25, z: 0 })
@@ -219,6 +238,14 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
     root.add(det.root)
     detailRef.current = det
     ;(window as unknown as Record<string, unknown>)['__mfTier'] = 0
+    // sombras en todo el motor (las camisas transparentes solo reciben)
+    root.traverse((o) => {
+      if (o instanceof THREE.Mesh || o instanceof THREE.InstancedMesh) {
+        const transparent = o.material instanceof THREE.Material && o.material.transparent
+        o.castShadow = !transparent
+        o.receiveShadow = true
+      }
+    })
 
     // luces de chispa (§4: PointLight amarillo 15 ms sobre bujía/corona)
     sparkLights.current = []
@@ -257,9 +284,17 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
       journal.rotation.z = Math.PI / 2
       web.add(journal)
       for (const sSign of [-1, 1]) {
-        const cheek = new THREE.Mesh(new THREE.BoxGeometry(spacing * 0.09, r * 1.9, boreR * 0.42), crankMat)
-        cheek.position.set(sSign * spacing * 0.2, r * 0.25, 0)
-        web.add(cheek)
+        // brazo hacia la muñequilla + contrapeso de media luna en oposición
+        const arm = new THREE.Mesh(new THREE.BoxGeometry(spacing * 0.1, r * 1.15, boreR * 0.42), crankMat)
+        arm.position.set(sSign * spacing * 0.2, r * 0.5, 0)
+        web.add(arm)
+        const weight = new THREE.Mesh(
+          new THREE.CylinderGeometry(r * 0.95, r * 0.95, spacing * 0.1, 20, 1, false, Math.PI, Math.PI),
+          crankMat
+        )
+        weight.rotation.z = Math.PI / 2
+        weight.position.set(sSign * spacing * 0.2, -r * 0.25, 0)
+        web.add(weight)
       }
       crankGroup.add(web)
     }
@@ -322,42 +357,85 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
       slider.limits = [l - r - 0.2, l + r + 0.2]
       const jPistonBlock = world.createImpulseJoint(slider, blockBody, piston, true)
 
-      // mallas (mate CAD): pistón con falda, bulón y 3 segmentos (fuego,
-      // compresión y rascador — nivel inspección)
-      const pistonMat = cadMat('#c7ccd6')
+      // pistón TORNEADO (LatheGeometry): copa en corona, tres gargantas de
+      // segmento mecanizadas y falda con entrada
+      const pistonMat = cadMat('#cdd3dd', 0.65, 0.32)
       const pistonMesh = new THREE.Group()
-      const crown = new THREE.Mesh(new THREE.CylinderGeometry(boreR * 0.94, boreR * 0.94, ch * 1.8, 28), pistonMat)
-      crown.position.y = ch * 0.4
-      pistonMesh.add(crown)
-      const skirt = new THREE.Mesh(
-        new THREE.CylinderGeometry(boreR * 0.92, boreR * 0.88, ch * 1.4, 20, 1, true),
-        pistonMat
+      const R = boreR * 0.94
+      const top = ch * 1.3
+      const bottom = -ch * 2.2
+      const pts: THREE.Vector2[] = [
+        new THREE.Vector2(0, top - 0.05),
+        new THREE.Vector2(R * 0.55, top - 0.05),
+        new THREE.Vector2(R * 0.86, top),
+        new THREE.Vector2(R, top - 0.05)
+      ]
+      for (let gI = 0; gI < 3; gI++) {
+        const gy = top - 0.16 - gI * 0.12
+        pts.push(
+          new THREE.Vector2(R, gy + 0.02),
+          new THREE.Vector2(R * 0.9, gy + 0.02),
+          new THREE.Vector2(R * 0.9, gy - 0.03),
+          new THREE.Vector2(R, gy - 0.03)
+        )
+      }
+      pts.push(
+        new THREE.Vector2(R, bottom + 0.14),
+        new THREE.Vector2(R * 0.96, bottom),
+        new THREE.Vector2(R * 0.62, bottom + 0.04)
       )
-      skirt.position.y = -ch * 1.2
-      pistonMesh.add(skirt)
+      const crown = new THREE.Mesh(new THREE.LatheGeometry(pts, 30), pistonMat)
+      pistonMesh.add(crown)
       const pin = new THREE.Mesh(new THREE.CylinderGeometry(boreR * 0.16, boreR * 0.16, boreR * 1.2, 10), pistonMat)
       pin.rotation.z = Math.PI / 2
       pin.name = 'ring-fine'
       pistonMesh.add(pin)
-      const ringMat = cadMat('#3c434e')
+      // segmentos alojados en sus gargantas mecanizadas
+      const ringMat = cadMat('#454d59', 0.85, 0.3)
       for (let rg = 0; rg < 3; rg++) {
-        const ring = new THREE.Mesh(new THREE.TorusGeometry(boreR * 0.95, 0.022, 6, 24), ringMat)
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(R * 0.945, 0.024, 6, 28), ringMat)
         ring.rotation.x = Math.PI / 2
-        ring.position.y = ch * (1.1 - rg * 0.34)
+        ring.position.y = top - 0.165 - rg * 0.12
         ring.name = 'ring-fine'
         pistonMesh.add(ring)
       }
       pistonMesh.userData['part'] = `Pistón ${i + 1}`
       root.add(pistonMesh)
 
-      const rodMat = cadMat('#9aa4b5')
+      // biela forjada: brazo con sección en I extruida + ojos torneados
+      const rodMat = cadMat('#a9b2c2', 0.7, 0.35)
       const rodMesh = new THREE.Group()
-      const beam = new THREE.Mesh(new THREE.BoxGeometry(boreR * 0.3, l * 0.98, boreR * 0.22), rodMat)
-      rodMesh.add(beam)
-      const bigEye = new THREE.Mesh(new THREE.CylinderGeometry(boreR * 0.26, boreR * 0.26, boreR * 0.3, 16), rodMat)
+      const W = boreR * 0.3
+      const T = boreR * 0.22
+      const fl = T * 0.32
+      const web = W * 0.34
+      const iShape = new THREE.Shape()
+      iShape.moveTo(-W / 2, -T / 2)
+      iShape.lineTo(W / 2, -T / 2)
+      iShape.lineTo(W / 2, -T / 2 + fl)
+      iShape.lineTo(web / 2, -T / 2 + fl)
+      iShape.lineTo(web / 2, T / 2 - fl)
+      iShape.lineTo(W / 2, T / 2 - fl)
+      iShape.lineTo(W / 2, T / 2)
+      iShape.lineTo(-W / 2, T / 2)
+      iShape.lineTo(-W / 2, T / 2 - fl)
+      iShape.lineTo(-web / 2, T / 2 - fl)
+      iShape.lineTo(-web / 2, -T / 2 + fl)
+      iShape.lineTo(-W / 2, -T / 2 + fl)
+      iShape.closePath()
+      const beamLen = l * 0.82
+      const beamGeo = new THREE.ExtrudeGeometry(iShape, { depth: beamLen, bevelEnabled: false })
+      beamGeo.rotateX(Math.PI / 2)
+      beamGeo.translate(0, beamLen / 2, 0)
+      rodMesh.add(new THREE.Mesh(beamGeo, rodMat))
+      const bigEye = new THREE.Mesh(new THREE.CylinderGeometry(boreR * 0.27, boreR * 0.27, boreR * 0.3, 18), rodMat)
       bigEye.rotation.z = Math.PI / 2
       bigEye.position.y = -l / 2
       rodMesh.add(bigEye)
+      const smallEye = new THREE.Mesh(new THREE.CylinderGeometry(boreR * 0.17, boreR * 0.17, boreR * 0.26, 14), rodMat)
+      smallEye.rotation.z = Math.PI / 2
+      smallEye.position.y = l / 2
+      rodMesh.add(smallEye)
       // semicojinete de biela (nivel inspección)
       const shell = new THREE.Mesh(
         new THREE.CylinderGeometry(boreR * 0.2, boreR * 0.2, boreR * 0.26, 10, 1, false, 0, Math.PI),
@@ -782,11 +860,43 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
     }
   }
 
+  const floorY = engineFloorY(sockets.crankRadius)
+
   return (
     <group onDoubleClick={handleDoubleClick}>
-      <ambientLight intensity={1.1} />
-      <directionalLight position={[8, 12, 6]} intensity={1.6} />
-      <directionalLight position={[-6, 4, -6]} intensity={0.5} color="#9db8e8" />
+      <ambientLight intensity={0.35} />
+      <directionalLight
+        position={[9, 14, 7]}
+        intensity={2.1}
+        castShadow
+        shadow-mapSize={[2048, 2048]}
+        shadow-camera-left={-9}
+        shadow-camera-right={9}
+        shadow-camera-top={9}
+        shadow-camera-bottom={-9}
+        shadow-camera-near={2}
+        shadow-camera-far={40}
+        shadow-bias={-0.0004}
+      />
+      <directionalLight position={[-7, 5, -6]} intensity={0.55} color="#9db8e8" />
+      <spotLight position={[0, sockets.block.deckY * 3.2, 4]} intensity={30} angle={0.7} penumbra={0.7} decay={1.6} />
+      {/* suelo de celda: atrapasombras + rejilla técnica */}
+      <mesh rotation-x={-Math.PI / 2} position={[0, floorY, 0]} receiveShadow>
+        <planeGeometry args={[90, 90]} />
+        <shadowMaterial opacity={0.42} />
+      </mesh>
+      <Grid
+        position={[0, floorY + 0.01, 0]}
+        args={[90, 90]}
+        cellSize={0.62}
+        cellThickness={0.6}
+        cellColor="#141b26"
+        sectionSize={3.1}
+        sectionThickness={1}
+        sectionColor="#20293a"
+        fadeDistance={38}
+        fadeStrength={1.6}
+      />
       <OrbitControls
         ref={orbitRef}
         target={[0, sockets.block.deckY * 0.5, 0]}
@@ -950,7 +1060,7 @@ export default function PhysicsLab({ engine }: Props): React.JSX.Element {
     <div className="phys-lab">
       <div className="phys-canvas">
         {ready ? (
-          <Canvas key={sceneKey} dpr={[1, 1.75]} camera={{ position: [5.2, 5.2, 6.2], fov: 40 }} gl={{ antialias: true }}>
+          <Canvas key={sceneKey} shadows dpr={[1, 1.75]} camera={{ position: [5.2, 5.2, 6.2], fov: 40 }} gl={{ antialias: true }}>
             <PhysicsScene
               engine={engine}
               controls={controls}
