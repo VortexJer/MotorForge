@@ -70,6 +70,17 @@ por tipo de pieza aporta las condiciones de contorno → se derivan límites:
    mientras TODAS las fuerzas de fallo usan la ω real del modelo de RPM. Las micro-piezas
    (tornillería, clips) son hijos de la malla principal, sin cuerpo rígido propio.
 
+7. **Hecha** (pliego LOD): árbol maestro de componentes en `physics/engineDetail.ts` —
+   distribución completa (2 levas a ω/2, 16 válvulas sincronizadas al ciclo de 4 tiempos,
+   muelles/taqués/cadena/tensor), turbo con wastegate, colectores, plénum con mariposa,
+   tuberías (intercooler, aceite del turbo, manguitos con abrazaderas, rampa), volante con
+   corona dentada instanciada, cojinetes, juntas, 6 sensores (CKP/CMP/aceite/ECT/MAP/knock)
+   e inyectores/bobinas. Rendimiento: estáticos fusionados con mergeGeometries (una malla por
+   material), tornillería SOLO en InstancedMesh (pernos de biela con matrices por frame desde
+   los cuerpos), presupuesto testeado <35 mallas. LOD de 3 niveles por distancia de cámara:
+   inspección (todo), banco (proxies low-poly para tornillería) y global (solo carcasas macro).
+   Pulso electrónico §4 exacto: #facc15/#eab308, intensidad 4.5, 15 ms, retorno a gris CAD.
+
 ## Estructura
 
 ```

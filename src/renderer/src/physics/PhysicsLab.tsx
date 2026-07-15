@@ -21,6 +21,8 @@ import {
 } from './engineMath'
 import type { FailureMode, PhysMaterial } from './engineMath'
 import { EngineAudio } from './audio'
+import { PULSE_COLOR, buildEngineDetail, setActuatorPulse } from './engineDetail'
+import type { EngineDetail, LodTier } from './engineDetail'
 import SocketEditor from './SocketEditor'
 import Tachometer from './Tachometer'
 
@@ -142,8 +144,10 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
   const crankMatRef = useRef<THREE.MeshStandardMaterial>(cadMat('#6b7382'))
   const sparkLights = useRef<THREE.PointLight[]>([])
   const sparkTimers = useRef<number[]>([])
-  const injectorMats = useRef<THREE.MeshStandardMaterial[]>([])
-  const boltsRef = useRef<THREE.Group[]>([])
+  const detailRef = useRef<EngineDetail | null>(null)
+  /** Ángulo visual acumulado del cigüeñal: sincroniza levas y válvulas. */
+  const thetaVisRef = useRef(0)
+  const tierRef = useRef<LodTier>(0)
 
   // estado del motor (real, no visual)
   const rpmRef = useRef(0)
@@ -159,11 +163,6 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
 
   const originalRodLength = g.rodLength
   const originalRodArea = 3.0e-4
-  // color de acento del tema del usuario (para los pulsos de inyector)
-  const accentColor = useMemo(
-    () => getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#e10600',
-    []
-  )
 
   // ---- construcción del mundo: cuerpos, juntas y mallas ----
   useEffect(() => {
@@ -195,7 +194,7 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
     wall(0.1, deckY, cageD / 2, -cageW / 2, floorY + deckY, 0)
     wall(0.1, deckY, cageD / 2, cageW / 2, floorY + deckY, 0)
 
-    // visual del bloque: camisas + deck + cárter, todo mate
+    // visual del bloque: camisas transparentes + cárter (macro, siempre visible)
     const linerMat = new THREE.MeshStandardMaterial({
       color: '#8fa3bd',
       metalness: 0.05,
@@ -210,47 +209,22 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
       liner.position.set(block.cylinders[i]!.x, deckY - r * 1.3, 0)
       root.add(liner)
     }
-    const deck = new THREE.Mesh(new THREE.BoxGeometry(cageW, 0.05, cageD * 0.9), cadMat('#39404d'))
-    deck.position.set(0, deckY + ch * 1.6, 0)
-    root.add(deck)
     const pan = new THREE.Mesh(new THREE.BoxGeometry(cageW * 0.9, 0.12, cageD * 0.8), cadMat('#2c323d'))
     pan.position.set(0, floorY, 0)
     root.add(pan)
 
-    // tornillería de culata: InstancedMesh (una sola llamada de dibujo)
-    const headBoltGeo = new THREE.CylinderGeometry(0.035, 0.035, 0.16, 8)
-    const headBolts = new THREE.InstancedMesh(headBoltGeo, cadMat('#525a66'), cyls * 4)
-    const m4 = new THREE.Matrix4()
-    let bi = 0
-    for (let i = 0; i < cyls; i++) {
-      for (const [dx, dz] of [
-        [-boreR * 0.8, -boreR * 0.9],
-        [boreR * 0.8, -boreR * 0.9],
-        [-boreR * 0.8, boreR * 0.9],
-        [boreR * 0.8, boreR * 0.9]
-      ]) {
-        m4.setPosition(block.cylinders[i]!.x + dx!, deckY + ch * 1.6 + 0.1, dz!)
-        headBolts.setMatrixAt(bi++, m4)
-      }
-    }
-    headBolts.name = 'lod-small'
-    root.add(headBolts)
+    // ---- Árbol maestro de componentes (pliego LOD): culata, distribución,
+    // turbo, tuberías, tornillería instanciada y sensores ----
+    const det = buildEngineDetail(sockets, cyls)
+    root.add(det.root)
+    detailRef.current = det
+    ;(window as unknown as Record<string, unknown>)['__mfTier'] = 0
 
-    // inyectores: LED emisivo que pulsa con la inyección (pliego §5)
-    for (let i = 0; i < cyls; i++) {
-      const mat = new THREE.MeshStandardMaterial({ color: '#2b2f38', emissive: '#000000', roughness: 0.8 })
-      injectorMats.current.push(mat)
-      const inj = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.22, 0.12), mat)
-      inj.position.set(block.cylinders[i]!.x + boreR * 0.5, deckY + ch * 2.6, boreR * 0.7)
-      inj.name = 'lod-small'
-      root.add(inj)
-    }
-
-    // luces de chispa (apagadas; §5: 15 ms al detectar PMS)
+    // luces de chispa (§4: PointLight amarillo 15 ms sobre bujía/corona)
     sparkLights.current = []
     sparkTimers.current = []
     for (let i = 0; i < cyls; i++) {
-      const light = new THREE.PointLight('#ffd34d', 0, boreR * 9)
+      const light = new THREE.PointLight(PULSE_COLOR, 0, boreR * 9)
       light.position.set(block.cylinders[i]!.x, deckY + ch, 0)
       root.add(light)
       sparkLights.current.push(light)
@@ -289,12 +263,13 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
       }
       crankGroup.add(web)
     }
+    // volante + corona dentada + piñón de distribución giran con el cigüeñal
+    crankGroup.add(det.crankAttach)
     root.add(crankGroup)
     crankMeshRef.current = crankGroup
 
     // ---- Bielas y pistones por cilindro: dinámicos + juntas ----
     const rigs: CylinderRig[] = []
-    boltsRef.current = []
     for (let i = 0; i < cyls; i++) {
       const phase = CRANK_PHASE[i] ?? 0
       const cx = block.cylinders[i]!.x
@@ -347,12 +322,31 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
       slider.limits = [l - r - 0.2, l + r + 0.2]
       const jPistonBlock = world.createImpulseJoint(slider, blockBody, piston, true)
 
-      // mallas (mate CAD); tornillería del sombrerete como HIJOS (§3)
+      // mallas (mate CAD): pistón con falda, bulón y 3 segmentos (fuego,
+      // compresión y rascador — nivel inspección)
       const pistonMat = cadMat('#c7ccd6')
       const pistonMesh = new THREE.Group()
       const crown = new THREE.Mesh(new THREE.CylinderGeometry(boreR * 0.94, boreR * 0.94, ch * 1.8, 28), pistonMat)
       crown.position.y = ch * 0.4
       pistonMesh.add(crown)
+      const skirt = new THREE.Mesh(
+        new THREE.CylinderGeometry(boreR * 0.92, boreR * 0.88, ch * 1.4, 20, 1, true),
+        pistonMat
+      )
+      skirt.position.y = -ch * 1.2
+      pistonMesh.add(skirt)
+      const pin = new THREE.Mesh(new THREE.CylinderGeometry(boreR * 0.16, boreR * 0.16, boreR * 1.2, 10), pistonMat)
+      pin.rotation.z = Math.PI / 2
+      pin.name = 'ring-fine'
+      pistonMesh.add(pin)
+      const ringMat = cadMat('#3c434e')
+      for (let rg = 0; rg < 3; rg++) {
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(boreR * 0.95, 0.022, 6, 24), ringMat)
+        ring.rotation.x = Math.PI / 2
+        ring.position.y = ch * (1.1 - rg * 0.34)
+        ring.name = 'ring-fine'
+        pistonMesh.add(ring)
+      }
       pistonMesh.userData['part'] = `Pistón ${i + 1}`
       root.add(pistonMesh)
 
@@ -364,15 +358,15 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
       bigEye.rotation.z = Math.PI / 2
       bigEye.position.y = -l / 2
       rodMesh.add(bigEye)
-      const boltGroup = new THREE.Group()
-      for (const sSign of [-1, 1]) {
-        const bolt = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.028, boreR * 0.34, 8), cadMat('#454c58'))
-        bolt.position.set(sSign * boreR * 0.16, -l / 2 - boreR * 0.1, 0)
-        boltGroup.add(bolt)
-      }
-      boltGroup.name = 'lod-small'
-      rodMesh.add(boltGroup)
-      boltsRef.current.push(boltGroup)
+      // semicojinete de biela (nivel inspección)
+      const shell = new THREE.Mesh(
+        new THREE.CylinderGeometry(boreR * 0.2, boreR * 0.2, boreR * 0.26, 10, 1, false, 0, Math.PI),
+        cadMat('#8a7a55')
+      )
+      shell.rotation.z = Math.PI / 2
+      shell.position.y = -l / 2
+      shell.name = 'ring-fine'
+      rodMesh.add(shell)
       rodMesh.userData['part'] = `Biela ${i + 1}`
       root.add(rodMesh)
 
@@ -396,6 +390,8 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
 
     return () => {
       scene.remove(root)
+      det.dispose()
+      detailRef.current = null
       root.traverse((o) => {
         if (o instanceof THREE.Mesh) {
           o.geometry.dispose()
@@ -514,6 +510,8 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
       const substeps = Math.min(Math.max(Math.ceil((visualOmega * dt) / 0.12), 1), 10)
       world.timestep = dt / substeps
       for (let s = 0; s < substeps; s++) world.step()
+      // ángulo visual acumulado: gobierna levas, válvulas y cadena
+      thetaVisRef.current += visualOmega * dt
     }
 
     // ---- sincroniza mallas con cuerpos ----
@@ -550,11 +548,18 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
             const fComb = Math.PI * (g.bore / 2) ** 2 * pCombBar * 1e5 * gas
             rig.piston.applyImpulse({ x: 0, y: -Math.min(fComb, 8e4) * 6e-5, z: 0 }, true)
             if (c.pulses) {
+              // §4: material exacto de pulso en inyector + bobina y
+              // PointLight de alta intensidad durante 15 ms estrictos
               const light = sparkLights.current[i]
               if (light) light.intensity = 70
-              sparkTimers.current[i] = 0.015 // 15 ms (§5)
-              const inj = injectorMats.current[i]
-              if (inj) inj.emissive.set(accentColor)
+              sparkTimers.current[i] = 0.015
+              const det = detailRef.current
+              if (det) {
+                const gi = det.glowInjector[i]
+                const gc = det.glowCoil[i]
+                if (gi) setActuatorPulse(gi, true)
+                if (gc) setActuatorPulse(gc, true)
+              }
             }
           }
         }
@@ -567,8 +572,13 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
         if (sparkTimers.current[i]! <= 0) {
           const light = sparkLights.current[i]
           if (light) light.intensity = 0
-          const inj = injectorMats.current[i]
-          if (inj) inj.emissive.set('#000000')
+          const det = detailRef.current
+          if (det) {
+            const gi = det.glowInjector[i]
+            const gc = det.glowCoil[i]
+            if (gi) setActuatorPulse(gi, false)
+            if (gc) setActuatorPulse(gc, false)
+          }
         }
       }
     }
@@ -679,12 +689,42 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
       if (!rig.broken) rig.rodMesh.scale.set(sc.x, Math.min(sc.y, 1.15), sc.z)
     }
 
-    // ---- LOD: tornillería fuera a partir de cierta distancia (§7) ----
-    const camDist = state.camera.position.length()
-    const showSmall = camDist < sockets.spacing * 7
-    scene.traverse((o) => {
-      if (o.name === 'lod-small') o.visible = showSmall
-    })
+    // ---- LOD dinámico por distancia (§3): inspección / banco / global ----
+    const engineCenter = orbitRef.current?.target ?? new THREE.Vector3(0, sockets.block.deckY * 0.5, 0)
+    const camDist = state.camera.position.distanceTo(engineCenter)
+    const tier: LodTier = camDist < sockets.spacing * 5 ? 0 : camDist < sockets.spacing * 9.5 ? 1 : 2
+    const det = detailRef.current
+    if (det) {
+      det.update(thetaVisRef.current, tier)
+      // pernos de biela instanciados: matrices por frame desde los cuerpos
+      if (tier === 0) {
+        const off = new THREE.Matrix4()
+        const world4 = new THREE.Matrix4()
+        for (let i = 0; i < rigs.length; i++) {
+          const rig = rigs[i]!
+          rig.rodMesh.updateMatrix()
+          for (const [b, sSign] of [
+            [0, -1],
+            [1, 1]
+          ] as Array<[number, number]>) {
+            off.makeTranslation(sSign * sockets.boreRadius * 0.16, -sockets.rodLength / 2 - sockets.boreRadius * 0.1, 0)
+            world4.multiplyMatrices(rig.rodMesh.matrix, off)
+            det.rodBolts.setMatrixAt(i * 2 + b, world4)
+          }
+        }
+        det.rodBolts.instanceMatrix.needsUpdate = true
+      }
+    }
+    if (tier !== tierRef.current) {
+      tierRef.current = tier
+      // segmentos, bulones y semicojinetes de las piezas móviles
+      scene.traverse((o) => {
+        if (o.name === 'ring-fine') o.visible = tier === 0
+      })
+    }
+    const dbg = window as unknown as Record<string, unknown>
+    dbg['__mfTier'] = tier
+    dbg['__mfDist'] = camDist
 
     // ---- focus zoom con lerp + outline (§7) ----
     const focus = focusRef.current
@@ -910,7 +950,7 @@ export default function PhysicsLab({ engine }: Props): React.JSX.Element {
     <div className="phys-lab">
       <div className="phys-canvas">
         {ready ? (
-          <Canvas key={sceneKey} dpr={[1, 1.75]} camera={{ position: [10, 7, 12], fov: 40 }} gl={{ antialias: true }}>
+          <Canvas key={sceneKey} dpr={[1, 1.75]} camera={{ position: [5.2, 5.2, 6.2], fov: 40 }} gl={{ antialias: true }}>
             <PhysicsScene
               engine={engine}
               controls={controls}
