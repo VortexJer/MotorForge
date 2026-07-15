@@ -60,6 +60,7 @@ export const enum Tap {
   IntakeAirT, // K (IAT: sube con heat-soak)
   TurboOmega, // rad/s del rotor
   CamPhase, // rad (CMP)
+  ThrottlePos, // 0..1 (TPS: la ECU no ve el pedal, ve su sensor)
   VehicleGx, // m/s² longitudinal
   VehicleGy, // m/s² lateral
   VehicleGz, // m/s² vertical
@@ -196,6 +197,7 @@ export function defaultHarness(seed = 1): HarnessConfig {
       { id: 'railp', tap: Tap.RailP, sampleRateHz: 100, latencyMs: 2, noiseFloor: 6000, failMode: 'none' },
       { id: 'egt', tap: Tap.ExhaustT, sampleRateHz: 2, latencyMs: 250, noiseFloor: 2.5, failMode: 'none' },
       { id: 'knock', tap: Tap.BlockKnockAccel, sampleRateHz: 240, latencyMs: 1, noiseFloor: 1.5, failMode: 'none' },
+      { id: 'tps', tap: Tap.ThrottlePos, sampleRateHz: 100, latencyMs: 1, noiseFloor: 0.004, adc: { min: 0, max: 1, bits: 10 }, failMode: 'none' },
       { id: 'vbatt', tap: Tap.BatteryV, sampleRateHz: 20, latencyMs: 5, noiseFloor: 0.03, failMode: 'none' }
     ],
     actuators: [

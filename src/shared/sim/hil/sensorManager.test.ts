@@ -129,7 +129,7 @@ describe('HIL fase 1: SensorManager', () => {
     expect(m.sensor('map')).not.toBeNull()
     expect(m.sensor('ckp')).not.toBeNull()
     expect(m.sensor('inventado')).toBeNull()
-    expect(m.count).toBe(10)
+    expect(m.count).toBe(11)
 
     const dup = defaultHarness(1)
     dup.sensors.push({ ...dup.sensors[0]! })

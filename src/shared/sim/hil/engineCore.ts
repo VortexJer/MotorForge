@@ -1,5 +1,5 @@
 import type { ResolvedGeometry } from '../types'
-import { Cyl, St } from './types'
+import { Cyl, St, Tap } from './types'
 import type { EngineArchetype } from './archetype'
 
 /**
@@ -53,10 +53,11 @@ export interface CoreInputs {
   throttle: number // 0..1 (mariposa física)
   ignition: boolean
   starter: boolean
-  /** Corte de inyección (lo decide el controlador/ECU, no el núcleo). */
+  /** Corte de inyección (lo decide la ECU, no el núcleo). */
   fuelCut: boolean
-  /** λ objetivo mandado y avance (rad APMS): provisional hasta Fase 3. */
-  lambdaCmd: number
+  /** Duty de inyector mandado por la ECU (0..1): la cantidad de combustible
+   *  ES el ancho de pulso — así el DeadTime del actuador tiene efecto real. */
+  injDuty: number
   sparkAdvance: number
   /** Apertura de wastegate 0..1 (1 = sangra toda la turbina). */
   wastegate: number
@@ -187,7 +188,7 @@ export class SimCore {
       ignition: false,
       starter: false,
       fuelCut: false,
-      lambdaCmd: 1.0,
+      injDuty: 0,
       sparkAdvance: 0.26,
       wastegate: 0,
       coolantFlow: 1,
@@ -317,8 +318,13 @@ export class SimCore {
     s[St.TurboOmega] = this.y[0]!
     s[St.BlockTemp] = this.y[2]!
     s[St.IntakeAirT] = this.y[3]!
-    // presión de aceite ∝ régimen × viscosidad (bomba volumétrica)
-    s[St.OilPressure] = Math.min(6e5, 900 * omega * Math.min(visc, 8))
+    // presión de aceite ∝ régimen × viscosidad (bomba volumétrica);
+    // §3: las G laterales descuelgan la película (multiplicador destructivo)
+    const gyAbs = Math.abs(s[St.Gy]!)
+    const gStarve = gyAbs > 9.8 ? Math.max(0.25, 1 - (gyAbs - 9.8) * 0.08) : 1
+    s[St.OilPressure] = Math.min(6e5, 900 * omega * Math.min(visc, 8)) * gStarve
+    // batería: cae en arranque (el motor de arranque chupa), sube con alternador
+    s[St.BatteryV] = inp.starter && omega < 100 ? 10.2 : rpm > 500 ? 13.9 : 12.5
     // EGT filtrada hacia la última muestra de escape
     // (la muestra se actualiza en el evento EVO de cada cilindro)
     for (let i = 0; i < this.n; i++) {
@@ -356,8 +362,8 @@ export class SimCore {
         let q = 0
         if (this.inputs.ignition && !this.inputs.fuelCut && omega > 5) {
           const cycleTime = (4 * Math.PI) / Math.max(omega, 1)
-          const mFuelMax = this.cfg.injectorFlow * this.cfg.injectorDutyMax * cycleTime
-          const mFuel = Math.min(m / (this.cfg.fuel.stoichAFR * Math.max(this.inputs.lambdaCmd, 0.7)), mFuelMax)
+          const duty = Math.min(Math.max(this.inputs.injDuty, 0), this.cfg.injectorDutyMax)
+          const mFuel = this.cfg.injectorFlow * duty * cycleTime
           const burnable = Math.min(mFuel, m / this.cfg.fuel.stoichAFR)
           q = burnable * this.cfg.fuel.lhv * 0.9
         }
@@ -528,5 +534,30 @@ export class SimCore {
     let acc = 0
     for (let i = 0; i < this.n; i++) acc += this.sc[i * SC.STRIDE + SC.PeakPHold]!
     return acc / this.n
+  }
+
+  /**
+   * Vuelca la "verdad" física a las tomas del bus (cero asignaciones).
+   * ESTE es el único camino de la física hacia los sensores.
+   */
+  writeTruth(truth: Float64Array): void {
+    const s = this.scalars
+    truth[Tap.CrankAngle] = s[St.CrankAngle]!
+    truth[Tap.CrankOmega] = s[St.CrankOmega]!
+    truth[Tap.ManifoldP] = this.y[1]!
+    truth[Tap.ManifoldT] = this.y[3]!
+    truth[Tap.CoolantT] = this.y[2]!
+    truth[Tap.OilP] = s[St.OilPressure]!
+    truth[Tap.RailP] = 3.5e5 + Math.max(this.y[1]! - this.cfg.ambientP, 0)
+    truth[Tap.ExhaustT] = this.egt
+    truth[Tap.BlockKnockAccel] = 0 // acoplamiento con el modelo de picado: futuro
+    truth[Tap.BatteryV] = s[St.BatteryV]!
+    truth[Tap.IntakeAirT] = this.y[3]!
+    truth[Tap.TurboOmega] = this.y[0]!
+    truth[Tap.CamPhase] = (s[St.CrankAngle]! / 2) % (2 * Math.PI)
+    truth[Tap.ThrottlePos] = this.inputs.throttle
+    truth[Tap.VehicleGx] = s[St.Gx]!
+    truth[Tap.VehicleGy] = s[St.Gy]!
+    truth[Tap.VehicleGz] = s[St.Gz]!
   }
 }

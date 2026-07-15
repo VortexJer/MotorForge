@@ -29,16 +29,25 @@ function stockConfig(overrides: Partial<CoreConfig> = {}): CoreConfig {
   }
 }
 
+/** Duty speed-density para un λ objetivo (lo que haría una ECU calibrada). */
+function dutyFor(core: SimCore, lambda: number): number {
+  const rpm = Math.max(core.rpm, 500)
+  const cycleTime = 120 / rpm
+  const mAir = 0.9 * (core.manifoldP / (287 * 300)) * 5.0e-4
+  const mFuel = mAir / (14.7 * lambda)
+  return Math.min(mFuel / (3.85e-3 * cycleTime), 0.85)
+}
+
 /** Arranca y estabiliza el núcleo en un punto (rpm objetivo vía par de carga PI). */
 function settleAt(core: SimCore, targetRpm: number, throttle: number, seconds: number): void {
   core.inputs.ignition = true
   core.inputs.throttle = throttle
-  core.inputs.lambdaCmd = 0.88
   core.inputs.sparkAdvance = 0.38
   let load = 0
   const ticks = Math.round(seconds / TICK_DT)
   for (let t = 0; t < ticks; t++) {
     core.inputs.starter = core.rpm < 350
+    core.inputs.injDuty = dutyFor(core, 0.88)
     // freno de banco PI: mantiene el régimen objetivo absorbiendo el par
     const err = core.rpm - targetRpm
     load += err * 0.002
@@ -54,10 +63,10 @@ describe('HIL fase 2: núcleo de primeros principios', () => {
     const core = new SimCore(stockConfig())
     core.inputs.ignition = true
     core.inputs.throttle = 0 // solo el bypass de ralentí de la mariposa
-    core.inputs.lambdaCmd = 1.0
     core.inputs.sparkAdvance = 0.18
     for (let t = 0; t < Math.round(5 / TICK_DT); t++) {
       core.inputs.starter = core.rpm < 350 && t < Math.round(2 / TICK_DT)
+      core.inputs.injDuty = dutyFor(core, 1.0)
       core.tick(TICK_DT)
     }
     // autosostenido tras soltar el arranque, en régimen de ralentí plausible
@@ -138,6 +147,9 @@ describe('HIL fase 2: núcleo de primeros principios', () => {
       while (core.boost < 0.25e5 && t < 12) {
         const err = core.rpm - 3500
         core.inputs.loadTorque = Math.max(0, core.inputs.loadTorque + err * 0.002)
+        // la ECU seguiría alimentando según el aire real: sin más gasolina
+        // no hay más energía de turbina
+        core.inputs.injDuty = dutyFor(core, 0.88)
         core.tick(TICK_DT)
         t += TICK_DT
       }

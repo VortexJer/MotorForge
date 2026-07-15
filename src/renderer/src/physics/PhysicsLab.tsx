@@ -23,8 +23,9 @@ import {
 import type { FailureMode, PhysMaterial } from './engineMath'
 import { FUELS } from '@sim/index'
 import { buildArchetype } from '@sim/hil/archetype'
-import { SimCore } from '@sim/hil/engineCore'
-import { TICK_DT as CORE_DT } from '@sim/hil/types'
+import { SimLoop } from '@sim/hil/simLoop'
+import type { EcuCalib } from '@sim/hil/ecu'
+import { TICK_DT as CORE_DT, defaultHarness } from '@sim/hil/types'
 import { EngineAudio } from './audio'
 import { PULSE_COLOR, buildEngineDetail, engineFloorY, setActuatorPulse } from './engineDetail'
 import type { EngineDetail, LodTier } from './engineDetail'
@@ -159,7 +160,8 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
   // estado del motor (real, no visual)
   const rpmRef = useRef(0)
   const thetaRef = useRef(0)
-  const coreRef = useRef<SimCore | null>(null)
+  const loopRef = useRef<SimLoop | null>(null)
+  const calibRef = useRef<EcuCalib | null>(null)
   const coreAccumRef = useRef(0)
   const thermal = useRef({ tMotor: AMBIENT_K })
   const statusRef = useRef<Telemetry['status']>('off')
@@ -251,24 +253,44 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
     detailRef.current = det
     ;(window as unknown as Record<string, unknown>)['__mfTier'] = 0
 
-    // ---- núcleo HIL de primeros principios (Fase 2) ----
+    // ---- lazo HIL completo (Fase 3): física + arnés + ECU caja negra ----
     const fuel = FUELS.gasolina95!
-    coreRef.current = new SimCore({
-      geometry: g,
-      archetype: buildArchetype({
-        geometry: g,
-        reciprocatingMass: engine.assembly.piston.spec.mass + 0.3 * engine.assembly.rod.spec.mass,
-        rotatingMassPerCyl: 0.7 * engine.assembly.rod.spec.mass
-      }),
-      veCurve: engine.assembly.head.spec.veCurve,
-      fuel: { stoichAFR: fuel.stoichAFR, lhv: fuel.lhv },
+    const isTurbo = engine.assembly.aspiration.spec.type === 'turbo'
+    const calib: EcuCalib = {
+      idleRpm: 950,
+      revLimit: 7200,
+      lambdaBase: 1.0,
+      lambdaWotDrop: 0.14,
+      advIdle: 0.17,
+      advMax: 0.56,
+      advAtRpm: 7000,
+      veEst: engine.assembly.head.spec.veCurve,
       injectorFlow: engine.assembly.injector.spec.staticFlow,
       injectorDutyMax: 0.85,
-      turbo: { inertia: 6e-5, present: engine.assembly.aspiration.spec.type === 'turbo' },
-      ambientP: 101325,
-      ambientT: 298,
-      humidity: 0.4
-    })
+      stoichAFR: fuel.stoichAFR,
+      boostTarget: isTurbo ? 1.2e5 : 0
+    }
+    calibRef.current = calib
+    loopRef.current = new SimLoop(
+      {
+        geometry: g,
+        archetype: buildArchetype({
+          geometry: g,
+          reciprocatingMass: engine.assembly.piston.spec.mass + 0.3 * engine.assembly.rod.spec.mass,
+          rotatingMassPerCyl: 0.7 * engine.assembly.rod.spec.mass
+        }),
+        veCurve: engine.assembly.head.spec.veCurve,
+        fuel: { stoichAFR: fuel.stoichAFR, lhv: fuel.lhv },
+        injectorFlow: engine.assembly.injector.spec.staticFlow,
+        injectorDutyMax: 0.85,
+        turbo: { inertia: 6e-5, present: isTurbo },
+        ambientP: 101325,
+        ambientT: 298,
+        humidity: 0.4
+      },
+      defaultHarness(1),
+      calib
+    )
     coreAccumRef.current = 0
     rpmRef.current = 0
     // sombras en todo el motor (las camisas transparentes solo reciben)
@@ -580,29 +602,24 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
     const dt = Math.min(rawDt, 0.05)
     const dead = statusRef.current === 'broken' || statusRef.current === 'seized'
 
-    // ---- HIL Fase 2: el régimen EMERGE del núcleo de primeros principios
-    // (presión de cámara → fuerza en pistón → par en cigüeñal). La antigua
-    // curva sintética de par ha muerto. ----
-    const core = coreRef.current
+    // ---- HIL Fase 3: lazo cerrado completo. El pedal es un CABLE físico a
+    // la mariposa; la llave alimenta la ECU; y la ECU gobierna ralentí,
+    // corte, mezcla, avance y wastegate leyendo SOLO sus sensores. ----
+    const loop = loopRef.current
+    const core = loop?.core ?? null
     let rpm = rpmRef.current
-    if (!c.paused && core) {
-      const inp = core.inputs
-      inp.throttle = gas
-      inp.ignition = c.ignition && statusRef.current !== 'broken' && statusRef.current !== 'seized'
-      inp.starter = inp.ignition && core.rpm < IDLE_RPM * 0.55
-      // corte de inyección: límite ECU + gobernador de ralentí provisional
-      // (la ECU de verdad, leyendo sensores, llega en Fase 3)
-      inp.fuelCut =
-        !inp.ignition || core.rpm >= c.revLimit || (gas < 0.04 && core.rpm > IDLE_RPM * 1.25)
-      inp.lambdaCmd = 1.0 - 0.14 * gas
-      inp.sparkAdvance = ((10 + 22 * Math.min(core.rpm / 7000, 1)) * Math.PI) / 180
-      inp.wastegate = core.boost > 1.2e5 ? 1 : core.boost > 1.0e5 ? 0.5 : 0
-      inp.coolantFlow = c.waterFlow
-      inp.loadTorque = statusRef.current === 'seized' ? 600 : 0
+    if (!c.paused && loop && core) {
+      const alive = statusRef.current !== 'broken' && statusRef.current !== 'seized'
+      loop.physical.throttle = gas
+      loop.physical.ignitionKey = c.ignition && alive
+      loop.physical.coolantFlow = c.waterFlow
+      loop.physical.loadTorque = statusRef.current === 'seized' ? 600 : 0
+      const calib = calibRef.current
+      if (calib) calib.revLimit = c.revLimit
       // acumulador a dt fijo (ADR-001): la física SIEMPRE integra a 240 Hz
       coreAccumRef.current += dt
       while (coreAccumRef.current >= CORE_DT) {
-        core.tick(CORE_DT)
+        loop.tick(CORE_DT)
         coreAccumRef.current -= CORE_DT
       }
       rpm = statusRef.current === 'broken' && core.rpm < 30 ? 0 : core.rpm
