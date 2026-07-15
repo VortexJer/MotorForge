@@ -21,6 +21,10 @@ import {
   thermalStep
 } from './engineMath'
 import type { FailureMode, PhysMaterial } from './engineMath'
+import { FUELS } from '@sim/index'
+import { buildArchetype } from '@sim/hil/archetype'
+import { SimCore } from '@sim/hil/engineCore'
+import { TICK_DT as CORE_DT } from '@sim/hil/types'
 import { EngineAudio } from './audio'
 import { PULSE_COLOR, buildEngineDetail, engineFloorY, setActuatorPulse } from './engineDetail'
 import type { EngineDetail, LodTier } from './engineDetail'
@@ -155,6 +159,8 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
   // estado del motor (real, no visual)
   const rpmRef = useRef(0)
   const thetaRef = useRef(0)
+  const coreRef = useRef<SimCore | null>(null)
+  const coreAccumRef = useRef(0)
   const thermal = useRef({ tMotor: AMBIENT_K })
   const statusRef = useRef<Telemetry['status']>('off')
   const failureRef = useRef<{ mode: FailureMode; text: string | null }>({ mode: null, text: null })
@@ -244,6 +250,27 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
     root.add(det.root)
     detailRef.current = det
     ;(window as unknown as Record<string, unknown>)['__mfTier'] = 0
+
+    // ---- núcleo HIL de primeros principios (Fase 2) ----
+    const fuel = FUELS.gasolina95!
+    coreRef.current = new SimCore({
+      geometry: g,
+      archetype: buildArchetype({
+        geometry: g,
+        reciprocatingMass: engine.assembly.piston.spec.mass + 0.3 * engine.assembly.rod.spec.mass,
+        rotatingMassPerCyl: 0.7 * engine.assembly.rod.spec.mass
+      }),
+      veCurve: engine.assembly.head.spec.veCurve,
+      fuel: { stoichAFR: fuel.stoichAFR, lhv: fuel.lhv },
+      injectorFlow: engine.assembly.injector.spec.staticFlow,
+      injectorDutyMax: 0.85,
+      turbo: { inertia: 6e-5, present: engine.assembly.aspiration.spec.type === 'turbo' },
+      ambientP: 101325,
+      ambientT: 298,
+      humidity: 0.4
+    })
+    coreAccumRef.current = 0
+    rpmRef.current = 0
     // sombras en todo el motor (las camisas transparentes solo reciben)
     root.traverse((o) => {
       if (o instanceof THREE.Mesh || o instanceof THREE.InstancedMesh) {
@@ -553,33 +580,34 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
     const dt = Math.min(rawDt, 0.05)
     const dead = statusRef.current === 'broken' || statusRef.current === 'seized'
 
-    // ---- modelo de RPM real (par − fricción sobre inercia) ----
+    // ---- HIL Fase 2: el régimen EMERGE del núcleo de primeros principios
+    // (presión de cámara → fuerza en pistón → par en cigüeñal). La antigua
+    // curva sintética de par ha muerto. ----
+    const core = coreRef.current
     let rpm = rpmRef.current
-    if (!c.paused) {
-      const omega = (rpm * 2 * Math.PI) / 60
-      let torque = 0
-      if (!dead && c.ignition) {
-        if (rpm < IDLE_RPM * 0.8) torque += 55 // §5: motor de arranque
-        const throttleEff = Math.max(gas, rpm < IDLE_RPM * 1.15 ? 0.08 : 0)
-        if (rpm < c.revLimit) {
-          // §4C: si la ECU se configura sin protección, el par residual a
-          // alto régimen basta para llevar el motor a la zona de rotura
-          const curve = Math.max(Math.sin(Math.min((rpm / 8200) * Math.PI, Math.PI)), 0.38)
-          torque += 260 * curve * throttleEff
-        }
+    if (!c.paused && core) {
+      const inp = core.inputs
+      inp.throttle = gas
+      inp.ignition = c.ignition && statusRef.current !== 'broken' && statusRef.current !== 'seized'
+      inp.starter = inp.ignition && core.rpm < IDLE_RPM * 0.55
+      // corte de inyección: límite ECU + gobernador de ralentí provisional
+      // (la ECU de verdad, leyendo sensores, llega en Fase 3)
+      inp.fuelCut =
+        !inp.ignition || core.rpm >= c.revLimit || (gas < 0.04 && core.rpm > IDLE_RPM * 1.25)
+      inp.lambdaCmd = 1.0 - 0.14 * gas
+      inp.sparkAdvance = ((10 + 22 * Math.min(core.rpm / 7000, 1)) * Math.PI) / 180
+      inp.wastegate = core.boost > 1.2e5 ? 1 : core.boost > 1.0e5 ? 0.5 : 0
+      inp.coolantFlow = c.waterFlow
+      inp.loadTorque = statusRef.current === 'seized' ? 600 : 0
+      // acumulador a dt fijo (ADR-001): la física SIEMPRE integra a 240 Hz
+      coreAccumRef.current += dt
+      while (coreAccumRef.current >= CORE_DT) {
+        core.tick(CORE_DT)
+        coreAccumRef.current -= CORE_DT
       }
-      // fricción + pérdidas de bombeo con gas cerrado (freno motor real)
-      const friction =
-        4 +
-        3e-5 * omega * omega +
-        (1 - gas) * 1.7e-4 * omega * omega +
-        (statusRef.current === 'seized' ? 500 : 0)
-      const domega = ((torque - friction) / 0.9) * dt
-      const newOmega = Math.max(omega + domega, 0)
-      rpm = (newOmega * 60) / (2 * Math.PI)
-      if (dead && rpm < 30) rpm = 0
+      rpm = statusRef.current === 'broken' && core.rpm < 30 ? 0 : core.rpm
       rpmRef.current = rpm
-      thetaRef.current += newOmega * dt
+      thetaRef.current = core.scalars[0] ?? 0
       if (!dead) statusRef.current = c.ignition ? (rpm > IDLE_RPM * 0.8 ? 'running' : 'cranking') : 'off'
       if (!c.ignition && !dead && rpm < 40) statusRef.current = 'off'
     }
@@ -616,8 +644,9 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
     }
 
     // ---- ECU: sensor de PMS sobre el deslizamiento del pistón (§5) ----
-    const boostBar = gas * Math.min(rpm / 3800, 1) * 1.1 * (engine.assembly.aspiration.spec.type === 'turbo' ? 1 : 0)
-    const pCombBar = 18 + gas * (40 + 26 * boostBar)
+    // boost y presión pico REALES del núcleo (nada de fórmulas sintéticas)
+    const boostBar = core ? core.boost / 1e5 : 0
+    const pCombBar = core ? Math.max(core.peakPressure / 1e5, 8) : 8
     if (!c.paused && !dead && rpm > 200) {
       for (let i = 0; i < rigs.length; i++) {
         const rig = rigs[i]!
