@@ -25,6 +25,7 @@ export type LimitVariable =
   | 'rpm'                  // rpm — régimen máximo del cigüeñal
   | 'boost'                // Pa (relativa) — presión máxima del sistema de admisión
   | 'injectorDuty'         // 0..1 — ciclo de trabajo máximo del inyector
+  | 'railPressure'         // Pa — presión de combustible que soporta el cuerpo del inyector
 
 export interface DerivedLimit {
   variable: LimitVariable

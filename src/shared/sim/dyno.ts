@@ -44,6 +44,10 @@ function measuredValue(v: LimitVariable, p: OperatingPointResult): number {
       return p.boost
     case 'injectorDuty':
       return p.injectorDuty
+    case 'railPressure':
+      // v0: inyección indirecta con presión de raíl fija. En fase 3 (sistema
+      // de combustible completo) esto saldrá de la bomba y el regulador.
+      return 3.5e5
   }
 }
 
@@ -88,6 +92,9 @@ function causeChain(
       chain.push(
         `duty de inyector pedido ${(p.injectorDuty * 100).toFixed(0)}% > máximo ${(limit.value * 100).toFixed(0)}%: combustible capado, λ real ${p.lambdaActual.toFixed(2)}`
       )
+      break
+    case 'railPressure':
+      chain.push(`presión de combustible ${bar(measuredValue(v, p))} bar > límite del cuerpo ${bar(limit.value)} bar`)
       break
   }
   return chain

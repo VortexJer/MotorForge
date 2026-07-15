@@ -16,9 +16,11 @@
   "dependencies": {
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
+    "occt-import-js": "^0.0.23",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "three": "^0.185.1",
+    "three-mesh-bvh": "^0.9.11",
     "zustand": "^5.0.5"
   },
   "devDependencies": {

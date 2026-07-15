@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   ASPIRATIONS,
   BLOCKS,
@@ -22,6 +22,7 @@ import type {
 } from '@sim/types'
 import DynoChart from './components/DynoChart'
 import Engine3D from './components/Engine3D'
+import ImportDialog from './components/ImportDialog'
 
 const CV = 735.5
 const fuel = FUELS.gasolina95!
@@ -36,7 +37,7 @@ interface Selection {
   aspiration: string
 }
 
-const SLOTS: Array<{ key: keyof Selection; label: string; options: Part[] }> = [
+const CATALOG_SLOTS: Array<{ key: keyof Selection; label: string; options: Part[] }> = [
   { key: 'block', label: 'Bloque', options: BLOCKS },
   { key: 'crank', label: 'Cigüeñal', options: CRANKS },
   { key: 'rod', label: 'Bielas', options: RODS },
@@ -81,19 +82,51 @@ export default function App(): React.JSX.Element {
   })
   const [tune, setTune] = useState<Tune>({ lambda: 0.88, revLimit: 8200, boostTarget: 0, sparkTrim: 0 })
   const [hoverRpm, setHoverRpm] = useState<number | null>(null)
+  const [imported, setImported] = useState<Part[]>([])
+  const [importFile, setImportFile] = useState<{ name: string; data: ArrayBuffer } | null>(null)
+
+  useEffect(() => {
+    window.motorforge
+      .loadImportedParts()
+      .then((json) => {
+        if (!json) return
+        const parts: unknown = JSON.parse(json)
+        if (Array.isArray(parts)) setImported(parts as Part[])
+      })
+      .catch(() => {
+        /* fichero corrupto: se ignora y se parte de cero */
+      })
+  }, [])
+
+  const findPart = useCallback(
+    <T extends Part>(id: string): T => {
+      const imp = imported.find((p) => p.id === id)
+      return (imp as T | undefined) ?? partById<T>(id)
+    },
+    [imported]
+  )
+
+  const slots = useMemo(
+    () =>
+      CATALOG_SLOTS.map((s) => ({
+        ...s,
+        options: [...s.options, ...imported.filter((p) => p.kind === s.key)]
+      })),
+    [imported]
+  )
 
   const engine = useMemo(() => {
     const assembly: EngineAssembly = {
-      block: partById(sel.block),
-      crank: partById(sel.crank),
-      rod: partById(sel.rod),
-      piston: partById(sel.piston),
-      head: partById(sel.head),
-      injector: partById(sel.injector),
-      aspiration: partById(sel.aspiration)
+      block: findPart(sel.block),
+      crank: findPart(sel.crank),
+      rod: findPart(sel.rod),
+      piston: findPart(sel.piston),
+      head: findPart(sel.head),
+      injector: findPart(sel.injector),
+      aspiration: findPart(sel.aspiration)
     }
     return resolveEngine(assembly)
-  }, [sel])
+  }, [sel, findPart])
 
   const hasErrors = engine.issues.some((i) => i.severity === 'error')
   const isTurbo = engine.assembly.aspiration.spec.type === 'turbo'
@@ -106,9 +139,22 @@ export default function App(): React.JSX.Element {
   const selectPart = (key: keyof Selection, id: string): void => {
     setSel((s) => ({ ...s, [key]: id }))
     if (key === 'aspiration') {
-      const asp = partById<AspirationPart>(id)
+      const asp = findPart<AspirationPart>(id)
       setTune((t) => ({ ...t, boostTarget: asp.spec.defaultBoost }))
     }
+  }
+
+  const startImport = async (): Promise<void> => {
+    const file = await window.motorforge.pickCadFile()
+    if (file) setImportFile(file)
+  }
+
+  const saveImported = (part: Part): void => {
+    const next = [...imported, part]
+    setImported(next)
+    setSel((s) => ({ ...s, [part.kind]: part.id }))
+    setImportFile(null)
+    void window.motorforge.saveImportedParts(JSON.stringify(next))
   }
 
   const g = engine.geometry
@@ -122,25 +168,28 @@ export default function App(): React.JSX.Element {
     <>
       <header className="topbar">
         <h1>MotorForge</h1>
-        <span className="sub">Banco de potencia · Fase 1 — catálogo, ensamblaje y fallos por límite</span>
+        <span className="sub">Banco de potencia · Fase 2 — importación CAD y límites derivados del material</span>
       </header>
 
       <div className="layout">
         <aside className="sidebar">
           <section>
             <h2 className="section-title">Piezas</h2>
-            {SLOTS.map(({ key, label, options }) => (
+            {slots.map(({ key, label, options }) => (
               <div className="field" key={key}>
                 <label htmlFor={`sel-${key}`}>{label}</label>
                 <select id={`sel-${key}`} value={sel[key]} onChange={(e) => selectPart(key, e.target.value)}>
                   {options.map((p) => (
                     <option key={p.id} value={p.id}>
-                      {p.name}
+                      {p.source === 'imported' ? `⬆ ${p.name}` : p.name}
                     </option>
                   ))}
                 </select>
               </div>
             ))}
+            <button className="btn import-btn" onClick={() => void startImport()}>
+              Importar pieza CAD… (STEP/IGES/STL)
+            </button>
           </section>
 
           <section>
@@ -356,6 +405,10 @@ export default function App(): React.JSX.Element {
           )}
         </main>
       </div>
+
+      {importFile && (
+        <ImportDialog file={importFile} onCancel={() => setImportFile(null)} onSave={saveImported} />
+      )}
     </>
   )
 }

@@ -11,6 +11,9 @@ export default defineConfig({
   },
   renderer: {
     plugins: [react()],
+    worker: {
+      format: 'es'
+    },
     resolve: {
       alias: {
         '@sim': resolve(__dirname, 'src/shared/sim'),
