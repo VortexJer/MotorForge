@@ -36,7 +36,7 @@ export default function TransientPanel({ engine, tune, fuel }: Props): React.JSX
       <div className="transient-head">
         <h2 className="section-title">Prueba dinámica (pull contra inercia)</h2>
         <button className="btn primary" onClick={launch}>
-          ▶ Lanzar pull
+          Lanzar pull
         </button>
       </div>
 

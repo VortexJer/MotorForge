@@ -22,6 +22,7 @@ import {
 import type { FailureMode, PhysMaterial } from './engineMath'
 import { EngineAudio } from './audio'
 import SocketEditor from './SocketEditor'
+import Tachometer from './Tachometer'
 
 /**
  * Laboratorio físico (pliego): el tren alternativo como cuerpos rígidos de
@@ -34,9 +35,18 @@ import SocketEditor from './SocketEditor'
  */
 
 const S = 10 // 1 m → 10 unidades de escena
-const VISUAL_OMEGA_MAX = 13 // rad/s en escena (~124 rpm visuales)
 const IDLE_RPM = 950
 const AMBIENT_K = 298
+
+/**
+ * Velocidad visual del cigüeñal: crece con las rpm reales para que acelerar
+ * SE VEA (ralentí ~9 rad/s → corte ~28 rad/s), con techo integrable. El
+ * factor de cámara lenta resultante se muestra en el HUD.
+ */
+function visualOmegaFor(rpm: number, omegaReal: number): number {
+  if (omegaReal <= 0) return 0
+  return Math.min(omegaReal, 6 + 24 * Math.min(rpm / 8000, 1.25))
+}
 
 // grupos de colisión: piezas unidas no colisionan; al romper, chocan con la jaula
 const GROUP_CAGE = 0x0001_0002 // membership jaula, filtra piezas
@@ -66,6 +76,8 @@ export interface Telemetry {
   tMotorC: number
   boostBar: number
   pistonClearanceUm: number
+  /** Factor de cámara lenta de la escena (1 = tiempo real). */
+  slowmo: number
   status: 'off' | 'cranking' | 'running' | 'broken' | 'seized'
   failure: FailureMode
   failureText: string | null
@@ -478,13 +490,16 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
       if (!c.ignition && !dead && rpm < 40) statusRef.current = 'off'
     }
 
-    // ---- cámara lenta automática + paso de Rapier ----
+    // ---- cámara lenta automática + paso de Rapier con sub-pasos ----
     const omegaReal = (rpm * 2 * Math.PI) / 60
-    const slowmo = omegaReal > VISUAL_OMEGA_MAX ? VISUAL_OMEGA_MAX / omegaReal : 1
+    const visualOmega = visualOmegaFor(rpm, omegaReal)
+    const slowmo = omegaReal > 0 ? visualOmega / omegaReal : 1
     if (!c.paused) {
-      crank.setAngvel({ x: omegaReal * slowmo, y: 0, z: 0 }, true)
-      world.timestep = dt
-      world.step()
+      crank.setAngvel({ x: visualOmega, y: 0, z: 0 }, true)
+      // sub-pasos: ≤0.12 rad de giro por paso para que las juntas no deriven
+      const substeps = Math.min(Math.max(Math.ceil((visualOmega * dt) / 0.12), 1), 10)
+      world.timestep = dt / substeps
+      for (let s = 0; s < substeps; s++) world.step()
     }
 
     // ---- sincroniza mallas con cuerpos ----
@@ -686,6 +701,7 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
         1e6
       onTelemetry({
         rpm,
+        slowmo,
         sigmaMpa: worst.sigma / 1e6,
         sigmaLimitMpa: worst.sigmaLimit / 1e6,
         eulerPct: stressTdcPower.eulerLimit > 0 ? (stressTdcPower.eulerLoad / stressTdcPower.eulerLimit) * 100 : 0,
@@ -804,16 +820,39 @@ export default function PhysicsLab({ engine }: Props): React.JSX.Element {
 
   const t = telemetry
   const sigmaPct = t ? Math.min((t.sigmaMpa / Math.max(t.sigmaLimitMpa, 1)) * 100, 100) : 0
+  const tempPct = ((t?.tMotorC ?? 25) - 25) / 1.3
   const statusLabel: Record<Telemetry['status'], string> = {
     off: 'PARADO',
-    cranking: 'ARRANCANDO',
+    cranking: 'ARRANQUE',
     running: 'EN MARCHA',
-    broken: '✕ ROTURA',
-    seized: '✕ GRIPADO'
+    broken: 'ROTURA',
+    seized: 'GRIPADO'
   }
+  const dead = t?.status === 'broken' || t?.status === 'seized'
 
   const bar = (pct: number): string => `${Math.min(Math.max(pct, 0), 100).toFixed(1)}%`
-  const barClass = (pct: number): string => (pct > 90 ? 'phys-bar-fill danger' : pct > 70 ? 'phys-bar-fill warn' : 'phys-bar-fill')
+  const barClass = (pct: number): string =>
+    pct > 90 ? 'phys-bar-fill danger' : pct > 70 ? 'phys-bar-fill warn' : 'phys-bar-fill'
+
+  const led = (on: boolean, alert = false): string => `phys-led${alert ? ' alert' : on ? ' on' : ''}`
+
+  const gauge = (
+    label: string,
+    value: string,
+    pct: number,
+    plain = false
+  ): React.JSX.Element => (
+    <div className="phys-gauge">
+      <div className="phys-gauge-head">
+        <span className="phys-gauge-label">{label}</span>
+        <span className="phys-gauge-value">{value}</span>
+      </div>
+      <div className="phys-bar">
+        <div className={plain ? 'phys-bar-fill' : barClass(pct)} style={{ width: bar(pct) }} />
+        {!plain && <span className="phys-bar-mark" />}
+      </div>
+    </div>
+  )
 
   return (
     <div className="phys-lab">
@@ -831,138 +870,161 @@ export default function PhysicsLab({ engine }: Props): React.JSX.Element {
         ) : (
           <p className="empty-note">Inicializando motor de físicas (Rapier WASM)…</p>
         )}
-        {sandbox && <div className="phys-sandbox-banner">CUSTOM SANDBOX — física en pausa</div>}
+
+        {/* HUD de visor: esquinas + lectura de cámara lenta */}
+        <span className="phys-corner tl" />
+        <span className="phys-corner tr" />
+        <span className="phys-corner bl" />
+        <span className="phys-corner br" />
+        <div className="phys-hud">
+          <span>ω REAL {(((t?.rpm ?? 0) * 2 * Math.PI) / 60).toFixed(0)} rad/s</span>
+          <span>REPRODUCCIÓN ×{(t?.slowmo ?? 1).toFixed(t && t.slowmo < 0.1 ? 3 : 2)}</span>
+          <span>SUBPASOS FÍSICA ACTIVOS</span>
+        </div>
+
+        {sandbox && <div className="phys-sandbox-banner">CUSTOM SANDBOX · FÍSICA EN PAUSA</div>}
         {t?.failureText && (
           <div className="phys-failure-banner">
-            ✕ {t.status === 'seized' ? 'GRIPADO' : 'ROTURA'}: {t.failureText}
+            <span className="phys-failure-title">INFORME DE FALLO — {t.status === 'seized' ? 'GRIPADO' : 'ROTURA'}</span>
+            {t.failureText}
           </div>
         )}
-        <div className="canvas-hint">doble clic: focus zoom con realce de bordes · rueda: zoom · arrastrar: girar</div>
+        <div className="canvas-hint">doble clic: focus zoom · rueda: zoom · arrastrar: girar</div>
       </div>
 
       <aside className="phys-panel">
-        <div className="phys-status">
-          <span className={`phys-status-chip ${t?.status ?? 'off'}`}>{statusLabel[t?.status ?? 'off']}</span>
-          <span className="phys-rpm">{(t?.rpm ?? 0).toFixed(0)}</span>
-          <span className="phys-rpm-unit">RPM</span>
+        <header className="phys-head">
+          <div>
+            <span className="phys-head-title">CELDA DE ENSAYO 02</span>
+            <span className="phys-head-sub">TREN ALTERNATIVO · {engine.geometry.cylinders} CIL · {(engine.geometry.displacement * 1e3).toFixed(1)} L</span>
+          </div>
+          <div className="phys-leds">
+            <span className="phys-led-item"><i className={led(ui.ignition, dead)} />IGN</span>
+            <span className="phys-led-item"><i className={led((t?.rpm ?? 0) > 400)} />ECU</span>
+            <span className="phys-led-item"><i className={led(ui.waterFlow > 0.3, tempPct > 90)} />WTR</span>
+            <span className="phys-led-item"><i className={led(ui.oilFlow > 0.3)} />OIL</span>
+          </div>
+        </header>
+
+        <div className="phys-tach-block">
+          <Tachometer rpm={t?.rpm ?? 0} redline={ui.revLimit} />
+          <div className="phys-tach-digits">
+            <span className={`phys-status-tag ${t?.status ?? 'off'}`}>{statusLabel[t?.status ?? 'off']}</span>
+            <span className="phys-rpm">{(t?.rpm ?? 0).toFixed(0).padStart(5, '0')}</span>
+            <span className="phys-rpm-unit">RPM</span>
+          </div>
         </div>
 
-        <div className="phys-telemetry">
-          <div className="phys-row">
-            <span>σ BIELA</span>
-            <span>{(t?.sigmaMpa ?? 0).toFixed(0)} / {(t?.sigmaLimitMpa ?? 0).toFixed(0)} MPa</span>
-          </div>
-          <div className="phys-bar"><div className={barClass(sigmaPct)} style={{ width: bar(sigmaPct) }} /></div>
-          <div className="phys-row">
-            <span>PANDEO EULER</span>
-            <span>{(t?.eulerPct ?? 0).toFixed(0)}%</span>
-          </div>
-          <div className="phys-bar"><div className={barClass(t?.eulerPct ?? 0)} style={{ width: bar(t?.eulerPct ?? 0) }} /></div>
-          <div className="phys-row">
-            <span>PERNOS</span>
-            <span>{(t?.boltPct ?? 0).toFixed(0)}%</span>
-          </div>
-          <div className="phys-bar"><div className={barClass(t?.boltPct ?? 0)} style={{ width: bar(t?.boltPct ?? 0) }} /></div>
-          <div className="phys-row">
-            <span>T MOTOR</span>
-            <span>{(t?.tMotorC ?? 25).toFixed(0)} °C · juego {(t?.pistonClearanceUm ?? 60).toFixed(0)} µm</span>
-          </div>
-          <div className="phys-bar"><div className={barClass(((t?.tMotorC ?? 25) - 25) / 1.3)} style={{ width: bar(((t?.tMotorC ?? 25) - 25) / 1.3) }} /></div>
-          <div className="phys-row">
-            <span>BOOST</span>
-            <span>{(t?.boostBar ?? 0).toFixed(2)} bar</span>
-          </div>
-          <div className="phys-bar"><div className="phys-bar-fill" style={{ width: bar(((t?.boostBar ?? 0) / 1.5) * 100) }} /></div>
+        <section className="phys-section">
+          <h3 className="phys-section-title"><em>01</em> TELEMETRÍA</h3>
+          {gauge('σ BIELA', `${(t?.sigmaMpa ?? 0).toFixed(0)} / ${(t?.sigmaLimitMpa ?? 0).toFixed(0)} MPa`, sigmaPct)}
+          {gauge('PANDEO EULER', `${(t?.eulerPct ?? 0).toFixed(0)} %`, t?.eulerPct ?? 0)}
+          {gauge('PERNOS SOMBRERETE', `${(t?.boltPct ?? 0).toFixed(0)} %`, t?.boltPct ?? 0)}
+          {gauge('T MOTOR', `${(t?.tMotorC ?? 25).toFixed(0)} °C · ${(t?.pistonClearanceUm ?? 60).toFixed(0)} µm`, tempPct)}
+          {gauge('BOOST', `${(t?.boostBar ?? 0).toFixed(2)} bar`, ((t?.boostBar ?? 0) / 1.5) * 100, true)}
+        </section>
+
+        <div className="phys-mid">
+          <section className="phys-section phys-throttle-block">
+            <h3 className="phys-section-title"><em>02</em> MANDO</h3>
+            <div className="phys-throttle-wrap">
+              <span className="phys-throttle-scale"><i>100</i><i>75</i><i>50</i><i>25</i><i>0</i></span>
+              <input
+                id="phys-throttle"
+                className="phys-throttle"
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={ui.throttle}
+                onChange={(e) => setControl('throttle', Number(e.target.value))}
+                aria-label="Acelerador"
+              />
+            </div>
+            <span className="phys-throttle-readout">{(ui.throttle * 100).toFixed(0)}<i>%</i></span>
+          </section>
+
+          <section className="phys-section">
+            <h3 className="phys-section-title"><em>03</em> CONTROL</h3>
+            <div className="phys-buttons">
+              <button className={`pbtn ${ui.ignition ? 'armed' : ''}`} onClick={startIgnition} disabled={sandbox}>
+                {ui.ignition ? 'CORTAR' : 'IGNITION'}
+              </button>
+              <button className="pbtn" onClick={rebuild}>RECONSTRUIR</button>
+              <button className={`pbtn ${sandbox ? 'armed' : ''}`} onClick={toggleSandbox}>
+                {sandbox ? 'SELLAR ENSAMBLAJE' : 'CUSTOM SANDBOX'}
+              </button>
+              {sandbox && (
+                <>
+                  <button className="pbtn" onClick={() => fileInput.current?.click()}>IMPORTAR .GLB…</button>
+                  <input ref={fileInput} type="file" accept=".glb,.gltf" hidden onChange={pickGlb} />
+                </>
+              )}
+              <label className="phys-toggle">
+                <input
+                  type="checkbox"
+                  checked={ui.pulses}
+                  onChange={(e) => setControl('pulses', e.target.checked)}
+                />
+                PULSOS ELECTRÓNICOS
+              </label>
+            </div>
+          </section>
         </div>
 
-        <div className="phys-throttle-block">
-          <label htmlFor="phys-throttle">THROTTLE {(ui.throttle * 100).toFixed(0)}%</label>
-          <input
-            id="phys-throttle"
-            className="phys-throttle"
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={ui.throttle}
-            onChange={(e) => setControl('throttle', Number(e.target.value))}
-          />
-        </div>
-
-        <div className="phys-buttons">
-          <button className={`btn ${ui.ignition ? 'primary' : ''}`} onClick={startIgnition} disabled={sandbox}>
-            {ui.ignition ? '⏻ CORTAR' : '⏻ IGNITION'}
-          </button>
-          <button className="btn" onClick={rebuild}>🔧 Reconstruir</button>
-          <button className={`btn ${sandbox ? 'primary' : ''}`} onClick={toggleSandbox}>
-            {sandbox ? '▶ Sellar ensamblaje' : '⏸ CUSTOM SANDBOX'}
-          </button>
-          {sandbox && (
-            <>
-              <button className="btn" onClick={() => fileInput.current?.click()}>Importar .glb…</button>
-              <input ref={fileInput} type="file" accept=".glb,.gltf" hidden onChange={pickGlb} />
-            </>
-          )}
-          <label className="phys-toggle">
-            <input
-              type="checkbox"
-              checked={ui.pulses}
-              onChange={(e) => setControl('pulses', e.target.checked)}
-            />
-            SHOW ELECTRONIC PULSES
-          </label>
-        </div>
-
-        <div className="phys-config">
-          <div className="field">
-            <label htmlFor="phys-material">Material de biela</label>
+        <section className="phys-section">
+          <h3 className="phys-section-title"><em>04</em> REGLAJE</h3>
+          <div className="phys-field">
+            <label htmlFor="phys-material">MATERIAL BIELA</label>
             <select id="phys-material" value={ui.materialId} onChange={(e) => setControl('materialId', e.target.value as PhysMaterial['id'])}>
               {Object.values(PHYS_MATERIALS).map((m) => (
-                <option key={m.id} value={m.id}>{m.name} · E={m.youngModulus / 1e9} GPa</option>
+                <option key={m.id} value={m.id}>{m.name} · E {m.youngModulus / 1e9} GPa</option>
               ))}
             </select>
           </div>
-          <div className="field">
-            <label htmlFor="phys-bolts">Pernos de sombrerete</label>
+          <div className="phys-field">
+            <label htmlFor="phys-bolts">PERNOS SOMBRERETE</label>
             <select id="phys-bolts" value={ui.boltKit} onChange={(e) => setControl('boltKit', e.target.value as 'serie' | 'arp')}>
               <option value="serie">{BOLT_KITS.serie.label}</option>
               <option value="arp">{BOLT_KITS.arp.label}</option>
             </select>
           </div>
-          <div className="field">
-            <label htmlFor="phys-rodlen">L biela: {ui.rodLengthMm.toFixed(0)} mm</label>
+          <div className="phys-field">
+            <label htmlFor="phys-rodlen">L BIELA <b>{ui.rodLengthMm.toFixed(0)} mm</b></label>
             <input id="phys-rodlen" type="range" min="120" max="180" step="1" value={ui.rodLengthMm}
               onChange={(e) => setControl('rodLengthMm', Number(e.target.value))} />
           </div>
-          <div className="field">
-            <label htmlFor="phys-rodarea">A sección biela: {ui.rodAreaMm2} mm²</label>
+          <div className="phys-field">
+            <label htmlFor="phys-rodarea">SECCIÓN BIELA <b>{ui.rodAreaMm2} mm²</b></label>
             <input id="phys-rodarea" type="range" min="110" max="650" step="10" value={ui.rodAreaMm2}
               onChange={(e) => setControl('rodAreaMm2', Number(e.target.value))} />
           </div>
-          <div className="field">
-            <label htmlFor="phys-revlimit">Corte ECU: {ui.revLimit} rpm {ui.revLimit > 9000 ? '⚠ sin protección' : ''}</label>
+          <div className="phys-field">
+            <label htmlFor="phys-revlimit">
+              CORTE ECU <b className={ui.revLimit > 9000 ? 'danger-text' : ''}>{ui.revLimit} rpm{ui.revLimit > 9000 ? ' · SIN PROTECCIÓN' : ''}</b>
+            </label>
             <input id="phys-revlimit" type="range" min="6000" max="12500" step="100" value={ui.revLimit}
               onChange={(e) => setControl('revLimit', Number(e.target.value))} />
           </div>
-          <div className="field">
-            <label htmlFor="phys-water">Caudal de agua: {(ui.waterFlow * 100).toFixed(0)}%</label>
+          <div className="phys-field">
+            <label htmlFor="phys-water">CAUDAL AGUA <b>{(ui.waterFlow * 100).toFixed(0)} %</b></label>
             <input id="phys-water" type="range" min="0" max="1" step="0.05" value={ui.waterFlow}
               onChange={(e) => setControl('waterFlow', Number(e.target.value))} />
           </div>
-          <div className="field">
-            <label htmlFor="phys-oil">Caudal de aceite: {(ui.oilFlow * 100).toFixed(0)}%</label>
+          <div className="phys-field">
+            <label htmlFor="phys-oil">CAUDAL ACEITE <b>{(ui.oilFlow * 100).toFixed(0)} %</b></label>
             <input id="phys-oil" type="range" min="0" max="1" step="0.05" value={ui.oilFlow}
               onChange={(e) => setControl('oilFlow', Number(e.target.value))} />
           </div>
           {customSockets && (
             <p className="phys-note">
-              Sockets de la pieza importada: bulón ({customSockets.primary.x.toFixed(2)},{' '}
+              SOCKETS PIEZA IMPORTADA — bulón ({customSockets.primary.x.toFixed(2)},{' '}
               {customSockets.primary.y.toFixed(2)}, {customSockets.primary.z.toFixed(2)}) · muñequilla (
               {customSockets.secondary.x.toFixed(2)}, {customSockets.secondary.y.toFixed(2)},{' '}
               {customSockets.secondary.z.toFixed(2)})
             </p>
           )}
-        </div>
+        </section>
       </aside>
 
       {glbFile && (

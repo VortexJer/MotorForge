@@ -316,7 +316,7 @@ body {
   color: var(--ink);
 }
 
-/* ---- Laboratorio físico (pliego §7: telemetría F1, fondo ultra oscuro) ---- */
+/* ---- Laboratorio físico: celda de ensayo (§7) ---- */
 
 .main-phys {
   padding: 0 !important;
@@ -324,10 +324,19 @@ body {
 }
 
 .phys-lab {
+  --pl-bg: #05070c;
+  --pl-panel: #090d15;
+  --pl-line: #1c2433;
+  --pl-ink: #e6e9ef;
+  --pl-mut: #6f7888;
+  --pl-acc: #f5b942;
+  --pl-ok: #3fd07a;
+  --pl-danger: #ff3b30;
   display: grid;
-  grid-template-columns: 1fr 300px;
+  grid-template-columns: 1fr 312px;
   height: calc(100vh - 52px);
-  background: #060a12;
+  background: var(--pl-bg);
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
 }
 
 .phys-canvas {
@@ -335,203 +344,478 @@ body {
   min-width: 0;
 }
 
+/* esquinas de visor tipo CAD */
+.phys-corner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 1px solid #2a3548;
+  pointer-events: none;
+}
+.phys-corner.tl { top: 10px; left: 10px; border-right: none; border-bottom: none; }
+.phys-corner.tr { top: 10px; right: 10px; border-left: none; border-bottom: none; }
+.phys-corner.bl { bottom: 10px; left: 10px; border-right: none; border-top: none; }
+.phys-corner.br { bottom: 10px; right: 10px; border-left: none; border-top: none; }
+
+.phys-hud {
+  position: absolute;
+  top: 16px;
+  left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  color: var(--pl-mut);
+  pointer-events: none;
+}
+
 .phys-sandbox-banner {
   position: absolute;
   top: 14px;
   left: 50%;
   transform: translateX(-50%);
-  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  color: #fab219;
-  background: rgba(250, 178, 25, 0.08);
-  border: 1px solid rgba(250, 178, 25, 0.4);
-  border-radius: 6px;
-  padding: 6px 14px;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  color: var(--pl-acc);
+  background: rgba(245, 185, 66, 0.07);
+  border: 1px solid rgba(245, 185, 66, 0.45);
+  padding: 6px 16px;
   pointer-events: none;
 }
 
 .phys-failure-banner {
   position: absolute;
-  bottom: 40px;
+  bottom: 44px;
   left: 50%;
   transform: translateX(-50%);
-  max-width: 80%;
-  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
-  font-size: 12px;
-  color: #ff5a4d;
-  background: rgba(208, 59, 59, 0.12);
-  border: 1px solid rgba(208, 59, 59, 0.5);
-  border-radius: 6px;
-  padding: 8px 14px;
+  max-width: 78%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #ffb3ad;
+  background: rgba(16, 6, 6, 0.92);
+  border: 1px solid rgba(255, 59, 48, 0.55);
+  border-left: 3px solid var(--pl-danger);
+  padding: 10px 16px;
   pointer-events: none;
 }
 
+.phys-failure-title {
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  color: var(--pl-danger);
+}
+
+/* ---- panel lateral ---- */
+
 .phys-panel {
-  border-left: 1px solid #1a2231;
-  background: #070b14;
-  padding: 14px;
+  border-left: 1px solid var(--pl-line);
+  background: var(--pl-panel);
   overflow-y: auto;
-  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
   display: flex;
   flex-direction: column;
-  gap: 14px;
 }
 
-.phys-status {
+.phys-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--pl-line);
+}
+
+.phys-head-title {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--pl-ink);
+}
+
+.phys-head-sub {
+  display: block;
+  margin-top: 3px;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--pl-mut);
+}
+
+.phys-leds {
+  display: flex;
+  gap: 9px;
+}
+
+.phys-led-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+  color: var(--pl-mut);
+}
+
+.phys-led {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #232c3d;
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.6);
+}
+
+.phys-led.on {
+  background: var(--pl-ok);
+  box-shadow: 0 0 6px rgba(63, 208, 122, 0.7);
+}
+
+.phys-led.alert {
+  background: var(--pl-danger);
+  box-shadow: 0 0 6px rgba(255, 59, 48, 0.8);
+  animation: phys-blink 0.5s steps(2) infinite;
+}
+
+/* ---- tacómetro ---- */
+
+.phys-tach-block {
+  padding: 8px 14px 4px;
+  border-bottom: 1px solid var(--pl-line);
+}
+
+.tach {
+  width: 100%;
+  display: block;
+}
+
+.phys-tach-digits {
   display: flex;
   align-items: baseline;
-  gap: 10px;
-  border: 1px solid #1a2231;
-  border-radius: 8px;
-  padding: 10px 12px;
-  background: #0a0f1a;
+  gap: 8px;
+  margin-top: -6px;
+  padding-bottom: 8px;
 }
 
-.phys-status-chip {
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  padding: 3px 8px;
-  border-radius: 5px;
+.phys-status-tag {
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  padding: 3px 7px;
   border: 1px solid #2a3548;
-  color: var(--muted);
+  color: var(--pl-mut);
 }
 
-.phys-status-chip.running {
-  color: #29c467;
-  border-color: rgba(41, 196, 103, 0.5);
-}
-
-.phys-status-chip.cranking {
-  color: #fab219;
-  border-color: rgba(250, 178, 25, 0.5);
-}
-
-.phys-status-chip.broken,
-.phys-status-chip.seized {
-  color: #ff5a4d;
-  border-color: rgba(255, 90, 77, 0.6);
+.phys-status-tag.running { color: var(--pl-ok); border-color: rgba(63, 208, 122, 0.5); }
+.phys-status-tag.cranking { color: var(--pl-acc); border-color: rgba(245, 185, 66, 0.5); }
+.phys-status-tag.broken,
+.phys-status-tag.seized {
+  color: var(--pl-danger);
+  border-color: rgba(255, 59, 48, 0.6);
   animation: phys-blink 0.6s steps(2) infinite;
 }
 
 .phys-rpm {
   margin-left: auto;
-  font-size: 26px;
+  font-size: 27px;
   font-weight: 700;
-  color: var(--ink);
+  color: var(--pl-ink);
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
 }
 
 .phys-rpm-unit {
-  font-size: 10px;
-  color: var(--muted);
-  letter-spacing: 0.14em;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--pl-mut);
 }
 
-.phys-telemetry {
+/* ---- secciones numeradas ---- */
+
+.phys-section {
+  padding: 10px 14px 12px;
+  border-bottom: 1px solid var(--pl-line);
+}
+
+.phys-section-title {
+  margin: 0 0 10px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--pl-mut);
   display: flex;
-  flex-direction: column;
-  gap: 5px;
-  border: 1px solid #1a2231;
-  border-radius: 8px;
-  padding: 12px;
-  background: #0a0f1a;
+  align-items: center;
+  gap: 7px;
 }
 
-.phys-row {
+.phys-section-title em {
+  font-style: normal;
+  color: var(--pl-acc);
+}
+
+.phys-section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--pl-line);
+}
+
+/* ---- telemetría ---- */
+
+.phys-gauge {
+  margin-bottom: 8px;
+}
+
+.phys-gauge-head {
   display: flex;
   justify-content: space-between;
-  font-size: 10.5px;
+  font-size: 9.5px;
   letter-spacing: 0.08em;
-  color: var(--muted);
+  color: var(--pl-mut);
+  margin-bottom: 3px;
 }
 
-.phys-row span:last-child {
-  color: var(--ink-2);
+.phys-gauge-value {
+  color: var(--pl-ink);
   font-variant-numeric: tabular-nums;
 }
 
 .phys-bar {
-  height: 3px;
-  background: #141b29;
-  border-radius: 2px;
+  position: relative;
+  height: 4px;
+  background: #131a28;
   overflow: hidden;
-  margin-bottom: 6px;
 }
 
 .phys-bar-fill {
   height: 100%;
-  background: #3987e5;
+  background: #4a80c4;
   transition: width 0.09s linear;
 }
 
-.phys-bar-fill.warn {
-  background: #fab219;
-}
+.phys-bar-fill.warn { background: var(--pl-acc); }
 
 .phys-bar-fill.danger {
-  background: #ff3b30;
+  background: var(--pl-danger);
   animation: phys-blink 0.35s steps(2) infinite;
 }
 
+/* muesca del 90% del límite */
+.phys-bar-mark {
+  position: absolute;
+  left: 90%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: #4a5568;
+}
+
 @keyframes phys-blink {
-  50% {
-    opacity: 0.35;
-  }
+  50% { opacity: 0.35; }
+}
+
+/* ---- mando y control ---- */
+
+.phys-mid {
+  display: grid;
+  grid-template-columns: 108px 1fr;
+  border-bottom: 1px solid var(--pl-line);
+}
+
+.phys-mid .phys-section {
+  border-bottom: none;
+}
+
+.phys-mid .phys-section:first-child {
+  border-right: 1px solid var(--pl-line);
 }
 
 .phys-throttle-block {
-  border: 1px solid #1a2231;
-  border-radius: 8px;
-  padding: 12px;
-  background: #0a0f1a;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
 }
 
-.phys-throttle-block label {
-  font-size: 10.5px;
-  letter-spacing: 0.12em;
-  color: var(--muted);
+.phys-throttle-block .phys-section-title {
+  align-self: stretch;
 }
 
-/* palanca vertical estilo cockpit */
+.phys-throttle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.phys-throttle-scale {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 150px;
+  font-size: 8px;
+  color: var(--pl-mut);
+  text-align: right;
+}
+
+.phys-throttle-scale i {
+  font-style: normal;
+}
+
 .phys-throttle {
+  appearance: none;
+  -webkit-appearance: none;
   writing-mode: vertical-lr;
   direction: rtl;
-  width: 26px;
-  height: 150px;
-  accent-color: #3987e5;
+  width: 30px;
+  height: 158px;
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 9px, var(--pl-line) 9px 10px),
+    linear-gradient(to right, transparent 12px, #131a28 12px, #131a28 18px, transparent 18px);
   cursor: grab;
+}
+
+.phys-throttle:active {
+  cursor: grabbing;
+}
+
+.phys-throttle::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 26px;
+  height: 15px;
+  background: linear-gradient(to bottom, #303b52, #1d2536);
+  border: 1px solid #4a5568;
+  border-left: 3px solid var(--pl-acc);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.phys-throttle-readout {
+  margin-top: 8px;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--pl-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.phys-throttle-readout i {
+  font-style: normal;
+  font-size: 10px;
+  color: var(--pl-mut);
+  margin-left: 2px;
 }
 
 .phys-buttons {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+}
+
+.pbtn {
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--pl-ink);
+  background: #10151f;
+  border: 1px solid #2a3548;
+  border-radius: 2px;
+  padding: 8px 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.pbtn:hover {
+  border-color: #45526b;
+  background: #141b28;
+}
+
+.pbtn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.pbtn.armed {
+  color: #0a0d14;
+  background: var(--pl-acc);
+  border-color: var(--pl-acc);
 }
 
 .phys-toggle {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 10.5px;
-  letter-spacing: 0.1em;
-  color: var(--muted);
+  margin-top: 2px;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--pl-mut);
   cursor: pointer;
 }
 
-.phys-config .field label {
-  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+.phys-toggle input {
+  accent-color: var(--pl-acc);
+}
+
+/* ---- reglaje ---- */
+
+.phys-field {
+  margin-bottom: 9px;
+}
+
+.phys-field label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--pl-mut);
+  margin-bottom: 4px;
+}
+
+.phys-field label b {
+  font-weight: 600;
+  color: var(--pl-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.phys-field label b.danger-text {
+  color: var(--pl-danger);
+}
+
+.phys-field select {
+  width: 100%;
+  font: inherit;
   font-size: 10.5px;
+  color: var(--pl-ink);
+  background: #10151f;
+  border: 1px solid #2a3548;
+  border-radius: 2px;
+  padding: 5px 7px;
+}
+
+.phys-field input[type='range'] {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  height: 16px;
+  background: linear-gradient(to bottom, transparent 7px, #131a28 7px, #131a28 10px, transparent 10px);
+  cursor: pointer;
+}
+
+.phys-field input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 9px;
+  height: 15px;
+  background: linear-gradient(to bottom, #303b52, #1d2536);
+  border: 1px solid #4a5568;
+  border-top: 2px solid var(--pl-acc);
 }
 
 .phys-note {
-  font-size: 10.5px;
-  color: var(--muted);
-  line-height: 1.5;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  color: var(--pl-mut);
+  line-height: 1.6;
 }
 
 /* ---- Asistente de sockets ---- */

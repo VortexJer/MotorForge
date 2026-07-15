@@ -116,11 +116,11 @@ export default function EndurancePanel({ engine, tune, fuel, wear, onWear }: Pro
             ))}
           </select>
           <button className="btn primary" onClick={run} disabled={broken}>
-            ▶ Rodar tanda
+            Rodar tanda
           </button>
           {used && (
             <button className="btn" onClick={rebuild} title="Reconstruye el motor: desgaste a cero">
-              🔧 Motor a estrenar
+              Motor a estrenar
             </button>
           )}
         </div>

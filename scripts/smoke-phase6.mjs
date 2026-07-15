@@ -32,7 +32,7 @@ await win.waitForSelector('.phys-canvas canvas', { timeout: 30000 })
 await win.waitForTimeout(1000)
 
 // ---- ignición: el motor de arranque debe llevarlo a ralentí ----
-await win.click('.phys-buttons .btn:has-text("IGNITION")')
+await win.click('.phys-buttons .pbtn:has-text("IGNITION")')
 await win.waitForTimeout(3500)
 const idleRpm = parseFloat(await win.textContent('.phys-rpm'))
 console.log('ralentí:', idleRpm.toFixed(0), 'rpm')
@@ -57,18 +57,18 @@ await win.waitForTimeout(1200) // deja volar las piezas por el cárter
 await win.screenshot({ path: join(shots, 'phase6-broken.png') })
 
 // ---- reconstruir ----
-await win.click('.phys-buttons .btn:has-text("Reconstruir")')
+await win.click('.phys-buttons .pbtn:has-text("Reconstruir")')
 await win.waitForTimeout(800)
-const status = await win.textContent('.phys-status-chip')
+const status = await win.textContent('.phys-status-tag')
 console.log('tras reconstruir:', status.trim())
 
 // ---- custom sandbox: pausa física + banner ----
-await win.click('.phys-buttons .btn:has-text("CUSTOM SANDBOX")')
+await win.click('.phys-buttons .pbtn:has-text("CUSTOM SANDBOX")')
 await win.waitForSelector('.phys-sandbox-banner', { timeout: 5000 })
-const importBtn = await win.locator('.phys-buttons .btn:has-text("Importar .glb")').count()
+const importBtn = await win.locator('.phys-buttons .pbtn:has-text("Importar .glb")').count()
 if (importBtn !== 1) throw new Error('falta el botón de importar .glb en sandbox')
 await win.screenshot({ path: join(shots, 'phase6-sandbox.png') })
-await win.click('.phys-buttons .btn:has-text("Sellar ensamblaje")')
+await win.click('.phys-buttons .pbtn:has-text("Sellar ensamblaje")')
 await win.waitForTimeout(400)
 
 // ---- gripaje: cortar agua y aceite a plena carga ----
@@ -76,9 +76,9 @@ await win.waitForTimeout(400)
 await win.selectOption('#phys-material', 'acero')
 await setRange('#phys-rodarea', 300)
 await setRange('#phys-revlimit', 7200)
-await win.click('.phys-buttons .btn:has-text("Reconstruir")')
+await win.click('.phys-buttons .pbtn:has-text("Reconstruir")')
 await win.waitForTimeout(600)
-await win.click('.phys-buttons .btn:has-text("IGNITION")')
+await win.click('.phys-buttons .pbtn:has-text("IGNITION")')
 await setRange('#phys-throttle', 1)
 await setRange('#phys-water', 0)
 await setRange('#phys-oil', 0)
