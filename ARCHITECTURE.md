@@ -104,6 +104,14 @@ src/
     import/       Métricas de malla (BVH), derivación analítica (nivel A) y FEA vóxel (nivel B)
 ```
 
+## Gemelo digital HIL (en curso)
+
+`src/shared/sim/hil/` — el motor como caja negra física y la ECU como caja negra lógica,
+comunicadas SOLO por sensores/actuadores virtuales (ver ADR-001 en `hil/types.ts`: tick 240 Hz,
+RK4+Euler semi-implícito, Float64 estado / Float32 rings, cableado declarativo en `.mforge.json`).
+Fase 1 (bus + SensorManager) hecha. **Backlog** (fuera de esta iteración): UI interactiva de
+cableado de sensores.
+
 ## Unidades
 
 SI en todo el núcleo: m, kg, s, Pa, K, J, W, rad. Conversión a unidades "de taller"
