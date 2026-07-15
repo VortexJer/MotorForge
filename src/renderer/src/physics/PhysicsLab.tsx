@@ -643,6 +643,8 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
                 const gc = det.glowCoil[i]
                 if (gi) setActuatorPulse(gi, true)
                 if (gc) setActuatorPulse(gc, true)
+                // la bomba de alta presión destella con cada ciclo de inyección
+                setActuatorPulse(det.glowPump, true)
               }
             }
           }
@@ -662,6 +664,7 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
             const gc = det.glowCoil[i]
             if (gi) setActuatorPulse(gi, false)
             if (gc) setActuatorPulse(gc, false)
+            if (sparkTimers.current.every((t) => t <= 0)) setActuatorPulse(det.glowPump, false)
           }
         }
       }
@@ -780,6 +783,10 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
     const det = detailRef.current
     if (det) {
       det.update(thetaVisRef.current, tier, c.cutaway)
+      // electroventiladores: giran según el caudal de agua configurado y
+      // solo con el motor en marcha (variable física real)
+      const fanSpeed = rpm > 200 ? (3 + 26 * c.waterFlow) * dt : 0
+      for (const fan of det.fanBlades) fan.rotation.x += fanSpeed
       // pernos de biela instanciados: matrices por frame desde los cuerpos
       if (tier === 0) {
         const off = new THREE.Matrix4()

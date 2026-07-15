@@ -130,6 +130,10 @@ export interface EngineDetail {
   rodBolts: THREE.InstancedMesh
   glowInjector: THREE.MeshStandardMaterial[]
   glowCoil: THREE.MeshStandardMaterial[]
+  /** Bomba de gasolina de alta presión: destella con cada ciclo de inyección. */
+  glowPump: THREE.MeshStandardMaterial
+  /** Aspas del electroventilador doble: las gira la escena según el caudal de agua. */
+  fanBlades: THREE.Group[]
   tier: LodTier
   dispose(): void
   /** Cinemática de distribución + LOD + vista seccionada/cerrada. */
@@ -465,8 +469,7 @@ export function buildEngineDetail(sockets: EngineSockets, cylinders: number): En
   detail.add(new THREE.CylinderGeometry(0.3, 0.3, 0.5, 14), mSteel, mat4(beltX + 0.28, 2.15, -1.05, 0, 0, Math.PI / 2))
   detail.add(new THREE.CylinderGeometry(0.18, 0.18, 0.09, 12), mSteel, mat4(beltX, 2.15, -1.05, 0, 0, Math.PI / 2))
   detail.add(new THREE.BoxGeometry(0.5, 0.16, 0.5), mAlu, mat4(-halfW - 0.2, 2.0, -0.85, 0, 0, 0.4)) // soporte
-  detail.add(new THREE.CylinderGeometry(0.26, 0.28, 0.22, 12), mAlu, mat4(beltX + 0.3, 0.95, 0.4, 0, 0, Math.PI / 2)) // bomba de agua
-  detail.add(new THREE.CylinderGeometry(0.2, 0.2, 0.09, 12), mSteel, mat4(beltX, 0.95, 0.4, 0, 0, Math.PI / 2))
+  detail.add(new THREE.CylinderGeometry(0.2, 0.2, 0.09, 12), mSteel, mat4(beltX, 0.95, 0.4, 0, 0, Math.PI / 2)) // polea bomba de agua
   detail.add(new THREE.CylinderGeometry(0.13, 0.13, 0.09, 10), mSteel, mat4(beltX, 1.5, -0.32, 0, 0, Math.PI / 2)) // tensor
   // correa: bucle cerrado alrededor de las cuatro poleas
   const beltLoop: THREE.Vector3[] = [
@@ -511,6 +514,117 @@ export function buildEngineDetail(sockets: EngineSockets, cylinders: number): En
   )
   fineStatic.add(new THREE.TorusGeometry(0.07, 0.018, 6, 12), mBrass, mat4(halfW * 0.12, deckY + 0.38, wallZ + 0.22))
 
+  // ============================================ CIRCUITO DE LUBRICACIÓN
+  // bomba de aceite trocoidal en el frontal bajo, accionada por el cigüeñal
+  always.add(casting(0.44, 0.44, 0.4), mAlu, mat4(-halfW - 0.26, -0.5, 0.12))
+  detail.add(new THREE.CylinderGeometry(0.06, 0.06, 0.35, 8), mSteel, mat4(-halfW - 0.05, -0.35, 0.08, 0, 0, Math.PI / 2)) // eje de accionamiento
+  fineStatic.add(new THREE.CylinderGeometry(0.07, 0.07, 0.14, 8), mBrass, mat4(-halfW - 0.26, -0.2, 0.12)) // válvula de alivio
+  fineStatic.add(new THREE.CylinderGeometry(0.05, 0.05, 0.08, 8), mSteel, mat4(-halfW - 0.26, -0.1, 0.12)) // muelle de la válvula
+  // tuberías rígidas de presión (bomba→galería) y retorno (culata→cárter)
+  detail.tube(
+    [new THREE.Vector3(-halfW - 0.26, -0.28, 0.12), new THREE.Vector3(-halfW - 0.06, deckY * 0.35, -wallZ * 0.5), new THREE.Vector3(-halfW + 0.3, panTop + 0.9, -wallZ + 0.2)],
+    0.045,
+    mSteel,
+    10
+  )
+  detail.tube(
+    [new THREE.Vector3(-halfW + 0.2, deckY + 0.4, -wallZ * 0.6), new THREE.Vector3(-halfW - 0.1, panTop + 0.3, -wallZ * 0.4)],
+    0.05,
+    mSteel,
+    8
+  )
+  // enfriador de aceite de placas + latiguillos trenzados al filtro
+  detail.add(casting(0.5, 0.34, 0.24), mAlu, mat4(0.4, panTop + 0.55, -wallZ - 0.42))
+  for (let p = 0; p < 6; p++) {
+    detail.add(new THREE.BoxGeometry(0.46, 0.028, 0.2), mSteel, mat4(0.4, panTop + 0.43 + p * 0.05, -wallZ - 0.42))
+  }
+  detail.tube(
+    [new THREE.Vector3(0.62, panTop + 0.55, -wallZ - 0.4), new THREE.Vector3(halfW * 0.35, panTop + 0.5, -wallZ - 0.22)],
+    0.045,
+    mSteel,
+    6
+  )
+  detail.tube(
+    [new THREE.Vector3(0.18, panTop + 0.55, -wallZ - 0.4), new THREE.Vector3(halfW * 0.3, panTop + 0.32, -wallZ - 0.18)],
+    0.045,
+    mSteel,
+    6
+  )
+
+  // ============================================ REFRIGERACIÓN: BOMBA E IMPULSOR
+  // carcasa dedicada (se vuelve translúcida en inspección para ver el rodete)
+  const pumpHousingMat = cad('#8891a0', 0.5, 0.4)
+  const pumpHousing = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.32, 0.42, 14), pumpHousingMat)
+  pumpHousing.rotation.z = Math.PI / 2
+  pumpHousing.position.set(beltX + 0.36, 0.95, 0.4)
+  root.add(pumpHousing)
+  const impeller = new THREE.Group()
+  impeller.position.set(beltX + 0.36, 0.95, 0.4)
+  {
+    const impParts = new Merger()
+    impParts.add(new THREE.CylinderGeometry(0.07, 0.07, 0.3, 8), mSteel, mat4(0, 0, 0, 0, 0, Math.PI / 2))
+    for (let b = 0; b < 6; b++) {
+      const a = (b / 6) * Math.PI * 2
+      impParts.add(new THREE.BoxGeometry(0.05, 0.05, 0.2), mBrass, mat4(0.02, Math.cos(a) * 0.13, Math.sin(a) * 0.13, a, 0, 0))
+    }
+    impParts.build('impeller').forEach((m) => impeller.add(m))
+  }
+  impeller.name = 'lod-fine'
+  root.add(impeller)
+  // muelle obturador del termostato
+  fineStatic.add(new THREE.CylinderGeometry(0.06, 0.06, 0.12, 8, 3, true), mSteel, mat4(-halfW - 0.08, deckY - 0.3, wallZ * 0.45, 0, 0, Math.PI / 2))
+  // vaso de expansión junto al radiador + manguito al cuello
+  detail.add(casting(0.3, 0.42, 0.26), mAlu, mat4(radX + 0.55, 2.0, -1.3))
+  detail.add(new THREE.CylinderGeometry(0.07, 0.07, 0.08, 10), mHose, mat4(radX + 0.55, 2.25, -1.3))
+  detail.tube(
+    [new THREE.Vector3(radX + 0.42, 1.95, -1.28), new THREE.Vector3(radX + 0.12, 1.8, -(blockD * 0.85))],
+    0.04,
+    mHose,
+    6
+  )
+  // electroventilador doble tras el radiador (soporte básico + aspas)
+  const fanBlades: THREE.Group[] = []
+  for (const fz of [-0.72, 0.72]) {
+    always.add(casting(0.1, 1.12, 1.12), mDark, mat4(radX + 0.26, 0.7, fz))
+    const blades = new THREE.Group()
+    blades.position.set(radX + 0.36, 0.7, fz)
+    const bParts = new Merger()
+    bParts.add(new THREE.CylinderGeometry(0.09, 0.09, 0.1, 10), mDark, mat4(0, 0, 0, 0, 0, Math.PI / 2))
+    for (let b = 0; b < 5; b++) {
+      const a = (b / 5) * Math.PI * 2
+      bParts.add(new THREE.BoxGeometry(0.035, 0.1, 0.4), mDark, mat4(0, Math.cos(a) * 0.28, Math.sin(a) * 0.28, a + 0.5, 0, 0))
+    }
+    bParts.build('fan').forEach((m) => blades.add(m))
+    blades.name = 'lod-detail'
+    root.add(blades)
+    fanBlades.push(blades)
+  }
+
+  // ============================================ ALIMENTACIÓN DE COMBUSTIBLE
+  // bomba de alta presión accionada por el árbol de admisión (testero trasero)
+  detail.add(new THREE.CylinderGeometry(0.15, 0.17, 0.3, 10), mSteel, mat4(halfW + 0.14, camY, camZ, 0, 0, Math.PI / 2))
+  const glowPump = cad(CAD_GRAY)
+  const pumpCap = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.12, 0.14), glowPump)
+  pumpCap.position.set(halfW + 0.32, camY, camZ)
+  pumpCap.name = 'lod-detail'
+  root.add(pumpCap)
+  detail.tube(
+    [new THREE.Vector3(halfW + 0.2, camY - 0.12, camZ), new THREE.Vector3(halfW * 0.82, deckY + 1.02, wallZ * 0.93 + 0.28)],
+    0.03,
+    mSteel,
+    8
+  )
+  // regulador de presión en el retorno de la rampa + línea de retorno
+  detail.add(new THREE.CylinderGeometry(0.09, 0.09, 0.14, 10), mSteel, mat4(-halfW * 0.82, deckY + 1.02, wallZ * 0.93 + 0.28))
+  detail.tube(
+    [new THREE.Vector3(-halfW * 0.82, deckY + 0.95, wallZ * 0.93 + 0.28), new THREE.Vector3(-halfW - 0.5, panTop - 0.2, wallZ * 0.55)],
+    0.028,
+    mSteel,
+    8
+  )
+  // filtro de alto flujo en la línea de entrada
+  detail.add(new THREE.CylinderGeometry(0.09, 0.09, 0.3, 10), mAlu, mat4(halfW + 0.28, panTop + 0.4, wallZ * 0.6, 0.9, 0, 0))
+
   // ============================================ CABLEADO (mazo + caídas)
   detail.add(
     new THREE.CylinderGeometry(0.045, 0.045, halfW * 1.7, 8),
@@ -547,6 +661,18 @@ export function buildEngineDetail(sockets: EngineSockets, cylinders: number): En
   for (let a = 0; a < 6; a++) {
     periMs.push(mat4(turbX + 0.35, turbY + 0.5 * Math.sin((a * Math.PI) / 3), turbZ + 0.5 * Math.cos((a * Math.PI) / 3), Math.PI / 2, 0, 0, 0.5))
   }
+  // pernos allen de las bombas y accesorios (obligatoriamente instanciados)
+  for (let a = 0; a < 4; a++) {
+    const ang = (a * Math.PI) / 2 + 0.4
+    periMs.push(mat4(beltX + 0.5, 0.95 + Math.cos(ang) * 0.36, 0.4 + Math.sin(ang) * 0.36, 0, 0, Math.PI / 2, 0.45)) // bomba de agua
+    periMs.push(mat4(-halfW - 0.05, -0.5 + Math.cos(ang) * 0.26, 0.12 + Math.sin(ang) * 0.26, 0, 0, Math.PI / 2, 0.45)) // bomba de aceite
+  }
+  for (const fz of [-0.72, 0.72]) {
+    periMs.push(mat4(radX + 0.3, 1.28, fz + 0.5, 0, 0, Math.PI / 2, 0.4), mat4(radX + 0.3, 0.12, fz - 0.5, 0, 0, Math.PI / 2, 0.4)) // ventiladores
+  }
+  periMs.push(mat4(halfW + 0.02, camY + 0.2, camZ, 0, 0, Math.PI / 2, 0.45)) // bomba de gasolina
+  periMs.push(mat4(halfW + 0.02, camY - 0.2, camZ, 0, 0, Math.PI / 2, 0.45))
+  periMs.push(mat4(-halfW - 0.35, 2.15, -0.8, 0, 0, Math.PI / 2, 0.5)) // alternador
   const periBolts = instancedPair(boltGeo.clone(), mSteel, periMs, 0.7)
   const rodBolts = new THREE.InstancedMesh(boltGeo.clone().scale(0.7, 0.7, 0.7), mSteel, cyls * 2)
   rodBolts.frustumCulled = false
@@ -655,10 +781,14 @@ export function buildEngineDetail(sockets: EngineSockets, cylinders: number): En
     rodBolts,
     glowInjector,
     glowCoil,
+    glowPump,
+    fanBlades,
     tier: 0,
     update(thetaVisual: number, tier: LodTier, cutaway = true): void {
       camIntake.rotation.x = thetaVisual / 2
       camExhaust.rotation.x = thetaVisual / 2
+      // el rodete de la bomba de agua gira arrastrado por la correa (1:1)
+      impeller.rotation.x = thetaVisual
 
       if (tier === 0) {
         const liftMax = boreR * 0.16
@@ -698,6 +828,11 @@ export function buildEngineDetail(sockets: EngineSockets, cylinders: number): En
       teeth.visible = fineOn
       injBodies.visible = detailOn
       coilBodies.visible = detailOn
+      // en inspección la carcasa de la bomba se vuelve translúcida y deja
+      // ver el rodete de palas girando
+      pumpHousingMat.transparent = fineOn
+      pumpHousingMat.opacity = fineOn ? 0.32 : 1
+      pumpHousingMat.depthWrite = !fineOn
       camIntake.visible = detailOn
       camExhaust.visible = detailOn
       root.traverse((o) => {

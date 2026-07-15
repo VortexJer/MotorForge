@@ -34,11 +34,13 @@ describe('árbol maestro de componentes 3D (pliego LOD)', () => {
 
   it('presupuesto de draw calls: estáticos fusionados y tornillería instanciada', () => {
     const c = counts(d.root)
-    // §2: el detalle completo cabe en <35 mallas (merges) y la tornillería
+    // §2: el detalle completo (con lubricación, refrigeración y combustible)
+    // cabe en <42 mallas — cada una es un bucket fusionado o una pieza móvil
+    // dedicada (rodete, aspas, carcasa translúcida) — y la tornillería
     // repetitiva vive en InstancedMesh (decenas de instancias por draw call)
-    expect(c.meshes).toBeLessThan(35)
+    expect(c.meshes).toBeLessThan(42)
     expect(c.instanced).toBeGreaterThanOrEqual(8)
-    expect(c.instances).toBeGreaterThan(80)
+    expect(c.instances).toBeGreaterThan(95)
   })
 
   it('16 válvulas sincronizadas al ciclo de 4 tiempos', () => {
