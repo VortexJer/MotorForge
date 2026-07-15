@@ -54,7 +54,9 @@ const GROUP_JOINED = 0x0002_0000 // piezas unidas: no colisionan con nada
 const GROUP_LOOSE = 0x0002_0003 // piezas sueltas: chocan con jaula y entre sí
 
 export interface LabControls {
-  throttle: number // 0..1
+  throttle: number // 0..1 — palanca (posición fija)
+  /** Pedal momentáneo 0..1: manda el máximo de palanca y pedal. */
+  pedal: number
   ignition: boolean
   pulses: boolean
   revLimit: number
@@ -461,6 +463,8 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
     const rigs = rigsRef.current
     if (!world || !crank) return
     const c = controls.current
+    /** Gas efectivo: palanca (posición fija) o pedal (momentáneo), el mayor. */
+    const gas = Math.max(c.throttle, c.pedal)
     const dt = Math.min(rawDt, 0.05)
     const dead = statusRef.current === 'broken' || statusRef.current === 'seized'
 
@@ -471,7 +475,7 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
       let torque = 0
       if (!dead && c.ignition) {
         if (rpm < IDLE_RPM * 0.8) torque += 55 // §5: motor de arranque
-        const throttleEff = Math.max(c.throttle, rpm < IDLE_RPM * 1.15 ? 0.08 : 0)
+        const throttleEff = Math.max(gas, rpm < IDLE_RPM * 1.15 ? 0.08 : 0)
         if (rpm < c.revLimit) {
           // §4C: si la ECU se configura sin protección, el par residual a
           // alto régimen basta para llevar el motor a la zona de rotura
@@ -479,7 +483,12 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
           torque += 260 * curve * throttleEff
         }
       }
-      const friction = 4 + 3e-5 * omega * omega + (statusRef.current === 'seized' ? 500 : 0)
+      // fricción + pérdidas de bombeo con gas cerrado (freno motor real)
+      const friction =
+        4 +
+        3e-5 * omega * omega +
+        (1 - gas) * 1.7e-4 * omega * omega +
+        (statusRef.current === 'seized' ? 500 : 0)
       const domega = ((torque - friction) / 0.9) * dt
       const newOmega = Math.max(omega + domega, 0)
       rpm = (newOmega * 60) / (2 * Math.PI)
@@ -520,8 +529,8 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
     }
 
     // ---- ECU: sensor de PMS sobre el deslizamiento del pistón (§5) ----
-    const boostBar = c.throttle * Math.min(rpm / 3800, 1) * 1.1 * (engine.assembly.aspiration.spec.type === 'turbo' ? 1 : 0)
-    const pCombBar = 18 + c.throttle * (40 + 26 * boostBar)
+    const boostBar = gas * Math.min(rpm / 3800, 1) * 1.1 * (engine.assembly.aspiration.spec.type === 'turbo' ? 1 : 0)
+    const pCombBar = 18 + gas * (40 + 26 * boostBar)
     if (!c.paused && !dead && rpm > 200) {
       for (let i = 0; i < rigs.length; i++) {
         const rig = rigs[i]!
@@ -533,7 +542,7 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
           // PMS detectado; alterna compresión/escape (ciclo de 4 tiempos)
           rig.strokePhase = 1 - rig.strokePhase
           if (rig.strokePhase === 1) {
-            const fComb = Math.PI * (g.bore / 2) ** 2 * pCombBar * 1e5 * c.throttle
+            const fComb = Math.PI * (g.bore / 2) ** 2 * pCombBar * 1e5 * gas
             rig.piston.applyImpulse({ x: 0, y: -Math.min(fComb, 8e4) * 6e-5, z: 0 }, true)
             if (c.pulses) {
               const light = sparkLights.current[i]
@@ -574,7 +583,7 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
       material,
       pComb: dead || !c.ignition ? 0 : pCombBar * 1e5,
       pistonArea: Math.PI * (g.bore / 2) ** 2,
-      throttle: c.throttle,
+      throttle: gas,
       theta: 0,
       boltDiameter: bolts.diameter,
       boltYield: bolts.yield
@@ -611,7 +620,7 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
     if (!c.paused && !dead && rpm > 100) {
       thermal.current = thermalStep(thermal.current, {
         rpm,
-        throttle: Math.max(c.throttle, 0.06),
+        throttle: Math.max(gas, 0.06),
         pCylBar: pCombBar,
         waterFlow: c.waterFlow,
         oilFlow: c.oilFlow,
@@ -656,7 +665,7 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
     if (c.paused) audio.suspend()
     else {
       audio.resume()
-      audio.update(rpm, g.cylinders, c.throttle, pCombBar / 6, boostBar)
+      audio.update(rpm, g.cylinders, gas, pCombBar / 6, boostBar)
     }
 
     // ---- escalado paramétrico en caliente (§1B): solo matrices ----
@@ -764,6 +773,7 @@ export default function PhysicsLab({ engine }: Props): React.JSX.Element {
 
   const controls = useRef<LabControls>({
     throttle: 0,
+    pedal: 0,
     ignition: false,
     pulses: true,
     revLimit: 7200,
@@ -785,6 +795,43 @@ export default function PhysicsLab({ engine }: Props): React.JSX.Element {
   useEffect(() => {
     void RAPIER.init().then(() => setReady(true))
   }, [])
+
+  // Pedal momentáneo: mantener pulsado abre gas con rampa mecánica;
+  // al soltar, el muelle lo devuelve (más rápido) a la posición de palanca.
+  const pedalHeld = useRef(false)
+  const [pedalPct, setPedalPct] = useState(0)
+  useEffect(() => {
+    let raf = 0
+    let last = performance.now()
+    const loop = (now: number): void => {
+      const dt = Math.min((now - last) / 1000, 0.1)
+      last = now
+      const cur = controls.current.pedal
+      const target = pedalHeld.current ? 1 : 0
+      const rate = pedalHeld.current ? 2.4 : 4.5
+      const next = cur + Math.sign(target - cur) * Math.min(Math.abs(target - cur), rate * dt)
+      if (next !== cur) {
+        controls.current.pedal = next
+        setPedalPct(next)
+      }
+      raf = requestAnimationFrame(loop)
+    }
+    raf = requestAnimationFrame(loop)
+    return () => cancelAnimationFrame(raf)
+  }, [])
+
+  const pedalDown = (e: React.PointerEvent<HTMLButtonElement>): void => {
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId)
+    } catch {
+      /* eventos sintéticos sin puntero activo */
+    }
+    pedalHeld.current = true
+    audio.start()
+  }
+  const pedalUp = (): void => {
+    pedalHeld.current = false
+  }
 
   useEffect(() => () => audio.dispose(), [audio])
 
@@ -938,10 +985,27 @@ export default function PhysicsLab({ engine }: Props): React.JSX.Element {
                 step="0.01"
                 value={ui.throttle}
                 onChange={(e) => setControl('throttle', Number(e.target.value))}
-                aria-label="Acelerador"
+                aria-label="Acelerador (palanca)"
               />
             </div>
-            <span className="phys-throttle-readout">{(ui.throttle * 100).toFixed(0)}<i>%</i></span>
+            <span className="phys-throttle-readout">
+              {(Math.max(ui.throttle, pedalPct) * 100).toFixed(0)}<i>%</i>
+            </span>
+            <button
+              type="button"
+              className={`phys-pedal ${pedalPct > 0.02 ? 'pressed' : ''}`}
+              onPointerDown={pedalDown}
+              onPointerUp={pedalUp}
+              onPointerCancel={pedalUp}
+              disabled={sandbox}
+              aria-label="Pedal de acelerador: mantener pulsado"
+            >
+              <i
+                className="phys-pedal-face"
+                style={{ transform: `rotateX(${14 + pedalPct * 26}deg)` }}
+              />
+              <span>PEDAL</span>
+            </button>
           </section>
 
           <section className="phys-section">

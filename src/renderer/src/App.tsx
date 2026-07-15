@@ -297,8 +297,7 @@ export default function App(): React.JSX.Element {
       <header className="topbar">
         <h1>MotorForge</h1>
         <span className="sub">
-          Banco de potencia · Fase 5 — proyectos, refrigeración y desgaste persistente
-          {projectName ? ` · ${projectName}` : ''}
+          Simulador estructural y térmico · {projectName ?? 'proyecto sin guardar'}
         </span>
         <div className="topbar-actions">
           <div className="segmented" role="group" aria-label="Vista">
@@ -329,7 +328,7 @@ export default function App(): React.JSX.Element {
       <div className="layout">
         <aside className="sidebar">
           <section>
-            <h2 className="section-title">Piezas</h2>
+            <h2 className="section-title"><em>01</em> Piezas</h2>
             {slots.map(({ key, label, options }) => (
               <div className="field" key={key}>
                 <label htmlFor={`sel-${key}`}>{label}</label>
@@ -348,7 +347,7 @@ export default function App(): React.JSX.Element {
           </section>
 
           <section>
-            <h2 className="section-title">ECU y combustible</h2>
+            <h2 className="section-title"><em>02</em> ECU y combustible</h2>
             <div className="field">
               <label htmlFor="fuel">Combustible</label>
               <select id="fuel" value={fuelId} onChange={(e) => setFuelId(e.target.value)}>
@@ -429,7 +428,7 @@ export default function App(): React.JSX.Element {
           </section>
 
           <section>
-            <h2 className="section-title">Motor resuelto</h2>
+            <h2 className="section-title"><em>03</em> Motor resuelto</h2>
             <div className="engine-card">
               <dl>
                 <dt>Cilindrada</dt>

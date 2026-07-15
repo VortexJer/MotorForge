@@ -38,6 +38,18 @@ const idleRpm = parseFloat(await win.textContent('.phys-rpm'))
 console.log('ralentí:', idleRpm.toFixed(0), 'rpm')
 if (idleRpm < 400) throw new Error(`el motor no arranca: ${idleRpm} rpm`)
 
+// ---- pedal momentáneo: pisar acelera, soltar devuelve a ralentí ----
+await win.dispatchEvent('.phys-pedal', 'pointerdown')
+await win.waitForTimeout(3000)
+const pedalRpm = parseFloat(await win.textContent('.phys-rpm'))
+console.log('pedal pisado:', pedalRpm.toFixed(0), 'rpm')
+if (pedalRpm < 2500) throw new Error(`el pedal no acelera: ${pedalRpm} rpm`)
+await win.dispatchEvent('.phys-pedal', 'pointerup')
+await win.waitForTimeout(6000)
+const releasedRpm = parseFloat(await win.textContent('.phys-rpm'))
+console.log('pedal soltado:', releasedRpm.toFixed(0), 'rpm')
+if (releasedRpm > 3500) throw new Error(`el pedal no vuelve: ${releasedRpm} rpm`)
+
 // ---- throttle a fondo: sube hasta el corte ----
 await setRange('#phys-throttle', 1)
 await win.waitForTimeout(5000)

@@ -2,6 +2,8 @@
 import { _electron } from 'playwright-core'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
+import { mkdtempSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 
 const projectDir = join(dirname(fileURLToPath(import.meta.url)), '..')
 const { createRequire } = await import('node:module')
@@ -9,6 +11,8 @@ const electronPath = createRequire(join(projectDir, 'package.json'))('electron')
 const shots = process.argv[2] ?? join(projectDir, 'screenshots')
 
 const app = await _electron.launch({ executablePath: electronPath, args: ['.'], cwd: projectDir })
+// userData temporal: el autosave de sesión (fase 5) no debe ensuciar el perfil real
+await app.evaluate(({ app: a }, dir) => a.setPath('userData', dir), mkdtempSync(join(tmpdir(), 'motorforge-smoke4-')))
 const win = await app.firstWindow()
 win.on('pageerror', (e) => console.log('[pageerror]', e.message))
 await win.waitForSelector('canvas', { timeout: 15000 })
@@ -34,6 +38,10 @@ await win.waitForSelector('.wear-bars', { timeout: 20000 })
 await win.waitForTimeout(500)
 console.log('resistencia limite:', (await endurance.locator('.transient-summary').textContent()).replace(/\s+/g, ' '))
 await win.screenshot({ path: join(shots, 'phase4-endurance.png'), clip: await endurance.boundingBox() })
+
+// El desgaste persiste desde fase 5: hay que reconstruir el motor roto
+await endurance.locator('.btn:has-text("Motor a estrenar")').click()
+await win.waitForTimeout(400)
 
 // ---- Turbo + 95: el picado revienta el ringland en minutos ----
 await win.selectOption('#sel-injector', 'inj-1000')

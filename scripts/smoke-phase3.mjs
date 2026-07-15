@@ -9,6 +9,7 @@ const electronPath = createRequire(join(projectDir, 'package.json'))('electron')
 const shots = process.argv[2] ?? join(projectDir, 'screenshots')
 
 const app = await _electron.launch({ executablePath: electronPath, args: ['.'], cwd: projectDir })
+await app.evaluate(({ app: a }, dir) => a.setPath('userData', dir), (await import('node:fs')).mkdtempSync((await import('node:path')).join((await import('node:os')).tmpdir(), 'motorforge-smoke3-')))
 const win = await app.firstWindow()
 win.on('pageerror', (e) => console.log('[pageerror]', e.message))
 await win.waitForSelector('canvas', { timeout: 15000 })
@@ -37,11 +38,11 @@ await win.screenshot({ path: join(shots, 'phase3-maps.png'), clip: mapCard })
 
 // Pull transitorio
 await win.click('details.map-card summary') // cerrar para la captura del pull
-await win.click('.transient-panel .btn.primary')
+await win.locator('.transient-panel .btn.primary').first().click()
 await win.waitForSelector('.transient-summary', { timeout: 20000 })
 await win.waitForTimeout(500)
 console.log('pull:', (await win.textContent('.transient-summary')).replace(/\s+/g, ' '))
-const panel = await win.locator('.transient-panel').boundingBox()
+const panel = await win.locator('.transient-panel').first().boundingBox()
 await win.screenshot({ path: join(shots, 'phase3-pull.png'), clip: panel })
 
 // Vista general
