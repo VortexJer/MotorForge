@@ -19,28 +19,29 @@ class Actuator implements ActuatorPort {
   readonly spec: ActuatorSpec
   private readonly ring = new Float32Array(RING_TICKS)
   private cursor = 0
-  private commanded = 0
-  private out = 0
+  // [commanded, out] en Float64Array: los stores a campos double de clase
+  // asignan HeapNumbers en V8 (ver ADR-001 y bench de Fase 4)
+  private readonly v = new Float64Array(2)
 
   constructor(spec: ActuatorSpec) {
     this.spec = spec
   }
 
   command(value: number): void {
-    this.commanded = value
+    this.v[0] = value
   }
 
   get effective(): number {
-    return this.out
+    return this.v[1]!
   }
 
   /** Avanza un tick con la tensión de alimentación REAL del momento. */
   step(volts: number): void {
-    this.ring[this.cursor] = this.commanded
+    this.ring[this.cursor] = this.v[0]!
     const d = this.spec.deadTime
     if (volts <= d.vMin + 0.05) {
       // sin tensión útil el actuador no responde
-      this.out = 0
+      this.v[1] = 0
       this.cursor = (this.cursor + 1) % RING_TICKS
       return
     }
@@ -49,7 +50,7 @@ class Actuator implements ActuatorPort {
     if (deadTicks < 0) deadTicks = 0
     if (deadTicks > RING_TICKS - 1) deadTicks = RING_TICKS - 1
     const idx = (this.cursor - deadTicks + RING_TICKS) % RING_TICKS
-    this.out = this.ring[idx]!
+    this.v[1] = this.ring[idx]!
     this.cursor = (this.cursor + 1) % RING_TICKS
   }
 }

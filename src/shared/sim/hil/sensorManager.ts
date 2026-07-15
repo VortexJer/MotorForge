@@ -19,15 +19,12 @@ class Sensor implements SensorInstance {
   /** Ring de verdad por tick: f32 (ADR-001 §3), longitud latencyTicks+1. */
   private readonly ring: Float32Array
   private cursor = 0
-  /** Periodo de muestreo (s) y acumulador. */
+  /** Periodo de muestreo (s). */
   private readonly period: number
-  private acc: number
-  /** Último valor muestreado ya procesado (lo que devuelve read()). */
-  private held = 0
+  /** [acc, held, spare, rng]: escalares mutables en Float64Array — los
+   *  stores a campos double de clase asignan HeapNumbers en V8. */
+  private readonly st = new Float64Array(4)
   private stuckArmed = false
-  /** Estado PRNG (mulberry32) + reserva de Box-Muller. */
-  private rng: number
-  private spare = 0
   private hasSpare = false
 
   constructor(spec: SensorSpec, seed: number, private readonly truth: Float64Array) {
@@ -37,17 +34,17 @@ class Sensor implements SensorInstance {
     const rate = Math.min(Math.max(spec.sampleRateHz, 0.01), TICK_RATE)
     this.period = 1 / rate
     // desfase inicial aleatorio-determinista del muestreo (sensores no sincronizados)
-    this.rng = (seed ^ 0x9e3779b9) >>> 0
-    this.acc = this.uniform() * this.period
+    this.st[3] = (seed ^ 0x9e3779b9) >>> 0
+    this.st[0] = this.uniform() * this.period
     // el ring arranca con la verdad inicial para no leer ceros espurios
     this.ring.fill(truth[spec.tap] ?? 0)
-    this.held = this.process(this.ring[0]!)
+    this.st[1] = this.process(this.ring[0]!)
   }
 
   /** mulberry32: PRNG entero sin asignaciones. */
   private uniform(): number {
-    this.rng = (this.rng + 0x6d2b79f5) >>> 0
-    let t = this.rng
+    this.st[3] = ((this.st[3]! + 0x6d2b79f5) >>> 0)
+    let t = this.st[3]!
     t = Math.imul(t ^ (t >>> 15), t | 1)
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296
@@ -57,7 +54,7 @@ class Sensor implements SensorInstance {
   private gaussian(): number {
     if (this.hasSpare) {
       this.hasSpare = false
-      return this.spare
+      return this.st[2]!
     }
     let u = 0
     let v = 0
@@ -66,7 +63,7 @@ class Sensor implements SensorInstance {
     } while (u <= 1e-12)
     v = this.uniform()
     const mag = Math.sqrt(-2 * Math.log(u))
-    this.spare = mag * Math.sin(2 * Math.PI * v)
+    this.st[2] = mag * Math.sin(2 * Math.PI * v)
     this.hasSpare = true
     return mag * Math.cos(2 * Math.PI * v)
   }
@@ -98,24 +95,24 @@ class Sensor implements SensorInstance {
     const delayed = ring[(this.cursor + 1) % len]!
     this.cursor = (this.cursor + 1) % len
 
-    this.acc += dt
-    if (this.acc < this.period) return
+    this.st[0] = this.st[0]! + dt
+    if (this.st[0]! < this.period) return
     // consume UN periodo por tick como máximo (rate ya saturado a TICK_RATE)
-    this.acc -= this.period
-    if (this.acc > this.period) this.acc = this.period
+    this.st[0] = this.st[0]! - this.period
+    if (this.st[0]! > this.period) this.st[0] = this.period
 
     if (this.spec.failMode === 'stuck') {
       if (!this.stuckArmed) {
-        this.held = this.process(delayed)
+        this.st[1] = this.process(delayed)
         this.stuckArmed = true
       }
       return
     }
-    this.held = this.process(delayed)
+    this.st[1] = this.process(delayed)
   }
 
   read(): number {
-    return this.held
+    return this.st[1]!
   }
 }
 

@@ -127,10 +127,13 @@ export class SimCore {
   private readonly k3 = new Float64Array(4)
   private readonly k4 = new Float64Array(4)
   private readonly ytmp = new Float64Array(4)
-  // salidas filtradas
-  private torqueFilt = 0
-  private egt = 500
-  private heatRate = 0 // W medios de calor liberado (para T_bloque)
+  /**
+   * Escalares mutables calientes [torqueFilt, egt, heatRate]: en un
+   * Float64Array porque V8 (sin unboxing de campos double desde 2020)
+   * asigna un HeapNumber NUEVO en cada store a un campo de clase double —
+   * cazado por el heap profiler del banco de Fase 4.
+   */
+  private readonly hot = new Float64Array([0, 500, 0])
 
   constructor(cfg: CoreConfig) {
     this.cfg = cfg
@@ -237,12 +240,14 @@ export class SimCore {
     return ys[last]!
   }
 
-  /** Wiebe acumulada sobre φ∈[φ0, φ0+dur] alrededor del PMS (φ=0). */
+  /** Wiebe acumulada sobre φ∈[φ0, φ0+dur] alrededor del PMS (φ=0).
+   *  Cubo a mano: Math.pow(x,3) cae en la ruta lenta del runtime de V8 y
+   *  asigna HeapNumbers — cazado por el profiler del banco de Fase 4. */
   private wiebeX(phi: number, phi0: number, dur: number): number {
     if (phi <= phi0) return 0
     const x = (phi - phi0) / dur
     if (x >= 1) return 1
-    return 1 - Math.exp(-5 * Math.pow(x, 3))
+    return 1 - Math.exp(-5 * x * x * x)
   }
 
   // ---------------------------------------------------------- tick
@@ -308,8 +313,8 @@ export class SimCore {
 
     s[St.CrankOmega] = omega
     s[St.CrankAngle] = theta
-    this.torqueFilt += ((torqueAccum / dt) - this.torqueFilt) * Math.min(1, dt * 12)
-    this.heatRate += ((heatAccum / dt) - this.heatRate) * Math.min(1, dt * 4)
+    this.hot[0] = this.hot[0]! + ((torqueAccum / dt) - this.hot[0]!) * Math.min(1, dt * 12)
+    this.hot[2] = this.hot[2]! + ((heatAccum / dt) - this.hot[2]!) * Math.min(1, dt * 4)
 
     // ---- estados lentos con RK4 ----
     this.rk4(dt, omega)
@@ -372,7 +377,7 @@ export class SimCore {
         // EVO: muestra de EGT del gas al final de la expansión
         const m = Math.max(sc[b + SC.TrappedMass]!, 1e-7)
         const tGas = (p * vOld) / (m * R_GAS)
-        this.egt += (Math.min(Math.max(tGas, 400), 1400) - this.egt) * 0.25
+        this.hot[1] = this.hot[1]! + (Math.min(Math.max(tGas, 400), 1400) - this.hot[1]!) * 0.25
         sc[b + SC.PeakPHold] = sc[b + SC.PeakP]!
         sc[b + SC.PeakP] = 0
       }
@@ -461,8 +466,8 @@ export class SimCore {
     // rotor del turbo: dω = (T_turb − T_comp − T_fric)/I  (pliego §1)
     if (cfg.turbo.present) {
       const mdotEx = mdotOut * 1.07
-      const prT = 1 + (6.5 * mdotEx * this.egt) / 900
-      const pTurb = 0.55 * mdotEx * CP_EXH * this.egt * (1 - Math.pow(prT, -0.26)) * (1 - this.inputs.wastegate)
+      const prT = 1 + (6.5 * mdotEx * this.hot[1]!) / 900
+      const pTurb = 0.55 * mdotEx * CP_EXH * this.hot[1]! * (1 - Math.pow(prT, -0.26)) * (1 - this.inputs.wastegate)
       const pComp = Math.max(mdotIn, 0) * CP_AIR * cfg.ambientT * (Math.pow(prC, 0.286) - 1) / 0.72
       const wSafe = Math.max(wt, 120)
       const tFric = 1.3e-6 * wt
@@ -473,7 +478,7 @@ export class SimCore {
 
     // bloque: retiene el calor de combustión y lo cede al refrigerante (Newton)
     const cBlock = 90000 // J/K — capacidad calorífica del bloque
-    const qIn = 0.22 * this.heatRate
+    const qIn = 0.22 * this.hot[2]!
     const qCoolant = (1500 * this.inputs.coolantFlow + 45) * (tBlock - cfg.ambientT)
     out[2] = (qIn - qCoolant) / cBlock
 
@@ -524,10 +529,10 @@ export class SimCore {
     return this.y[3]!
   }
   get exhaustTemp(): number {
-    return this.egt
+    return this.hot[1]!
   }
   get meanTorque(): number {
-    return this.torqueFilt
+    return this.hot[0]!
   }
   /** Pico de presión medio del último ciclo (Pa) — para los chequeos de fallo. */
   get peakPressure(): number {
@@ -549,7 +554,7 @@ export class SimCore {
     truth[Tap.CoolantT] = this.y[2]!
     truth[Tap.OilP] = s[St.OilPressure]!
     truth[Tap.RailP] = 3.5e5 + Math.max(this.y[1]! - this.cfg.ambientP, 0)
-    truth[Tap.ExhaustT] = this.egt
+    truth[Tap.ExhaustT] = this.hot[1]!
     truth[Tap.BlockKnockAccel] = 0 // acoplamiento con el modelo de picado: futuro
     truth[Tap.BatteryV] = s[St.BatteryV]!
     truth[Tap.IntakeAirT] = this.y[3]!

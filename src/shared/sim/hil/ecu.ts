@@ -50,9 +50,9 @@ export class VirtualEcu {
   private readonly aWg: ActuatorPort | null
   private readonly aFp: ActuatorPort | null
   // estado interno (preasignado)
-  private prevCkp = 0
-  private omegaMeas = 0
-  private wgInteg = 0
+  // escalares mutables calientes en Float64Array (V8 asigna HeapNumber en
+  // cada store a campo double de clase): [prevCkp, omegaMeas, wgInteg]
+  private readonly hot = new Float64Array(3)
   private fuelCutLatch = false
   /** VE aplanada de la calibración. */
   private readonly veRpm: Float64Array
@@ -79,12 +79,12 @@ export class VirtualEcu {
       this.veRpm[i] = calib.veEst[i]![0]
       this.veVal[i] = calib.veEst[i]![1]
     }
-    this.prevCkp = this.sCkp ? this.sCkp.read() : 0
+    this.hot[0] = this.sCkp ? this.sCkp.read() : 0
   }
 
   /** RPM que la ECU CREE tener (derivada filtrada del CKP). */
   get rpmMeasured(): number {
-    return (this.omegaMeas * 60) / (2 * Math.PI)
+    return (this.hot[1]! * 60) / (2 * Math.PI)
   }
 
   private veAt(rpm: number): number {
@@ -109,10 +109,10 @@ export class VirtualEcu {
     // ---- régimen desde el CKP: derivada del ángulo con filtro EMA ----
     if (this.sCkp) {
       const ckp = this.sCkp.read()
-      const raw = (ckp - this.prevCkp) / dt
-      this.prevCkp = ckp
+      const raw = (ckp - this.hot[0]!) / dt
+      this.hot[0] = ckp
       // descarta saltos absurdos (glitch de sensor) y filtra
-      if (raw > -50 && raw < 2200) this.omegaMeas += (raw - this.omegaMeas) * 0.18
+      if (raw > -50 && raw < 2200) this.hot[1] = this.hot[1]! + (raw - this.hot[1]!) * 0.18
     }
     const rpm = this.rpmMeasured
 
@@ -163,8 +163,8 @@ export class VirtualEcu {
       if (c.boostTarget > 0) {
         const boostMeas = pMap - 101325
         const err = boostMeas - c.boostTarget
-        this.wgInteg = Math.min(Math.max(this.wgInteg + err * dt * 4e-6, 0), 1)
-        const wg = Math.min(Math.max(err * 8e-6 + this.wgInteg, 0), 1)
+        this.hot[2] = Math.min(Math.max(this.hot[2]! + err * dt * 4e-6, 0), 1)
+        const wg = Math.min(Math.max(err * 8e-6 + this.hot[2]!, 0), 1)
         this.aWg.command(wg)
       } else {
         this.aWg.command(0)

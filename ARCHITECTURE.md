@@ -108,9 +108,17 @@ src/
 
 `src/shared/sim/hil/` — el motor como caja negra física y la ECU como caja negra lógica,
 comunicadas SOLO por sensores/actuadores virtuales (ver ADR-001 en `hil/types.ts`: tick 240 Hz,
-RK4+Euler semi-implícito, Float64 estado / Float32 rings, cableado declarativo en `.mforge.json`).
-Fase 1 (bus + SensorManager) hecha. **Backlog** (fuera de esta iteración): UI interactiva de
-cableado de sensores.
+RK4+Euler semi-implícito, Float64 estado / Float32 rings, cableado declarativo).
+**Las 4 fases completadas**: 1) bus + SensorManager (latencia/ruido/ADC/fallos, determinista);
+2) núcleo de primeros principios (EDO monozona de presión, par por dS/dθ, turbo-rotor RK4,
+mariposa con bloqueo sónico, Chen-Flynn×Vogel, heat-soak, arquetipo agnóstico con orden de
+encendido generado — el laboratorio ya consume este par); 3) ECU caja negra (rpm derivada del
+CKP, speed-density por MAP/IAT, DeadTime por tensión real, SimLoop
+física→sensores→ECU→actuadores, fuerzas G); 4) banco de validación `hil/bench.ts`
+(V8+fallo+20 sensores, 20k ticks: ~2.8 ms/frame medio, p99 ~5.5 ms, zero-alloc verificado con
+el heap profiler de muestreo — investigación documentada en el propio bench).
+**Backlog**: UI de cableado; SimLoop a Web Worker en el renderer (hoy acumulador in-thread a
+2.8 ms/frame, 6× bajo presupuesto); acoplamiento knock→FatigueScore del bus.
 
 ## Unidades
 
