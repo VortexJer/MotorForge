@@ -38,10 +38,12 @@ por tipo de pieza aporta las condiciones de contorno → se derivan límites:
 
 ## Fases
 
-1. **MVP (actual)**: catálogo de piezas con límites de fábrica, ensamblador con validación de
+1. **MVP — hecha**: catálogo de piezas con límites de fábrica, ensamblador con validación de
    compatibilidad, simulación de ciclo Otto, banco dyno (CV/par vs RPM), fallos por límite duro con causa.
-2. Import STEP/IGES + BD de materiales + derivación analítica de límites.
-3. ECU completa (mapas VE/encendido/lambda/boost), fluidos, knock, transitorios.
+2. **Hecha**: import STEP/IGES/STL (occt-import-js en worker) + BD de materiales + derivación analítica de límites.
+3. **Hecha**: mapas ECU (λ/avance por rpm×carga, bilineal), sistema de combustible (bomba + regulador +
+   inyectores √ΔP → presión de raíl real), knock por octanaje requerido, transitorios (pull contra
+   inercia con lag de turbo e inercia térmica).
 4. Desgaste acumulado, fatiga, fallos progresivos, FEA vóxel, overlays 3D térmicos/tensión.
 
 ## Estructura
@@ -52,11 +54,16 @@ src/
   preload/        Bridge (vacío por ahora)
   renderer/       React UI (banco dyno, ensamblador)
   shared/sim/     Núcleo de simulación — TS puro, sin dependencias de UI, testeado con vitest
-    types.ts      Contratos: piezas, límites, ensamblaje, eventos
-    catalog.ts    Biblioteca de piezas v0
+    types.ts      Contratos: piezas, límites, ensamblaje, eventos, mapas ECU
+    catalog.ts    Biblioteca de piezas (incl. combustibles y bombas)
+    materials.ts  BD de materiales con propiedades reales (fase 2)
     assembly.ts   Validación de compatibilidad y geometría resultante
-    cycle.ts      Ciclo termodinámico 0D (Wiebe + Woschni-lite + Chen-Flynn)
+    ecu.ts        Mapas rpm×carga con interpolación bilineal y mapas por defecto
+    fuel.ts       Bomba + regulador + inyectores: presión de raíl real
+    cycle.ts      Ciclo termodinámico 0D (Wiebe + Woschni-lite + Chen-Flynn) + knock
     dyno.ts       Barrido de RPM, curvas, chequeo de límites y eventos de fallo
+    transient.ts  Pull contra inercia: lag de turbo + inercia térmica
+    import/       Métricas de malla (BVH) y derivación analítica de límites
 ```
 
 ## Unidades

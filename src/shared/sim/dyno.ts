@@ -45,9 +45,9 @@ function measuredValue(v: LimitVariable, p: OperatingPointResult): number {
     case 'injectorDuty':
       return p.injectorDuty
     case 'railPressure':
-      // v0: inyección indirecta con presión de raíl fija. En fase 3 (sistema
-      // de combustible completo) esto saldrá de la bomba y el regulador.
-      return 3.5e5
+      return p.railPressure
+    case 'knockIndex':
+      return p.knockIndex
   }
 }
 
@@ -55,12 +55,21 @@ function causeChain(
   v: LimitVariable,
   p: OperatingPointResult,
   limit: DerivedLimit,
-  tune: Tune
+  tune: Tune,
+  ctx: { compressionRatio: number; fuel: FuelSpec }
 ): string[] {
   const chain: string[] = [`${p.rpm} rpm a plena carga`]
   if (p.boost > 1000) chain.push(`boost real ${bar(p.boost)} bar (objetivo ${bar(tune.boostTarget)} bar)`)
-  if (p.lambdaActual > tune.lambda + 0.03)
-    chain.push(`inyectores saturados: λ real ${p.lambdaActual.toFixed(2)} en vez de ${tune.lambda.toFixed(2)} (mezcla pobre)`)
+  if (p.fuelStarve === 'pump')
+    chain.push(
+      `la bomba no da el caudal: presión de raíl ${bar(p.railPressure)} bar en vez de ${bar(3.5e5 + Math.max(p.manifoldPressure - 101325, 0))} bar`
+    )
+  if (p.lambdaActual > p.lambdaTarget + 0.03)
+    chain.push(
+      `${p.fuelStarve === 'pump' ? 'sin presión, los inyectores no llegan' : 'inyectores saturados'}: λ real ${p.lambdaActual.toFixed(2)} en vez de ${p.lambdaTarget.toFixed(2)} (mezcla pobre)`
+    )
+  if (p.knockIndex >= 1 && v !== 'knockIndex')
+    chain.push(`el motor está picando (índice ${p.knockIndex.toFixed(2)}): más calor en cámara`)
 
   switch (v) {
     case 'peakCylinderPressure':
@@ -96,14 +105,23 @@ function causeChain(
     case 'railPressure':
       chain.push(`presión de combustible ${bar(measuredValue(v, p))} bar > límite del cuerpo ${bar(limit.value)} bar`)
       break
+    case 'knockIndex':
+      chain.push(
+        `RC ${ctx.compressionRatio.toFixed(1)}:1, admisión a ${(p.manifoldPressure / 1e5).toFixed(2)} bar y avance ${p.sparkAdvance.toFixed(0)}° con ${ctx.fuel.name} (${ctx.fuel.octane} RON)`
+      )
+      chain.push(
+        `octanaje requerido ${(p.knockIndex * ctx.fuel.octane).toFixed(0)} > ${ctx.fuel.octane} RON: detonación (índice ${p.knockIndex.toFixed(2)} > tolerancia ${limit.value.toFixed(2)})`
+      )
+      break
   }
   return chain
 }
 
-function checkLimits(
+export function checkLimits(
   engine: ResolvedEngine,
   point: OperatingPointResult,
-  tune: Tune
+  tune: Tune,
+  fuel: FuelSpec
 ): SimEvent[] {
   const events: SimEvent[] = []
   const parts: Part[] = Object.values(engine.assembly)
@@ -128,7 +146,10 @@ function checkLimits(
         variable: limit.variable,
         value,
         limit: limit.value,
-        causeChain: causeChain(limit.variable, point, limit, tune),
+        causeChain: causeChain(limit.variable, point, limit, tune, {
+          compressionRatio: engine.geometry.compressionRatio,
+          fuel
+        }),
         state: { torque: point.torque, power: point.power, rpm: point.rpm }
       })
     }
@@ -152,7 +173,7 @@ export function runDyno(engine: ResolvedEngine, tune: Tune, fuel: FuelSpec): Dyn
     points.push(point)
 
     let failed = false
-    for (const ev of checkLimits(engine, point, tune)) {
+    for (const ev of checkLimits(engine, point, tune, fuel)) {
       // Un aviso por pieza+variable es suficiente; los fallos siempre se registran
       const key = `${ev.partId}:${ev.variable}:${ev.severity}`
       if (ev.severity === 'warning' && seen.has(key)) continue

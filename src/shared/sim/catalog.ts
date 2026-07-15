@@ -2,6 +2,7 @@ import type {
   AspirationPart,
   BlockPart,
   CrankPart,
+  FuelPumpPart,
   FuelSpec,
   HeadPart,
   InjectorPart,
@@ -19,7 +20,31 @@ import type {
  */
 
 export const FUELS: Record<string, FuelSpec> = {
-  gasolina95: { name: 'Gasolina 95', stoichAFR: 14.7, lhv: 42.9e6, density: 745 }
+  gasolina95: {
+    name: 'Gasolina 95',
+    stoichAFR: 14.7,
+    lhv: 42.9e6,
+    density: 745,
+    octane: 95,
+    richCooling: 850
+  },
+  gasolina98: {
+    name: 'Gasolina 98',
+    stoichAFR: 14.7,
+    lhv: 43.0e6,
+    density: 750,
+    octane: 98,
+    richCooling: 850
+  },
+  e85: {
+    name: 'E85 (etanol 85%)',
+    stoichAFR: 9.8,
+    lhv: 29.2e6,
+    density: 785,
+    // RON efectivo ~106 y gran calor de vaporización: el combustible anti-knock
+    octane: 106,
+    richCooling: 2100
+  }
 }
 
 export const BLOCKS: BlockPart[] = [
@@ -162,6 +187,13 @@ export const PISTONS: PistonPart[] = [
         provenance: 'catalog',
         explanation: 'El material fundido pierde resistencia a partir de ~610 K (337 °C) en corona',
         failureMode: 'Fusión / ablandamiento de corona de pistón'
+      },
+      {
+        variable: 'knockIndex',
+        value: 1.05,
+        provenance: 'catalog',
+        explanation: 'Aleación fundida frágil: la detonación sostenida rompe el puente entre segmentos',
+        failureMode: 'Picado (detonación): rotura de ringland'
       }
     ]
   },
@@ -185,6 +217,13 @@ export const PISTONS: PistonPart[] = [
         provenance: 'catalog',
         explanation: 'El 2618 forjado mantiene propiedades hasta ~690 K (417 °C)',
         failureMode: 'Fusión / ablandamiento de corona de pistón'
+      },
+      {
+        variable: 'knockIndex',
+        value: 1.15,
+        provenance: 'catalog',
+        explanation: 'El forjado dúctil tolera picado ligero antes de dañar el ringland',
+        failureMode: 'Picado (detonación): rotura de ringland'
       }
     ]
   }
@@ -303,6 +342,34 @@ export const INJECTORS: InjectorPart[] = [
   }
 ]
 
+export const FUEL_PUMPS: FuelPumpPart[] = [
+  {
+    id: 'pump-stock-110',
+    kind: 'fuelPump',
+    name: 'Bomba de serie 110 l/h',
+    source: 'catalog',
+    // 110 l/h × 0.745 kg/l a 3.5 bar; corte a 5 bar
+    spec: { maxFlow: 2.28e-2, maxPressure: 5.0e5 },
+    limits: []
+  },
+  {
+    id: 'pump-255',
+    kind: 'fuelPump',
+    name: 'Bomba de alto caudal 255 l/h',
+    source: 'catalog',
+    spec: { maxFlow: 5.28e-2, maxPressure: 8.0e5 },
+    limits: []
+  },
+  {
+    id: 'pump-dual-460',
+    kind: 'fuelPump',
+    name: 'Doble bomba 460 l/h (competición)',
+    source: 'catalog',
+    spec: { maxFlow: 9.52e-2, maxPressure: 9.0e5 },
+    limits: []
+  }
+]
+
 export const ASPIRATIONS: AspirationPart[] = [
   {
     id: 'asp-na',
@@ -353,6 +420,7 @@ export const CATALOG: Part[] = [
   ...PISTONS,
   ...HEADS,
   ...INJECTORS,
+  ...FUEL_PUMPS,
   ...ASPIRATIONS
 ]
 

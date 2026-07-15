@@ -4,10 +4,12 @@ import {
   BLOCKS,
   CRANKS,
   FUELS,
+  FUEL_PUMPS,
   HEADS,
   INJECTORS,
   PISTONS,
   RODS,
+  defaultTune,
   partById,
   resolveEngine,
   runDyno
@@ -17,15 +19,16 @@ import type {
   DynoResult,
   EngineAssembly,
   Part,
-  SimEvent,
   Tune
 } from '@sim/types'
 import DynoChart from './components/DynoChart'
 import Engine3D from './components/Engine3D'
+import EventCard from './components/EventCard'
 import ImportDialog from './components/ImportDialog'
+import MapEditor from './components/MapEditor'
+import TransientPanel from './components/TransientPanel'
 
 const CV = 735.5
-const fuel = FUELS.gasolina95!
 
 interface Selection {
   block: string
@@ -34,6 +37,7 @@ interface Selection {
   piston: string
   head: string
   injector: string
+  fuelPump: string
   aspiration: string
 }
 
@@ -44,31 +48,9 @@ const CATALOG_SLOTS: Array<{ key: keyof Selection; label: string; options: Part[
   { key: 'piston', label: 'Pistones', options: PISTONS },
   { key: 'head', label: 'Culata', options: HEADS },
   { key: 'injector', label: 'Inyectores', options: INJECTORS },
+  { key: 'fuelPump', label: 'Bomba de combustible', options: FUEL_PUMPS },
   { key: 'aspiration', label: 'Admisión', options: ASPIRATIONS }
 ]
-
-function EventCard({ ev }: { ev: SimEvent }): React.JSX.Element {
-  return (
-    <article className="event">
-      <div className="event-head">
-        <span className={`sev ${ev.severity}`}>{ev.severity === 'failure' ? '✕ FALLO' : '⚠ AVISO'}</span>
-        <span className="part">{ev.partName}</span>
-        <span className="mode">{ev.failureMode}</span>
-      </div>
-      <ul className="cause-chain">
-        {ev.causeChain.map((c, i) => (
-          <li key={i}>{c}</li>
-        ))}
-      </ul>
-      {ev.severity === 'failure' && (
-        <div className="state-before">
-          Rendimiento en el momento del fallo: {ev.state.torque.toFixed(0)} Nm ·{' '}
-          {(ev.state.power / CV).toFixed(0)} CV @ {ev.state.rpm} rpm
-        </div>
-      )}
-    </article>
-  )
-}
 
 export default function App(): React.JSX.Element {
   const [sel, setSel] = useState<Selection>({
@@ -78,10 +60,13 @@ export default function App(): React.JSX.Element {
     piston: 'piston-cast-86',
     head: 'head-sport-42',
     injector: 'inj-310',
+    fuelPump: 'pump-stock-110',
     aspiration: 'asp-na'
   })
-  const [tune, setTune] = useState<Tune>({ lambda: 0.88, revLimit: 8200, boostTarget: 0, sparkTrim: 0 })
+  const [tune, setTune] = useState<Tune>(() => defaultTune())
+  const [fuelId, setFuelId] = useState('gasolina95')
   const [hoverRpm, setHoverRpm] = useState<number | null>(null)
+  const fuel = FUELS[fuelId] ?? FUELS.gasolina95!
   const [imported, setImported] = useState<Part[]>([])
   const [importFile, setImportFile] = useState<{ name: string; data: ArrayBuffer } | null>(null)
 
@@ -123,6 +108,7 @@ export default function App(): React.JSX.Element {
       piston: findPart(sel.piston),
       head: findPart(sel.head),
       injector: findPart(sel.injector),
+      fuelPump: findPart(sel.fuelPump),
       aspiration: findPart(sel.aspiration)
     }
     return resolveEngine(assembly)
@@ -134,7 +120,7 @@ export default function App(): React.JSX.Element {
   const dyno: DynoResult | null = useMemo(() => {
     if (hasErrors) return null
     return runDyno(engine, tune, fuel)
-  }, [engine, tune, hasErrors])
+  }, [engine, tune, fuel, hasErrors])
 
   const selectPart = (key: keyof Selection, id: string): void => {
     setSel((s) => ({ ...s, [key]: id }))
@@ -168,7 +154,7 @@ export default function App(): React.JSX.Element {
     <>
       <header className="topbar">
         <h1>MotorForge</h1>
-        <span className="sub">Banco de potencia · Fase 2 — importación CAD y límites derivados del material</span>
+        <span className="sub">Banco de potencia · Fase 3 — mapas ECU, sistema de combustible, picado y transitorios</span>
       </header>
 
       <div className="layout">
@@ -193,20 +179,33 @@ export default function App(): React.JSX.Element {
           </section>
 
           <section>
-            <h2 className="section-title">Ajustes (ECU-lite)</h2>
+            <h2 className="section-title">ECU y combustible</h2>
             <div className="field">
-              <label htmlFor="lambda">Mezcla λ a plena carga</label>
+              <label htmlFor="fuel">Combustible</label>
+              <select id="fuel" value={fuelId} onChange={(e) => setFuelId(e.target.value)}>
+                {Object.entries(FUELS).map(([id, f]) => (
+                  <option key={id} value={id}>
+                    {f.name} · {f.octane} RON
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="field">
+              <label htmlFor="lambdatrim">Trim global de λ (sobre el mapa)</label>
               <div className="slider-row">
                 <input
-                  id="lambda"
+                  id="lambdatrim"
                   type="range"
-                  min="0.75"
-                  max="1.05"
+                  min="-0.10"
+                  max="0.10"
                   step="0.01"
-                  value={tune.lambda}
-                  onChange={(e) => setTune((t) => ({ ...t, lambda: Number(e.target.value) }))}
+                  value={tune.lambdaTrim}
+                  onChange={(e) => setTune((t) => ({ ...t, lambdaTrim: Number(e.target.value) }))}
                 />
-                <span className="slider-value">{tune.lambda.toFixed(2)}</span>
+                <span className="slider-value">
+                  {tune.lambdaTrim > 0 ? '+' : ''}
+                  {tune.lambdaTrim.toFixed(2)}
+                </span>
               </div>
             </div>
             <div className="field">
@@ -352,6 +351,35 @@ export default function App(): React.JSX.Element {
                 onHover={setHoverRpm}
               />
 
+              <details className="map-card">
+                <summary>Mapas ECU — mezcla y encendido (rpm × carga)</summary>
+                <div className="map-grid">
+                  <MapEditor
+                    title="Mezcla λ"
+                    unit="λ objetivo"
+                    map={tune.fuelMap}
+                    min={0.7}
+                    max={1.1}
+                    step={0.01}
+                    decimals={2}
+                    invertScale
+                    onChange={(m) => setTune((t) => ({ ...t, fuelMap: m }))}
+                  />
+                  <MapEditor
+                    title="Avance de encendido"
+                    unit="° APMS"
+                    map={tune.sparkMap}
+                    min={0}
+                    max={40}
+                    step={0.5}
+                    decimals={1}
+                    onChange={(m) => setTune((t) => ({ ...t, sparkMap: m }))}
+                  />
+                </div>
+              </details>
+
+              <TransientPanel engine={engine} tune={tune} fuel={fuel} />
+
               <section>
                 <h2 className="section-title">Eventos de la simulación</h2>
                 {dyno.events.length === 0 && (
@@ -377,6 +405,9 @@ export default function App(): React.JSX.Element {
                       <th>Corona (°C)</th>
                       <th>Duty iny.</th>
                       <th>λ real</th>
+                      <th>Avance (°)</th>
+                      <th>Raíl (bar)</th>
+                      <th>Picado</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -390,6 +421,9 @@ export default function App(): React.JSX.Element {
                         <td>{(p.crownTemp - 273.15).toFixed(0)}</td>
                         <td>{(p.injectorDuty * 100).toFixed(0)}%</td>
                         <td>{p.lambdaActual.toFixed(2)}</td>
+                        <td>{p.sparkAdvance.toFixed(0)}</td>
+                        <td>{(p.railPressure / 1e5).toFixed(1)}</td>
+                        <td>{p.knockIndex.toFixed(2)}</td>
                       </tr>
                     ))}
                   </tbody>

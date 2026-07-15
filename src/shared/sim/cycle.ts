@@ -1,3 +1,5 @@
+import { mapLookup } from './ecu'
+import { resolveFuelSupply } from './fuel'
 import type { FuelSpec, OperatingPointResult, ResolvedEngine, Tune } from './types'
 
 /**
@@ -10,9 +12,11 @@ import type { FuelSpec, OperatingPointResult, ResolvedEngine, Tune } from './typ
  *  - Fricción: Chen-Flynn (constante + presión pico + velocidad media de pistón).
  *  - Bombeo: PMEP = p_escape − p_admisión (lazo de bombeo rectangular).
  *  - Cargas: fuerza de gas + inercia alternativa sobre la biela, cuasi-estáticas.
+ *  - Fase 3: λ y avance salen de mapas ECU (rpm × carga), el combustible pasa
+ *    por bomba + regulador + inyectores (√ΔP) y se evalúa un índice de
+ *    detonación empírico (octanaje requerido / octanaje del combustible).
  *
- * Deliberadamente NO modela (v0): knock, transitorios térmicos, gasdinámica de
- * colectores, desgaste. Ver fases 3-4.
+ * Deliberadamente NO modela (v0): gasdinámica de colectores, desgaste. Fase 4.
  */
 
 const R_GAS = 287 // J/(kg·K), aire
@@ -31,8 +35,6 @@ const COMBUSTION_EFF = 0.96
  * dejar el BSFC en la banda real de un motor de gasolina (~240-280 g/kWh).
  */
 const REAL_BURN_DERATE = 0.9
-/** K de enfriamiento de escape por unidad de riqueza (evaporación + Cp del exceso de combustible). */
-const RICH_COOLING = 850
 
 function deg(d: number): number {
   return (d * Math.PI) / 180
@@ -55,11 +57,16 @@ export function interpolateCurve(curve: Array<[number, number]>, x: number): num
   return last[1]
 }
 
-/** Condiciones en el colector de admisión y escape para un punto a plena carga. */
+/**
+ * Condiciones en el colector de admisión y escape para un punto a plena carga.
+ * `boostOverride` (transitorios) impone el boost real con lag en vez del
+ * estacionario de la curva de spool.
+ */
 export function manifoldConditions(
   engine: ResolvedEngine,
   tune: Tune,
-  rpm: number
+  rpm: number,
+  boostOverride?: number
 ): { pMan: number; tMan: number; pExh: number; boost: number } {
   const asp = engine.assembly.aspiration.spec
   if (asp.type === 'na') {
@@ -71,7 +78,8 @@ export function manifoldConditions(
   // Turbo: el boost objetivo se alcanza progresivamente hasta la rpm de spool
   const spoolStart = 0.45 * asp.spoolRpm
   const spoolFactor = clamp((rpm - spoolStart) / (asp.spoolRpm - spoolStart), 0, 1)
-  const boost = tune.boostTarget * spoolFactor * spoolFactor * (3 - 2 * spoolFactor) // smoothstep
+  const boostSteady = tune.boostTarget * spoolFactor * spoolFactor * (3 - 2 * spoolFactor) // smoothstep
+  const boost = boostOverride ?? boostSteady
   const pMan = P_AMBIENT + boost - 2000
   // Temperatura post-intercooler: sube con el boost
   const tMan = 310 + 26 * (boost / 1e5)
@@ -92,10 +100,11 @@ export function simulateOperatingPoint(
   engine: ResolvedEngine,
   tune: Tune,
   fuel: FuelSpec,
-  rpm: number
+  rpm: number,
+  opts: { boostOverride?: number } = {}
 ): OperatingPointResult {
   const g = engine.geometry
-  const { piston, rod, head, injector } = engine.assembly
+  const { piston, rod, head, injector, fuelPump } = engine.assembly
 
   const omega = (rpm * 2 * Math.PI) / 60
   const area = (Math.PI * g.bore * g.bore) / 4
@@ -105,24 +114,33 @@ export function simulateOperatingPoint(
   const vDispCyl = area * g.stroke
   const meanPistonSpeed = (2 * g.stroke * rpm) / 60
 
-  const { pMan, tMan, pExh, boost } = manifoldConditions(engine, tune, rpm)
+  const { pMan, tMan, pExh, boost } = manifoldConditions(engine, tune, rpm, opts.boostOverride)
 
   // ---- Llenado del cilindro ----
   const ve = interpolateCurve(head.spec.veCurve, rpm)
   const rhoMan = pMan / (R_GAS * tMan)
   const mAir = ve * rhoMan * vDispCyl // kg de aire atrapado por cilindro y ciclo
 
-  // ---- Combustible e inyectores ----
-  const fuelDemanded = mAir / (fuel.stoichAFR * tune.lambda)
+  // ---- ECU: λ objetivo y avance desde los mapas (rpm × carga) + trims ----
+  const lambdaTarget = clamp(mapLookup(tune.fuelMap, rpm, pMan) + tune.lambdaTrim, 0.7, 1.4)
+  const sparkAdvance = mapLookup(tune.sparkMap, rpm, pMan) + tune.sparkTrim // ° APMS
+
+  // ---- Sistema de combustible: bomba + regulador + inyectores ----
   const cycleTime = 120 / rpm // s por ciclo de 4 tiempos
-  const dutyDemanded = fuelDemanded / (injector.spec.staticFlow * cycleTime)
   const dutyLimit =
     injector.limits.find((li) => li.variable === 'injectorDuty')?.value ?? 0.85
-  const injectorDuty = Math.min(dutyDemanded, 1)
-  // Si el inyector satura, entra menos combustible del pedido: la mezcla empobrece
-  const mFuel =
-    dutyDemanded > dutyLimit ? injector.spec.staticFlow * dutyLimit * cycleTime : fuelDemanded
-  const lambdaActual = mAir / (fuel.stoichAFR * mFuel)
+  const supply = resolveFuelSupply({
+    pump: fuelPump,
+    injector,
+    stoichAFR: fuel.stoichAFR,
+    mAir,
+    lambdaTarget,
+    cycleTime,
+    cylinders: g.cylinders,
+    manifoldGauge: pMan - P_AMBIENT,
+    dutyLimit
+  })
+  const { mFuel, lambdaActual, injectorDuty } = supply
 
   // Solo arde el combustible que encuentra aire (mezcla rica: el exceso no libera calor)
   const burnableFuel = Math.min(mFuel, mAir / fuel.stoichAFR)
@@ -132,9 +150,6 @@ export function simulateOperatingPoint(
   if (lambdaActual > 1.15) combEff *= Math.max(0.7, 1 - 0.6 * (lambdaActual - 1.15)) // fallos de encendido en mezcla muy pobre
   const qTotal = burnableFuel * fuel.lhv * combEff
 
-  // ---- Encendido (mapa base integrado, fase 1) ----
-  const sparkAdvance =
-    12 + 20 * clamp((rpm - 1000) / 7000, 0, 1) - 7 * (boost / 1e5) + tune.sparkTrim // ° APMS
   const burnStart = deg(-sparkAdvance + 4) // retardo de encendido ~4°
   const burnDuration =
     deg(38 + 16 * (rpm / 9000)) *
@@ -217,19 +232,37 @@ export function simulateOperatingPoint(
     25000 + 0.005 * peakPressure + 500 * meanPistonSpeed + 60 * meanPistonSpeed * meanPistonSpeed
   const bmep = imep - fmep
 
-  const torque = (bmep * g.displacement) / (4 * Math.PI)
+  let torque = (bmep * g.displacement) / (4 * Math.PI)
+
+  // ---- Detonación: octanaje requerido por el punto vs octanaje del combustible ----
+  // Empírico calibrado: +5 ON por punto de RC, +14 ON/bar de boost, +0.3 ON/K de
+  // temperatura de admisión, ±1.3 ON/° de avance respecto al base, alivios por
+  // rpm (menos tiempo de residencia) y por mezcla rica (enfría la carga).
+  const advBase = 12 + 20 * clamp((rpm - 1000) / 7000, 0, 1)
+  const octaneRequired =
+    32 +
+    5.0 * g.compressionRatio +
+    14 * (boost / 1e5) +
+    0.3 * (tMan - 310) +
+    1.3 * (sparkAdvance - advBase) -
+    3.0 * clamp((rpm - 1500) / 6000, 0, 1) -
+    28 * richness
+  const knockIndex = Math.max(0, octaneRequired) / fuel.octane
+  const knockExcess = Math.max(0, knockIndex - 1)
+  // Picar quema trabajo y mete calor en la corona
+  torque *= 1 - Math.min(0.3, 1.5 * knockExcess)
   const power = torque * omega
 
   // ---- Temperaturas derivadas ----
   // EGT: expansión de blowdown desde condiciones en EVO hasta presión de escape,
   // menos el enfriamiento por mezcla rica (el motivo por el que se engorda con turbo)
   const gammaExh = 1.3
-  const richCooling = RICH_COOLING * richness
+  const richCooling = fuel.richCooling * richness
   const exhaustTemp =
     T * Math.pow(pExh / Math.max(P, pExh), (gammaExh - 1) / gammaExh) - richCooling
   // Corona de pistón: flujo de calor medio × resistencia térmica corona→aceite/camisa
   const heatFlux = (qHeatTransfer * (rpm / 120)) / areaHt
-  const crownTemp = 385 + 4.4e-4 * heatFlux - 0.3 * richCooling
+  const crownTemp = 385 + 4.4e-4 * heatFlux - 0.3 * richCooling + Math.min(150, 1400 * knockExcess)
 
   const fuelFlow = (mFuel * g.cylinders * rpm) / 120
   const bsfc = power > 0 ? fuelFlow / power : Number.POSITIVE_INFINITY
@@ -251,7 +284,12 @@ export function simulateOperatingPoint(
     rodCompression: rodCompressionMax,
     rodTension: rodTensionMax,
     injectorDuty,
+    lambdaTarget,
     lambdaActual,
+    sparkAdvance,
+    railPressure: supply.railPressure,
+    fuelStarve: supply.starve,
+    knockIndex,
     fuelFlow,
     bsfc
   }

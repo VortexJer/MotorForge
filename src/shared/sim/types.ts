@@ -11,6 +11,7 @@ export type PartKind =
   | 'piston'
   | 'head'
   | 'injector'
+  | 'fuelPump'
   | 'aspiration'
 
 export type Provenance = 'catalog' | 'derived-analytic' | 'derived-fea' | 'manual'
@@ -26,6 +27,7 @@ export type LimitVariable =
   | 'boost'                // Pa (relativa) — presión máxima del sistema de admisión
   | 'injectorDuty'         // 0..1 — ciclo de trabajo máximo del inyector
   | 'railPressure'         // Pa — presión de combustible que soporta el cuerpo del inyector
+  | 'knockIndex'           // adimensional — tolerancia a detonación de la pieza (1 = umbral)
 
 export interface DerivedLimit {
   variable: LimitVariable
@@ -91,7 +93,18 @@ export interface HeadPart extends BasePart {
 export interface InjectorPart extends BasePart {
   kind: 'injector'
   spec: {
-    staticFlow: number // kg/s a duty 100%
+    /** kg/s a duty 100% con ΔP nominal de 3.5 bar; el caudal real escala con √(ΔP/3.5). */
+    staticFlow: number
+  }
+}
+
+export interface FuelPumpPart extends BasePart {
+  kind: 'fuelPump'
+  spec: {
+    /** Caudal (kg/s) que entrega a la presión base del regulador (3.5 bar). */
+    maxFlow: number
+    /** Presión de corte (Pa relativa): a esta presión el caudal cae a cero. */
+    maxPressure: number
   }
 }
 
@@ -113,6 +126,7 @@ export type Part =
   | PistonPart
   | HeadPart
   | InjectorPart
+  | FuelPumpPart
   | AspirationPart
 
 /** Selección de piezas: un slot por tipo (motor de un solo banco, v0). */
@@ -123,6 +137,7 @@ export interface EngineAssembly {
   piston: PistonPart
   head: HeadPart
   injector: InjectorPart
+  fuelPump: FuelPumpPart
   aspiration: AspirationPart
 }
 
@@ -149,16 +164,32 @@ export interface ResolvedEngine {
   issues: CompatIssue[]
 }
 
-/** Ajustes que el usuario puede tocar en el banco (ECU-lite de la fase 1). */
+/**
+ * Mapa ECU 2D: rpm × carga (presión absoluta de colector). Interpolación
+ * bilineal; fuera de los ejes se satura al borde.
+ */
+export interface EcuMap {
+  rpmAxis: number[]
+  /** Pa absolutos de colector (la "carga" que ve la ECU). */
+  loadAxis: number[]
+  /** values[iLoad][iRpm]. */
+  values: number[][]
+}
+
+/** Ajustes de ECU (fase 3: mapas completos + trims globales). */
 export interface Tune {
-  /** Lambda objetivo a plena carga (1 = estequiométrica, <1 = rica). */
-  lambda: number
+  /** Mapa de mezcla: λ objetivo por celda rpm × carga. */
+  fuelMap: EcuMap
+  /** Mapa de encendido: avance en ° APMS por celda rpm × carga. */
+  sparkMap: EcuMap
+  /** Offset global de λ sobre el mapa (+empobrece, −enriquece). */
+  lambdaTrim: number
+  /** Offset global de avance sobre el mapa (grados, +adelanta). */
+  sparkTrim: number
   /** Corte de inyección. */
   revLimit: number
   /** Boost objetivo (Pa relativa). Ignorado en motores atmosféricos. */
   boostTarget: number
-  /** Corrección de avance de encendido sobre el mapa base (grados, +adelanta). */
-  sparkTrim: number
 }
 
 export interface FuelSpec {
@@ -166,6 +197,10 @@ export interface FuelSpec {
   stoichAFR: number
   lhv: number     // J/kg
   density: number // kg/m³
+  /** Octanaje RON: resistencia a la detonación. */
+  octane: number
+  /** K de enfriamiento de escape por unidad de riqueza (calor de vaporización). */
+  richCooling: number
 }
 
 /** Resultado de simular un punto de funcionamiento estacionario a plena carga. */
@@ -186,7 +221,14 @@ export interface OperatingPointResult {
   rodCompression: number    // N
   rodTension: number        // N
   injectorDuty: number      // 0..1
-  lambdaActual: number      // tras capar inyectores, si aplica
+  lambdaTarget: number      // λ objetivo del mapa (+trim)
+  lambdaActual: number      // tras capar inyectores o caída de raíl
+  sparkAdvance: number      // ° APMS del mapa (+trim)
+  railPressure: number      // Pa relativa — presión de raíl real (bomba + regulador)
+  /** Por qué la mezcla quedó más pobre que el objetivo, si pasó. */
+  fuelStarve: 'none' | 'injector' | 'pump'
+  /** Índice de detonación: octanaje requerido / octanaje del combustible. ≥1 = pica. */
+  knockIndex: number
   fuelFlow: number          // kg/s total
   bsfc: number              // kg/J (presentar como g/kWh)
 }
@@ -194,6 +236,8 @@ export interface OperatingPointResult {
 export interface SimEvent {
   severity: 'info' | 'warning' | 'failure'
   rpm: number
+  /** Instante del evento (s) en simulaciones transitorias. */
+  time?: number
   partId: string
   partName: string
   failureMode: string
@@ -213,4 +257,28 @@ export interface DynoResult {
   failedAtRpm: number | null
   peakPower: { power: number; rpm: number }
   peakTorque: { torque: number; rpm: number }
+}
+
+/** Muestra de la simulación transitoria (pull a plena carga contra inercia). */
+export interface TransientSample {
+  t: number            // s
+  rpm: number
+  torque: number       // Nm
+  power: number        // W
+  boost: number        // Pa relativa — boost real (con lag)
+  boostSteady: number  // Pa relativa — boost estacionario a esas rpm
+  crownTemp: number    // K — con inercia térmica
+  exhaustTemp: number  // K — con inercia térmica
+  railPressure: number // Pa relativa
+  knockIndex: number
+  lambdaActual: number
+}
+
+export interface TransientResult {
+  samples: TransientSample[]
+  events: SimEvent[]
+  /** Instante del fallo (s), si lo hubo. */
+  failedAtTime: number | null
+  /** Tiempo en alcanzar el corte (s), si llegó. */
+  timeToRevLimit: number | null
 }

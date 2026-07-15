@@ -20,6 +20,7 @@ function turboForgedEngine(): EngineAssembly {
     rod: partById('rod-forged-139'),
     piston: partById('piston-forged-86'),
     injector: partById('inj-1000'),
+    fuelPump: partById('pump-255'),
     aspiration: partById('asp-turbo-gt35')
   }
 }
@@ -108,7 +109,7 @@ describe('relaciones causa-efecto', () => {
     const big = engine
     const pSmall = simulateOperatingPoint(small, tune, fuel, 6500)
     const pBig = simulateOperatingPoint(big, tune, fuel, 6500)
-    expect(pSmall.lambdaActual).toBeGreaterThan(tune.lambda + 0.05)
+    expect(pSmall.lambdaActual).toBeGreaterThan(pSmall.lambdaTarget + 0.05)
     expect(pSmall.exhaustTemp).toBeGreaterThan(pBig.exhaustTemp)
   })
 })
@@ -118,15 +119,17 @@ describe('fallos explicables', () => {
     const engine = resolveEngine({
       ...stockEngine(),
       aspiration: partById('asp-turbo-gt35'),
-      injector: partById('inj-1000')
+      injector: partById('inj-1000'),
+      fuelPump: partById('pump-255')
     })
     const result = runDyno(engine, { ...defaultTune(), boostTarget: 1.4e5, revLimit: 8000 }, fuel)
 
     expect(result.failedAtRpm).not.toBeNull()
     const failure = result.events.find((e) => e.severity === 'failure')!
     expect(failure).toBeDefined()
-    // Cede un interno de serie por presión: biela, pistón o bloque
-    expect(['rodCompression', 'peakCylinderPressure']).toContain(failure.variable)
+    // Cede un interno de serie: presión sobre biela/pistón/bloque, o picado
+    // (a 1.4 bar con gasolina 95 y RC de serie el knock llega antes)
+    expect(['rodCompression', 'peakCylinderPressure', 'knockIndex']).toContain(failure.variable)
     // La cadena causal menciona el boost como origen
     expect(failure.causeChain.join(' ')).toMatch(/boost/)
     // Y registra el rendimiento que tenía justo antes de romper

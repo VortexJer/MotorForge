@@ -101,8 +101,21 @@ export function derivePistonLimits(input: ImportedPartInput, params: PistonParam
       provenance: 'derived-analytic',
       explanation: `${m.name} conserva propiedades hasta ${(m.maxServiceTemp - 273).toFixed(0)} °C (funde a ${(m.meltingPoint - 273).toFixed(0)} °C)`,
       failureMode: 'Fusión / ablandamiento de corona de pistón'
+    },
+    {
+      variable: 'knockIndex',
+      value: knockTolerance(m),
+      provenance: 'derived-analytic',
+      explanation: `Tolerancia a detonación estimada por ductilidad del material (${m.name})`,
+      failureMode: 'Picado (detonación): rotura de ringland'
     }
   ]
+}
+
+/** Tolerancia a picado: los materiales dúctiles/forjados aguantan detonación ligera. */
+function knockTolerance(m: Material): number {
+  if (m.category === 'acero' || m.category === 'titanio' || m.category === 'superaleación') return 1.25
+  return m.yieldStrength >= 300e6 ? 1.15 : 1.05
 }
 
 export function deriveInjectorLimits(input: ImportedPartInput, params: InjectorParams): DerivedLimit[] {

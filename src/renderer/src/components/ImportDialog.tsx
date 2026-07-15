@@ -97,7 +97,8 @@ const LIMIT_LABELS: Record<LimitVariable, string> = {
   rpm: 'Régimen máximo',
   boost: 'Boost máximo',
   injectorDuty: 'Duty máximo',
-  railPressure: 'Presión de raíl máxima'
+  railPressure: 'Presión de raíl máxima',
+  knockIndex: 'Tolerancia a picado'
 }
 
 function formatLimit(l: DerivedLimit): string {
@@ -116,6 +117,8 @@ function formatLimit(l: DerivedLimit): string {
       return `${l.value.toFixed(0)} rpm`
     case 'injectorDuty':
       return `${(l.value * 100).toFixed(0)} %`
+    case 'knockIndex':
+      return `índice ${l.value.toFixed(2)}`
   }
 }
 
