@@ -70,6 +70,8 @@ export interface LabControls {
   materialId: PhysMaterial['id']
   boltKit: 'serie' | 'arp'
   paused: boolean // Custom Sandbox
+  /** Vista seccionada (cutaway) o carcasas cerradas. */
+  cutaway: boolean
 }
 
 export interface Telemetry {
@@ -159,6 +161,9 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
   const telemetryClock = useRef(0)
 
   const focusRef = useRef<{ target: THREE.Vector3; camPos: THREE.Vector3; obj: THREE.Object3D } | null>(null)
+  const rootGroupRef = useRef<THREE.Group | null>(null)
+  const raycaster = useMemo(() => new THREE.Raycaster(), [])
+  const fadeOrig = useRef(new Map<THREE.MeshStandardMaterial, { t: boolean; d: boolean; op: number }>())
   const composerRef = useRef<EffectComposer | null>(null)
   const outlineRef = useRef<OutlinePass | null>(null)
 
@@ -190,6 +195,7 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
     const root = new THREE.Group()
     root.name = 'phys-root'
     scene.add(root)
+    rootGroupRef.current = root
 
     const { spacing, crankRadius: r, rodLength: l, boreRadius: boreR, block } = sockets
     const deckY = block.deckY
@@ -773,7 +779,7 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
     const tier: LodTier = camDist < sockets.spacing * 5 ? 0 : camDist < sockets.spacing * 9.5 ? 1 : 2
     const det = detailRef.current
     if (det) {
-      det.update(thetaVisRef.current, tier)
+      det.update(thetaVisRef.current, tier, c.cutaway)
       // pernos de biela instanciados: matrices por frame desde los cuerpos
       if (tier === 0) {
         const off = new THREE.Matrix4()
@@ -815,6 +821,40 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
     if (outlineRef.current) {
       outlineRef.current.selectedObjects = focus ? [focus.obj] : []
     }
+
+    // ---- las piezas entre la cámara y el objetivo se desvanecen para no
+    // bloquear la vista (fantasma al atravesarlas con el zoom) ----
+    const rootG = rootGroupRef.current
+    const orbitTarget = orbitRef.current?.target
+    if (rootG && orbitTarget) {
+      const dirV = new THREE.Vector3().copy(orbitTarget).sub(state.camera.position)
+      const distT = dirV.length()
+      raycaster.set(state.camera.position, dirV.normalize())
+      raycaster.far = Math.min(distT * 0.55, 3.4)
+      const hot = new Set<THREE.MeshStandardMaterial>()
+      for (const h of raycaster.intersectObjects(rootG.children, true)) {
+        const m = (h.object as THREE.Mesh).material
+        if (m instanceof THREE.MeshStandardMaterial) hot.add(m)
+      }
+      const orig = fadeOrig.current
+      for (const m of hot) {
+        if (!orig.has(m)) orig.set(m, { t: m.transparent, d: m.depthWrite, op: m.opacity })
+      }
+      for (const [m, o] of orig) {
+        const targetOp = hot.has(m) ? Math.min(0.12, o.op) : o.op
+        m.opacity += (targetOp - m.opacity) * Math.min(dt * 10, 1)
+        if (Math.abs(m.opacity - o.op) > 0.015) {
+          m.transparent = true
+          m.depthWrite = false
+        } else {
+          m.opacity = o.op
+          m.transparent = o.t
+          m.depthWrite = o.d
+          orig.delete(m)
+        }
+      }
+    }
+
     composerRef.current?.render()
 
     // ---- telemetría a ~12 Hz ----
@@ -938,7 +978,8 @@ export default function PhysicsLab({ engine }: Props): React.JSX.Element {
     rodAreaMm2: 300,
     materialId: 'acero',
     boltKit: 'arp',
-    paused: false
+    paused: false,
+    cutaway: true
   })
   // estado espejo para re-render de la UI (la escena lee el ref)
   const [ui, setUi] = useState({ ...controls.current })
@@ -1186,6 +1227,14 @@ export default function PhysicsLab({ engine }: Props): React.JSX.Element {
                   onChange={(e) => setControl('pulses', e.target.checked)}
                 />
                 PULSOS ELECTRÓNICOS
+              </label>
+              <label className="phys-toggle">
+                <input
+                  type="checkbox"
+                  checked={ui.cutaway}
+                  onChange={(e) => setControl('cutaway', e.target.checked)}
+                />
+                VISTA SECCIONADA
               </label>
             </div>
           </section>

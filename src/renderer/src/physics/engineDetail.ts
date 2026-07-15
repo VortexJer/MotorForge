@@ -47,7 +47,11 @@ class Merger {
   private buckets = new Map<THREE.Material, THREE.BufferGeometry[]>()
 
   add(geo: THREE.BufferGeometry, mat: THREE.Material, m: THREE.Matrix4): void {
-    const g = geo.clone().applyMatrix4(m)
+    // normalizar a no-indexado: mergeGeometries exige homogeneidad y
+    // RoundedBoxGeometry viene sin índice (si no, descarta el bucket entero)
+    const transformed = geo.clone().applyMatrix4(m)
+    const g = transformed.index ? transformed.toNonIndexed() : transformed
+    if (g !== transformed) transformed.dispose()
     const list = this.buckets.get(mat)
     if (list) list.push(g)
     else this.buckets.set(mat, [g])
@@ -68,7 +72,7 @@ class Merger {
     for (const [mat, geos] of this.buckets) {
       const merged = mergeGeometries(geos, false)
       geos.forEach((g) => g.dispose())
-      if (!merged) continue
+      if (!merged) throw new Error('Merger: bucket con geometrías incompatibles (se perdería la pieza)')
       const mesh = new THREE.Mesh(merged, mat)
       mesh.name = name
       out.push(mesh)
@@ -128,7 +132,8 @@ export interface EngineDetail {
   glowCoil: THREE.MeshStandardMaterial[]
   tier: LodTier
   dispose(): void
-  update(thetaVisual: number, tier: LodTier): void
+  /** Cinemática de distribución + LOD + vista seccionada/cerrada. */
+  update(thetaVisual: number, tier: LodTier, cutaway?: boolean): void
 }
 
 export function buildEngineDetail(sockets: EngineSockets, cylinders: number): EngineDetail {
@@ -379,18 +384,6 @@ export function buildEngineDetail(sockets: EngineSockets, cylinders: number): En
     )
   }
 
-  // tubería del intercooler: compresor → rodeando el testero trasero → mariposa
-  detail.tube(
-    [
-      new THREE.Vector3(turbX + 0.72, turbY + 0.44, turbZ),
-      new THREE.Vector3(halfW + 0.45, deckY + 0.4, -wallZ * 0.4),
-      new THREE.Vector3(halfW + 0.45, plenumY + 0.15, plenumZ - 0.3),
-      new THREE.Vector3(tbX - 0.3, plenumY, plenumZ)
-    ],
-    0.15,
-    mAlu,
-    16
-  )
   // aceite del turbo: suministro fino desde la galería y retorno al cárter
   detail.tube(
     [new THREE.Vector3(halfW * 0.8, panTop + 0.9, -wallZ + 0.2), new THREE.Vector3(turbX + 0.35, turbY + 0.12, turbZ + 0.1)],
@@ -404,21 +397,131 @@ export function buildEngineDetail(sockets: EngineSockets, cylinders: number): En
     mSteel,
     8
   )
-  // manguitos del radiador con abrazaderas, saliendo del testero frontal
-  for (const [y0, tag] of [
-    [deckY - 0.35, 1],
-    [panTop + 0.85, -1]
-  ] as Array<[number, number]>) {
-    detail.tube(
-      [new THREE.Vector3(-halfW - 0.05, y0, wallZ * 0.45), new THREE.Vector3(-halfW - 0.85, y0 + tag * 0.15, wallZ * 0.6)],
-      0.11,
-      mHose,
-      6
-    )
-    fineStatic.add(new THREE.TorusGeometry(0.12, 0.02, 6, 12), mSteel, mat4(-halfW - 0.16, y0 + tag * 0.02, wallZ * 0.47, 0, Math.PI / 2, 0.2))
-  }
-  // rampa de inyección sobre los inyectores
+  // rampa de inyección sobre los inyectores + línea de combustible a la rampa
   detail.add(new THREE.CylinderGeometry(0.08, 0.08, halfW * 1.6, 8), mSteel, mat4(0, deckY + 1.02, wallZ * 0.93 + 0.28, 0, 0, Math.PI / 2))
+  detail.tube(
+    [new THREE.Vector3(halfW * 0.8, deckY + 1.02, wallZ * 0.93 + 0.28), new THREE.Vector3(halfW + 0.3, panTop + 0.4, wallZ * 0.6)],
+    0.035,
+    mSteel,
+    8
+  )
+
+  // ============================================ RADIADOR E INTERCOOLER
+  // radiador frontal: núcleo con aletas + dos tanques; los manguitos van
+  // DEL motor AL radiador (nada acaba en el aire)
+  const radX = -halfW - 1.55
+  detail.add(casting(0.22, 2.5, blockD * 1.7), mDark, mat4(radX, 0.7, 0))
+  for (let f = 0; f < 12; f++) {
+    detail.add(new THREE.BoxGeometry(0.16, 0.035, blockD * 1.6), mSteel, mat4(radX, -0.4 + f * 0.2, 0))
+  }
+  for (const tz of [-1, 1]) {
+    detail.add(casting(0.26, 2.5, 0.3), mDark, mat4(radX, 0.7, tz * (blockD * 0.85 + 0.14)))
+  }
+  // termostato en la culata + manguito superior al tanque; inferior desde el bloque
+  detail.add(new THREE.CylinderGeometry(0.14, 0.16, 0.2, 10), mAlu, mat4(-halfW - 0.08, deckY - 0.3, wallZ * 0.45, 0, 0, Math.PI / 2))
+  detail.tube(
+    [new THREE.Vector3(-halfW - 0.16, deckY - 0.3, wallZ * 0.45), new THREE.Vector3(radX + 0.15, 1.75, blockD * 0.85)],
+    0.11,
+    mHose,
+    8
+  )
+  detail.tube(
+    [new THREE.Vector3(-halfW - 0.05, panTop + 0.85, wallZ * 0.45), new THREE.Vector3(radX + 0.15, -0.35, blockD * 0.85)],
+    0.11,
+    mHose,
+    8
+  )
+  for (const hy of [deckY - 0.32, panTop + 0.83]) {
+    fineStatic.add(new THREE.TorusGeometry(0.12, 0.02, 6, 12), mSteel, mat4(-halfW - 0.2, hy, wallZ * 0.46, 0, Math.PI / 2, 0.2))
+  }
+  // intercooler bajo el radiador + tubería completa caliente/fría
+  detail.add(casting(0.22, 1.0, blockD * 1.5), mAlu, mat4(radX, -1.45, 0))
+  for (const tz of [-1, 1]) detail.add(casting(0.26, 1.0, 0.28), mDark, mat4(radX, -1.45, tz * (blockD * 0.75 + 0.13)))
+  detail.tube(
+    [
+      new THREE.Vector3(turbX + 0.72, turbY + 0.42, turbZ),
+      new THREE.Vector3(halfW + 0.5, deckY * 0.35, -wallZ - 0.55),
+      new THREE.Vector3(0, -0.6, -wallZ - 0.6),
+      new THREE.Vector3(radX + 0.2, -1.35, -(blockD * 0.75 + 0.1))
+    ],
+    0.15,
+    mAlu,
+    18
+  )
+  detail.tube(
+    [
+      new THREE.Vector3(radX + 0.2, -1.35, blockD * 0.75 + 0.1),
+      new THREE.Vector3(-halfW - 0.75, 1.1, wallZ + 0.7),
+      new THREE.Vector3(tbX - 0.28, plenumY, plenumZ)
+    ],
+    0.15,
+    mAlu,
+    14
+  )
+
+  // ============================================ CORREA DE ACCESORIOS
+  const beltX = frontX - 0.34
+  // alternador con soporte + bomba de agua + tensor (poleas coplanarias)
+  detail.add(new THREE.CylinderGeometry(0.3, 0.3, 0.5, 14), mSteel, mat4(beltX + 0.28, 2.15, -1.05, 0, 0, Math.PI / 2))
+  detail.add(new THREE.CylinderGeometry(0.18, 0.18, 0.09, 12), mSteel, mat4(beltX, 2.15, -1.05, 0, 0, Math.PI / 2))
+  detail.add(new THREE.BoxGeometry(0.5, 0.16, 0.5), mAlu, mat4(-halfW - 0.2, 2.0, -0.85, 0, 0, 0.4)) // soporte
+  detail.add(new THREE.CylinderGeometry(0.26, 0.28, 0.22, 12), mAlu, mat4(beltX + 0.3, 0.95, 0.4, 0, 0, Math.PI / 2)) // bomba de agua
+  detail.add(new THREE.CylinderGeometry(0.2, 0.2, 0.09, 12), mSteel, mat4(beltX, 0.95, 0.4, 0, 0, Math.PI / 2))
+  detail.add(new THREE.CylinderGeometry(0.13, 0.13, 0.09, 10), mSteel, mat4(beltX, 1.5, -0.32, 0, 0, Math.PI / 2)) // tensor
+  // correa: bucle cerrado alrededor de las cuatro poleas
+  const beltLoop: THREE.Vector3[] = [
+    new THREE.Vector3(beltX, -0.42, 0),
+    new THREE.Vector3(beltX, 0.5, 0.58),
+    new THREE.Vector3(beltX, 0.95, 0.62),
+    new THREE.Vector3(beltX, 1.55, -0.12),
+    new THREE.Vector3(beltX, 2.35, -0.95),
+    new THREE.Vector3(beltX, 2.05, -1.32),
+    new THREE.Vector3(beltX, 0.55, -0.5)
+  ]
+  detail.add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(beltLoop, true), 44, 0.045, 6, true), mHose, new THREE.Matrix4())
+
+  // ============================================ ARRANQUE, ACEITE Y ESCAPE
+  detail.add(new THREE.CylinderGeometry(0.24, 0.24, 0.6, 12), mSteel, mat4(halfW + 0.25, -0.45, 0.55, 0, 0, Math.PI / 2)) // motor de arranque
+  detail.add(new THREE.CylinderGeometry(0.13, 0.13, 0.4, 10), mSteel, mat4(halfW + 0.2, -0.18, 0.78, 0, 0, Math.PI / 2)) // solenoide
+  detail.add(new THREE.CylinderGeometry(0.17, 0.17, 0.34, 12), mSteel, mat4(halfW * 0.35, panTop + 0.42, -wallZ - 0.18, Math.PI / 2, 0, 0)) // filtro de aceite
+  // bajante completa: turbina → resonador → cola
+  detail.tube(
+    [
+      new THREE.Vector3(turbX, turbY - 0.45, turbZ),
+      new THREE.Vector3(turbX - 0.3, floorY + 0.5, turbZ - 0.25),
+      new THREE.Vector3(turbX - 1.1, floorY + 0.42, turbZ - 0.3)
+    ],
+    0.14,
+    mCast,
+    10
+  )
+  detail.add(casting(0.95, 0.34, 0.42), mSteel, mat4(turbX - 1.65, floorY + 0.42, turbZ - 0.3))
+  detail.tube(
+    [new THREE.Vector3(turbX - 2.1, floorY + 0.42, turbZ - 0.3), new THREE.Vector3(-halfW - 0.6, floorY + 0.4, turbZ - 0.3)],
+    0.12,
+    mSteel,
+    6
+  )
+  // varilla de aceite
+  detail.tube(
+    [new THREE.Vector3(halfW * 0.18, panTop + 0.4, wallZ + 0.02), new THREE.Vector3(halfW * 0.12, deckY + 0.3, wallZ + 0.22)],
+    0.024,
+    mBrass,
+    6
+  )
+  fineStatic.add(new THREE.TorusGeometry(0.07, 0.018, 6, 12), mBrass, mat4(halfW * 0.12, deckY + 0.38, wallZ + 0.22))
+
+  // ============================================ CABLEADO (mazo + caídas)
+  detail.add(
+    new THREE.CylinderGeometry(0.045, 0.045, halfW * 1.7, 8),
+    mHose,
+    mat4(0, headTop + 0.3, blockD * 0.46, 0, 0, Math.PI / 2)
+  )
+  for (let i = 0; i < cyls; i++) {
+    const cx = block.cylinders[i]!.x
+    fineStatic.add(new THREE.CylinderGeometry(0.02, 0.02, 0.34, 6), mHose, mat4(cx, headTop + 0.46, blockD * 0.24, 0.75, 0, 0))
+    fineStatic.add(new THREE.CylinderGeometry(0.02, 0.02, 0.3, 6), mHose, mat4(cx + 0.1, deckY + 1.05, wallZ * 0.93 + 0.34, 0.3, 0, 0.4))
+  }
 
   // ===================================================== TORNILLERÍA
   const boltGeo = mergeGeometries([
@@ -538,6 +641,7 @@ export function buildEngineDetail(sockets: EngineSockets, cylinders: number): En
   fineMeshes.forEach((m) => root.add(m))
 
   const finePairs = [headBolts, mainBolts, periBolts]
+  let lastKey = -1
 
   const d: EngineDetail = {
     root,
@@ -552,7 +656,7 @@ export function buildEngineDetail(sockets: EngineSockets, cylinders: number): En
     glowInjector,
     glowCoil,
     tier: 0,
-    update(thetaVisual: number, tier: LodTier): void {
+    update(thetaVisual: number, tier: LodTier, cutaway = true): void {
       camIntake.rotation.x = thetaVisual / 2
       camExhaust.rotation.x = thetaVisual / 2
 
@@ -575,11 +679,14 @@ export function buildEngineDetail(sockets: EngineSockets, cylinders: number): En
         buckets.instanceMatrix.needsUpdate = true
       }
 
-      if (tier === d.tier) return
+      const stateKey = tier * 2 + (cutaway ? 1 : 0)
+      if (stateKey === lastKey) return
+      lastKey = stateKey
       d.tier = tier
       const fineOn = tier === 0
       const proxyOn = tier === 1
       const detailOn = tier < 2
+      const cutOn = detailOn && cutaway
       for (const p of finePairs) {
         p.fine.visible = fineOn
         p.proxy.visible = proxyOn
@@ -596,8 +703,8 @@ export function buildEngineDetail(sockets: EngineSockets, cylinders: number): En
       root.traverse((o) => {
         if (o.name === 'lod-fine') o.visible = fineOn
         else if (o.name === 'lod-detail') o.visible = detailOn
-        else if (o.name === 'shell-cut') o.visible = detailOn
-        else if (o.name === 'shell-closed') o.visible = !detailOn
+        else if (o.name === 'shell-cut') o.visible = cutOn
+        else if (o.name === 'shell-closed') o.visible = !cutOn
       })
     },
     dispose(): void {
