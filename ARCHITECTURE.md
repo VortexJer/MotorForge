@@ -54,6 +54,21 @@ por tipo de pieza aporta las condiciones de contorno → se derivan límites:
    userData), desgaste persistente entre tandas y sesiones (motor "usado" hasta reconstruir),
    slot de refrigeración/aceite (baja corona/escape y protege cojinetes), comparador A/B de
    curvas de dyno, histórico de tandas y exportación CSV.
+6. **Hecha**: laboratorio físico (pestaña propia, lazy) — tren alternativo como cuerpos rígidos
+   de Rapier con juntas de revolución (biela-cigüeñal, biela-pistón) y deslizante estricta
+   (pistón-bloque); sockets declarativos generados de la geometría real (`physics/sockets.ts`);
+   fatiga/pandeo de Euler/pernos y térmica+gripaje (`physics/engineMath.ts`, testeado); rotura =
+   destruir joints + piezas libres rebotando en el cárter en rojo neón; ECU con sensor de PMS
+   sobre la deslizante, chispa PointLight de 15 ms y motor de arranque; audio 100% sintetizado
+   (sawtooth + paso bajo por carga + ruido de turbo + CLANK y silencio); Custom Sandbox con
+   física en pausa, import .glb y Asistente de Sockets (gizmos + esferas guía) con alineación
+   exacta al sellar; telemetría estilo F1 monoespaciada con barras que parpadean cerca del
+   límite; InstancedMesh para tornillería, LOD por distancia y focus-zoom con OutlinePass.
+
+   **Compromiso clave**: ningún integrador de cuerpos rígidos aguanta 8000 rpm a 60 fps, así que
+   el cigüeñal es un cuerpo cinemático motorizado a ω visual acotada (cámara lenta automática)
+   mientras TODAS las fuerzas de fallo usan la ω real del modelo de RPM. Las micro-piezas
+   (tornillería, clips) son hijos de la malla principal, sin cuerpo rígido propio.
 
 ## Estructura
 
@@ -62,6 +77,7 @@ src/
   main/           Proceso principal Electron
   preload/        Bridge (vacío por ahora)
   renderer/       React UI (banco dyno, ensamblador)
+    src/physics/  Laboratorio físico: Rapier + sockets + matemáticas de fallo + audio
   shared/sim/     Núcleo de simulación — TS puro, sin dependencias de UI, testeado con vitest
     types.ts      Contratos: piezas, límites, ensamblaje, eventos, mapas ECU
     catalog.ts    Biblioteca de piezas (incl. combustibles y bombas)

@@ -316,6 +316,271 @@ body {
   color: var(--ink);
 }
 
+/* ---- Laboratorio físico (pliego §7: telemetría F1, fondo ultra oscuro) ---- */
+
+.main-phys {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.phys-lab {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  height: calc(100vh - 52px);
+  background: #060a12;
+}
+
+.phys-canvas {
+  position: relative;
+  min-width: 0;
+}
+
+.phys-sandbox-banner {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: #fab219;
+  background: rgba(250, 178, 25, 0.08);
+  border: 1px solid rgba(250, 178, 25, 0.4);
+  border-radius: 6px;
+  padding: 6px 14px;
+  pointer-events: none;
+}
+
+.phys-failure-banner {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 80%;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 12px;
+  color: #ff5a4d;
+  background: rgba(208, 59, 59, 0.12);
+  border: 1px solid rgba(208, 59, 59, 0.5);
+  border-radius: 6px;
+  padding: 8px 14px;
+  pointer-events: none;
+}
+
+.phys-panel {
+  border-left: 1px solid #1a2231;
+  background: #070b14;
+  padding: 14px;
+  overflow-y: auto;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.phys-status {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  border: 1px solid #1a2231;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #0a0f1a;
+}
+
+.phys-status-chip {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  padding: 3px 8px;
+  border-radius: 5px;
+  border: 1px solid #2a3548;
+  color: var(--muted);
+}
+
+.phys-status-chip.running {
+  color: #29c467;
+  border-color: rgba(41, 196, 103, 0.5);
+}
+
+.phys-status-chip.cranking {
+  color: #fab219;
+  border-color: rgba(250, 178, 25, 0.5);
+}
+
+.phys-status-chip.broken,
+.phys-status-chip.seized {
+  color: #ff5a4d;
+  border-color: rgba(255, 90, 77, 0.6);
+  animation: phys-blink 0.6s steps(2) infinite;
+}
+
+.phys-rpm {
+  margin-left: auto;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.phys-rpm-unit {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.14em;
+}
+
+.phys-telemetry {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border: 1px solid #1a2231;
+  border-radius: 8px;
+  padding: 12px;
+  background: #0a0f1a;
+}
+
+.phys-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.phys-row span:last-child {
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.phys-bar {
+  height: 3px;
+  background: #141b29;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.phys-bar-fill {
+  height: 100%;
+  background: #3987e5;
+  transition: width 0.09s linear;
+}
+
+.phys-bar-fill.warn {
+  background: #fab219;
+}
+
+.phys-bar-fill.danger {
+  background: #ff3b30;
+  animation: phys-blink 0.35s steps(2) infinite;
+}
+
+@keyframes phys-blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.phys-throttle-block {
+  border: 1px solid #1a2231;
+  border-radius: 8px;
+  padding: 12px;
+  background: #0a0f1a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.phys-throttle-block label {
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+/* palanca vertical estilo cockpit */
+.phys-throttle {
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 26px;
+  height: 150px;
+  accent-color: #3987e5;
+  cursor: grab;
+}
+
+.phys-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.phys-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.phys-config .field label {
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 10.5px;
+}
+
+.phys-note {
+  font-size: 10.5px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* ---- Asistente de sockets ---- */
+
+.socket-modal {
+  width: min(880px, 92vw);
+}
+
+.socket-body {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: 14px;
+  padding: 14px;
+}
+
+.socket-canvas {
+  height: 380px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 30%, #151b26 0%, #0d1119 70%);
+}
+
+.socket-side {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.socket-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.socket-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: -1px;
+}
+
+.socket-coord {
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
 .topbar-actions {
   margin-left: auto;
   display: flex;

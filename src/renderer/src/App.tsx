@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react'
 import {
   ASPIRATIONS,
   BLOCKS,
@@ -32,6 +32,8 @@ import EventCard from './components/EventCard'
 import ImportDialog from './components/ImportDialog'
 import MapEditor from './components/MapEditor'
 import TransientPanel from './components/TransientPanel'
+
+const PhysicsLab = lazy(() => import('./physics/PhysicsLab'))
 
 const CV = 735.5
 
@@ -94,6 +96,8 @@ export default function App(): React.JSX.Element {
   const [wear, setWear] = useState<WearState>(() => freshWear())
   const [projectName, setProjectName] = useState<string | null>(null)
   const [restored, setRestored] = useState(false)
+  /** Vista activa: banco (dyno/tandas) o laboratorio físico (Rapier). */
+  const [view, setView] = useState<'banco' | 'fisica'>('banco')
 
   /** Aplica un proyecto/sesión validando que cada id de pieza exista. */
   const applyProject = useCallback((data: ProjectData, parts: Part[]): void => {
@@ -297,6 +301,22 @@ export default function App(): React.JSX.Element {
           {projectName ? ` · ${projectName}` : ''}
         </span>
         <div className="topbar-actions">
+          <div className="segmented" role="group" aria-label="Vista">
+            <button
+              type="button"
+              className={view === 'banco' ? 'seg-btn active' : 'seg-btn'}
+              onClick={() => setView('banco')}
+            >
+              Banco de potencia
+            </button>
+            <button
+              type="button"
+              className={view === 'fisica' ? 'seg-btn active' : 'seg-btn'}
+              onClick={() => setView('fisica')}
+            >
+              Laboratorio físico
+            </button>
+          </div>
           <button className="btn" onClick={() => void openProjectFile()}>
             Abrir proyecto…
           </button>
@@ -433,6 +453,19 @@ export default function App(): React.JSX.Element {
           </section>
         </aside>
 
+        {view === 'fisica' ? (
+          <main className="main main-phys">
+            {hasErrors ? (
+              <p className="empty-note">
+                Corrige los errores de compatibilidad del ensamblaje para entrar al laboratorio físico.
+              </p>
+            ) : (
+              <Suspense fallback={<p className="empty-note">Cargando laboratorio físico (Rapier)…</p>}>
+                <PhysicsLab engine={engine} />
+              </Suspense>
+            )}
+          </main>
+        ) : (
         <main className="main">
           <div className="stat-row">
             <div className="stat-tile">
@@ -646,6 +679,7 @@ export default function App(): React.JSX.Element {
             </p>
           )}
         </main>
+        )}
       </div>
 
       {importFile && (
