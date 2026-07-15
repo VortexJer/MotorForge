@@ -33,8 +33,11 @@ por tipo de pieza aporta las condiciones de contorno → se derivan límites:
 
 - **Nivel A (analítico, instantáneo)**: pared delgada/Lamé para conductos, Euler para bielas,
   módulo resistente para flexión, temperatura de servicio del material, Goodman para fatiga.
-- **Nivel B (FEA vóxel, al importar, cacheado)**: voxelización robusta (three-mesh-bvh) +
-  elasticidad lineal con gradiente conjugado matrix-free; se escala carga unitaria hasta von Mises = límite elástico.
+- **Nivel B (FEA vóxel, bajo demanda, cacheado por caso)**: voxelización por paridad de cruces
+  (three-mesh-bvh) → hexaedros trilineales → elasticidad lineal con gradiente conjugado matrix-free
+  (Jacobi); von Mises p95 (fuera de las zonas de contorno) por unidad de carga → límite =
+  σ admisible / (vm/unidad) / SF. Casos plantilla: biela axial, corona de pistón a presión.
+  El pandeo de Euler se mantiene como techo independiente (el FEA lineal no lo ve).
 
 ## Fases
 
@@ -44,7 +47,9 @@ por tipo de pieza aporta las condiciones de contorno → se derivan límites:
 3. **Hecha**: mapas ECU (λ/avance por rpm×carga, bilineal), sistema de combustible (bomba + regulador +
    inyectores √ΔP → presión de raíl real), knock por octanaje requerido, transitorios (pull contra
    inercia con lag de turbo e inercia térmica).
-4. Desgaste acumulado, fatiga, fallos progresivos, FEA vóxel, overlays 3D térmicos/tensión.
+4. **Hecha**: banco de resistencia (desgaste acumulado: fatiga Miner de biela/cigüeñal, ringland
+   por picado, fluencia térmica, cojinetes, segmentos como fallo progresivo que roba par),
+   FEA vóxel (nivel B) para piezas importadas, overlays 3D de utilización térmica/estructural.
 
 ## Estructura
 
@@ -63,7 +68,9 @@ src/
     cycle.ts      Ciclo termodinámico 0D (Wiebe + Woschni-lite + Chen-Flynn) + knock
     dyno.ts       Barrido de RPM, curvas, chequeo de límites y eventos de fallo
     transient.ts  Pull contra inercia: lag de turbo + inercia térmica
-    import/       Métricas de malla (BVH) y derivación analítica de límites
+    wear.ts       Banco de resistencia: daño acumulado por mecanismo (Miner, picado, fluencia…)
+    utilization.ts Utilización valor/límite por pieza para los overlays 3D
+    import/       Métricas de malla (BVH), derivación analítica (nivel A) y FEA vóxel (nivel B)
 ```
 
 ## Unidades

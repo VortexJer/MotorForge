@@ -22,9 +22,24 @@ const FAIL_COLOR = '#d03b3b'
 // I4 de plano de 180°: pistones 1-4 y 2-3 en fase opuesta
 const PHASE = [0, Math.PI, Math.PI, 0]
 
+/** Utilización por pieza (valor/límite, 1 = al límite) para colorear overlays. */
+export type OverlayMap = Partial<Record<PartKind, number>>
+
 interface Props {
   geometry: ResolvedGeometry
   failedKind: PartKind | null
+  /** null = vista normal; con mapa, las piezas se colorean por utilización. */
+  overlay: OverlayMap | null
+}
+
+/** Escala de calor: frío → ámbar (92%) → rojo (límite). */
+function heatColor(u: number): THREE.Color {
+  const cold = new THREE.Color('#35507a')
+  const warn = new THREE.Color('#fab219')
+  const crit = new THREE.Color('#d03b3b')
+  if (u <= 0.55) return cold
+  if (u <= 0.92) return cold.lerp(warn, (u - 0.55) / 0.37)
+  return warn.lerp(crit, Math.min((u - 0.92) / 0.08, 1))
 }
 
 interface Kinematics {
@@ -94,6 +109,35 @@ function metal(color: string, failed: boolean): THREE.MeshStandardMaterial {
   })
 }
 
+/**
+ * Material de una pieza: prioridad rotura (rojo pulsante) > overlay (calor
+ * por utilización) > metal normal.
+ */
+function partMaterial(
+  baseColor: string,
+  kind: PartKind,
+  failedKind: PartKind | null,
+  overlay: OverlayMap | null
+): THREE.MeshStandardMaterial {
+  if (failedKind === kind) return metal(baseColor, true)
+  const u = overlay?.[kind]
+  if (overlay !== null && u !== undefined) {
+    const c = heatColor(u)
+    return new THREE.MeshStandardMaterial({
+      color: c,
+      metalness: 0.25,
+      roughness: 0.45,
+      emissive: c.clone(),
+      emissiveIntensity: 0.22
+    })
+  }
+  if (overlay !== null) {
+    // sin dato en esta categoría: gris apagado para que destaque lo medido
+    return new THREE.MeshStandardMaterial({ color: '#3a414d', metalness: 0.4, roughness: 0.6 })
+  }
+  return metal(baseColor, false)
+}
+
 /** Latido rojo de la pieza rota. */
 function pulse(mat: THREE.MeshStandardMaterial, t: number): void {
   mat.emissiveIntensity = 0.35 + 0.3 * Math.sin(t * 4.5)
@@ -101,7 +145,15 @@ function pulse(mat: THREE.MeshStandardMaterial, t: number): void {
 
 const xPos = (i: number, k: Kinematics): number => (i - (k.cylinders - 1) / 2) * k.spacing
 
-function CrankTrain({ k, failedKind }: { k: Kinematics; failedKind: PartKind | null }): React.JSX.Element {
+function CrankTrain({
+  k,
+  failedKind,
+  overlay
+}: {
+  k: Kinematics
+  failedKind: PartKind | null
+  overlay: OverlayMap | null
+}): React.JSX.Element {
   const theta = useRef(0)
   const pistonRefs = useRef<Array<THREE.Mesh | null>>([])
   const rodRefs = useRef<Array<THREE.Mesh | null>>([])
@@ -111,9 +163,9 @@ function CrankTrain({ k, failedKind }: { k: Kinematics; failedKind: PartKind | n
   const up = useMemo(() => new THREE.Vector3(0, 1, 0), [])
   const tmpDir = useMemo(() => new THREE.Vector3(), [])
 
-  const pistonMat = useMemo(() => metal('#cdd3dd', failedKind === 'piston'), [failedKind])
-  const rodMat = useMemo(() => metal('#98a2b3', failedKind === 'rod'), [failedKind])
-  const crankMat = useMemo(() => metal('#717c8f', failedKind === 'crank'), [failedKind])
+  const pistonMat = useMemo(() => partMaterial('#cdd3dd', 'piston', failedKind, overlay), [failedKind, overlay])
+  const rodMat = useMemo(() => partMaterial('#98a2b3', 'rod', failedKind, overlay), [failedKind, overlay])
+  const crankMat = useMemo(() => partMaterial('#717c8f', 'crank', failedKind, overlay), [failedKind, overlay])
 
   const pistonH = ch * 1.8
 
@@ -191,10 +243,30 @@ function CrankTrain({ k, failedKind }: { k: Kinematics; failedKind: PartKind | n
   )
 }
 
-function Internals({ k, failedKind }: { k: Kinematics; failedKind: PartKind | null }): React.JSX.Element {
+function Internals({
+  k,
+  failedKind,
+  overlay
+}: {
+  k: Kinematics
+  failedKind: PartKind | null
+  overlay: OverlayMap | null
+}): React.JSX.Element {
   const { boreR, spacing, deckY, cylinders } = k
   const linerLen = k.r * 2 * 1.45
   const blockFailed = failedKind === 'block'
+  const blockU = overlay?.block
+  const headU = overlay?.head
+  const linerColor = blockFailed
+    ? FAIL_COLOR
+    : blockU !== undefined
+      ? `#${heatColor(blockU).getHexString()}`
+      : '#9fb4cc'
+  const deckColor = failedKind === 'head'
+    ? FAIL_COLOR
+    : headU !== undefined
+      ? `#${heatColor(headU).getHexString()}`
+      : '#39404d'
 
   return (
     <group>
@@ -202,11 +274,11 @@ function Internals({ k, failedKind }: { k: Kinematics; failedKind: PartKind | nu
         <mesh key={i} position={[xPos(i, k), deckY - linerLen / 2, 0]}>
           <cylinderGeometry args={[boreR, boreR, linerLen, 36, 1, true]} />
           <meshPhysicalMaterial
-            color={blockFailed ? FAIL_COLOR : '#9fb4cc'}
+            color={linerColor}
             metalness={0.1}
             roughness={0.15}
             transparent
-            opacity={blockFailed ? 0.4 : 0.15}
+            opacity={blockFailed ? 0.4 : blockU !== undefined ? 0.38 : 0.15}
             side={THREE.DoubleSide}
             depthWrite={false}
           />
@@ -215,11 +287,11 @@ function Internals({ k, failedKind }: { k: Kinematics; failedKind: PartKind | nu
       <mesh position={[0, deckY + 0.01, 0]}>
         <boxGeometry args={[spacing * (cylinders + 0.6), 0.02, boreR * 3.2]} />
         <meshStandardMaterial
-          color={blockFailed ? FAIL_COLOR : '#39404d'}
+          color={deckColor}
           metalness={0.6}
           roughness={0.5}
           transparent
-          opacity={0.55}
+          opacity={headU !== undefined ? 0.8 : 0.55}
         />
       </mesh>
     </group>
@@ -229,25 +301,37 @@ function Internals({ k, failedKind }: { k: Kinematics; failedKind: PartKind | nu
 /**
  * Carcasa exterior: sólida de lejos, se desvanece al acercar la cámara.
  */
-function Exterior({ k, failedKind }: { k: Kinematics; failedKind: PartKind | null }): React.JSX.Element {
+function Exterior({
+  k,
+  failedKind,
+  overlay
+}: {
+  k: Kinematics
+  failedKind: PartKind | null
+  overlay: OverlayMap | null
+}): React.JSX.Element {
   const { boreR, r, spacing, deckY, cylinders, crankLen } = k
   const blockFailed = failedKind === 'block'
   const headFailed = failedKind === 'head'
 
   const casingMat = useMemo(() => {
-    const m = metal(blockFailed ? FAIL_COLOR : '#525b69', blockFailed)
+    const m = partMaterial('#525b69', 'block', failedKind, overlay)
     m.transparent = true
-    m.roughness = 0.5
-    m.metalness = 0.7
+    if (!blockFailed && overlay === null) {
+      m.roughness = 0.5
+      m.metalness = 0.7
+    }
     return m
-  }, [blockFailed])
+  }, [failedKind, overlay, blockFailed])
   const coverMat = useMemo(() => {
-    const m = metal(headFailed ? FAIL_COLOR : '#3e4654', headFailed)
+    const m = partMaterial('#3e4654', 'head', failedKind, overlay)
     m.transparent = true
-    m.roughness = 0.45
-    m.metalness = 0.65
+    if (!headFailed && overlay === null) {
+      m.roughness = 0.45
+      m.metalness = 0.65
+    }
     return m
-  }, [headFailed])
+  }, [failedKind, overlay, headFailed])
   const panMat = useMemo(() => {
     const m = metal('#454d5a', false)
     m.transparent = true
@@ -306,7 +390,7 @@ function Exterior({ k, failedKind }: { k: Kinematics; failedKind: PartKind | nul
   )
 }
 
-export default function Engine3D({ geometry, failedKind }: Props): React.JSX.Element {
+export default function Engine3D({ geometry, failedKind, overlay }: Props): React.JSX.Element {
   const k = useKinematics(geometry)
 
   return (
@@ -321,9 +405,9 @@ export default function Engine3D({ geometry, failedKind }: Props): React.JSX.Ele
         <directionalLight position={[6, 9, 5]} intensity={2.2} />
         <directionalLight position={[-7, 4, -5]} intensity={0.9} color="#8fb4ff" />
         <pointLight position={[0, k.deckY * 0.4, k.spacing * 2.5]} intensity={4} distance={12} />
-        <CrankTrain k={k} failedKind={failedKind} />
-        <Internals k={k} failedKind={failedKind} />
-        <Exterior k={k} failedKind={failedKind} />
+        <CrankTrain k={k} failedKind={failedKind} overlay={overlay} />
+        <Internals k={k} failedKind={failedKind} overlay={overlay} />
+        <Exterior k={k} failedKind={failedKind} overlay={overlay} />
         <OrbitControls
           target={[k.target.x, k.target.y, k.target.z]}
           enableDamping
@@ -332,6 +416,13 @@ export default function Engine3D({ geometry, failedKind }: Props): React.JSX.Ele
           maxDistance={k.spacing * 9}
         />
       </Canvas>
+      {overlay !== null && (
+        <div className="overlay-legend">
+          <span className="overlay-legend-bar" />
+          <span>0%</span>
+          <span className="overlay-legend-max">100% del límite</span>
+        </div>
+      )}
       <div className="canvas-hint">rueda: zoom (lejos = motor completo, cerca = interior) · arrastrar: girar</div>
     </div>
   )

@@ -2,8 +2,18 @@ export * from './types'
 export * from './catalog'
 export { resolveEngine } from './assembly'
 export { simulateOperatingPoint, manifoldConditions, interpolateCurve } from './cycle'
-export { runDyno, checkLimits } from './dyno'
+export { runDyno, checkLimits, measuredValue } from './dyno'
+export { computeUtilization } from './utilization'
+export type { OverlayCategory } from './utilization'
 export { runTransient } from './transient'
+export { runEndurance, WEAR_LABELS } from './wear'
+export type {
+  WearState,
+  EnduranceResult,
+  EnduranceSample,
+  EnduranceStyle,
+  EnduranceOptions
+} from './wear'
 export { mapLookup, defaultFuelMap, defaultSparkMap, cloneMap, withCell } from './ecu'
 export { resolveFuelSupply, RAIL_BASE_DP } from './fuel'
 

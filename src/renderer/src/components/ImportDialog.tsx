@@ -13,8 +13,10 @@ import {
   proposeParams
 } from '@sim/import/derive'
 import type { ImportKind, InjectorParams, PistonParams, RodParams } from '@sim/import/derive'
+import { refinePistonLimitsWithFea, refineRodLimitsWithFea } from '@sim/import/fea'
+import type { FeaCase, FeaSummary } from '@sim/import/fea'
 import type { DerivedLimit, LimitVariable, Part } from '@sim/types'
-import { parseCadFile } from '../lib/geometryClient'
+import { parseCadFile, runFea } from '../lib/geometryClient'
 import type { ParsedCad } from '../lib/geometryClient'
 
 /** Densidad de la gasolina para convertir cc/min ↔ kg/s en la UI. */
@@ -161,6 +163,14 @@ export default function ImportDialog({ file, onCancel, onSave }: ImportDialogPro
   const [materialId, setMaterialId] = useState(DEFAULT_MATERIAL.rod)
   const [partName, setPartName] = useState(file.name.replace(/\.[^.]+$/, ''))
   const [fields, setFields] = useState<Record<string, number>>({})
+  // El resultado FEA solo depende de la geometría y del caso de carga
+  // (E se cancela y ν es fijo), así que se cachea por caso.
+  const [fea, setFea] = useState<Partial<Record<FeaCase, FeaSummary>>>({})
+  const [feaBusy, setFeaBusy] = useState(false)
+  const [feaError, setFeaError] = useState<string | null>(null)
+
+  const feaCase: FeaCase | null = kind === 'rod' ? 'rod-axial' : kind === 'piston' ? 'piston-crown' : null
+  const feaSummary = feaCase ? (fea[feaCase] ?? null) : null
 
   useEffect(() => {
     let cancelled = false
@@ -191,20 +201,36 @@ export default function ImportDialog({ file, onCancel, onSave }: ImportDialogPro
     const input = { name: partName, metrics: parsed.metrics, material }
     try {
       switch (kind) {
-        case 'rod':
-          return deriveRodLimits(input, toParams('rod', fields) as RodParams)
-        case 'piston':
-          return derivePistonLimits(input, toParams('piston', fields) as PistonParams)
+        case 'rod': {
+          const params = toParams('rod', fields) as RodParams
+          const analytic = deriveRodLimits(input, params)
+          return feaSummary ? refineRodLimitsWithFea(analytic, input, params, feaSummary) : analytic
+        }
+        case 'piston': {
+          const params = toParams('piston', fields) as PistonParams
+          const analytic = derivePistonLimits(input, params)
+          return feaSummary ? refinePistonLimitsWithFea(analytic, input, params, feaSummary) : analytic
+        }
         case 'injector':
           return deriveInjectorLimits(input, toParams('injector', fields) as InjectorParams)
       }
     } catch {
       return null
     }
-  }, [parsed, kind, material, fields, partName])
+  }, [parsed, kind, material, fields, partName, feaSummary])
+
+  const launchFea = (): void => {
+    if (!parsed || !feaCase || feaBusy) return
+    setFeaBusy(true)
+    setFeaError(null)
+    runFea(parsed.positions, feaCase)
+      .then((summary) => setFea((f) => ({ ...f, [feaCase]: summary })))
+      .catch((e: Error) => setFeaError(e.message))
+      .finally(() => setFeaBusy(false))
+  }
 
   const save = (): void => {
-    if (!parsed) return
+    if (!parsed || limits === null) return
     const input = { name: partName || 'Pieza importada', metrics: parsed.metrics, material }
     const part: Part =
       kind === 'rod'
@@ -212,7 +238,8 @@ export default function ImportDialog({ file, onCancel, onSave }: ImportDialogPro
         : kind === 'piston'
           ? buildImportedPiston(input, toParams('piston', fields) as PistonParams)
           : buildImportedInjector(input, toParams('injector', fields) as InjectorParams)
-    onSave(part)
+    // los límites mostrados (posiblemente refinados con FEA) son los que se guardan
+    onSave({ ...part, limits })
   }
 
   const m = parsed?.metrics
@@ -317,6 +344,20 @@ export default function ImportDialog({ file, onCancel, onSave }: ImportDialogPro
               ))}
 
               <h3 className="section-title">Límites derivados</h3>
+              {feaCase && (
+                <div className="fea-row">
+                  {feaSummary ? (
+                    <span className="fea-badge">
+                      ✓ FEA {feaSummary.grid.join('×')} · {feaSummary.elements.toLocaleString('es-ES')} elementos
+                    </span>
+                  ) : (
+                    <button className="btn" onClick={launchFea} disabled={feaBusy || !parsed}>
+                      {feaBusy ? 'Calculando FEA…' : 'Refinar con FEA (nivel B)'}
+                    </button>
+                  )}
+                  {feaError && <span className="fea-error">✕ {feaError}</span>}
+                </div>
+              )}
               {limits === null && <p className="empty-note">Parámetros no válidos.</p>}
               {limits?.map((l) => (
                 <div className="limit-card" key={l.variable}>

@@ -12,6 +12,8 @@ interface Props {
   points: TimePoint[]
   failedAtTime: number | null
   formatValue?: (v: number) => string
+  /** Unidad del eje temporal ('s' para pulls, 'min' para tandas de resistencia). */
+  xUnit?: 's' | 'min'
   /** Serie de referencia opcional (p. ej. boost estacionario) en línea discontinua. */
   reference?: TimePoint[]
   referenceLabel?: string
@@ -37,6 +39,7 @@ export default function TimeChart({
   points,
   failedAtTime,
   formatValue = (v) => v.toFixed(0),
+  xUnit = 's',
   reference,
   referenceLabel
 }: Props): React.JSX.Element {
@@ -87,7 +90,7 @@ export default function TimeChart({
 
   const yTicks: number[] = []
   for (let v = 0; v <= yMax; v += yStep) yTicks.push(v)
-  const xTickStep = xMax > 12 ? 2 : xMax > 6 ? 1 : 0.5
+  const xTickStep = xMax > 30 ? niceStep(xMax, 8) : xMax > 12 ? 2 : xMax > 6 ? 1 : 0.5
   const xTicks: number[] = []
   for (let v = 0; v <= xMax; v += xTickStep) xTicks.push(Number(v.toFixed(1)))
 
@@ -129,7 +132,8 @@ export default function TimeChart({
         ))}
         {xTicks.map((v) => (
           <text key={v} x={x(v)} y={HEIGHT - 8} textAnchor="middle" fontSize="11" fill="var(--muted)">
-            {v}s
+            {v}
+            {xUnit}
           </text>
         ))}
         <line x1={MARGIN.left} x2={MARGIN.left + plotW} y1={y(0)} y2={y(0)} stroke="var(--baseline)" strokeWidth="1" />
@@ -195,7 +199,9 @@ export default function TimeChart({
           className="chart-tooltip"
           style={{ left: Math.min(x(hoverPoint.t) + 12, width - 130), top: y(hoverPoint.value) - 14 }}
         >
-          <span className="t-rpm">{hoverPoint.t.toFixed(1)} s · </span>
+          <span className="t-rpm">
+            {xUnit === 'min' ? hoverPoint.t.toFixed(0) : hoverPoint.t.toFixed(1)} {xUnit} ·{' '}
+          </span>
           <span className="t-val">
             {formatValue(hoverPoint.value)} {unit}
           </span>

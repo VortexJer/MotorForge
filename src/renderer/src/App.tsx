@@ -9,11 +9,13 @@ import {
   INJECTORS,
   PISTONS,
   RODS,
+  computeUtilization,
   defaultTune,
   partById,
   resolveEngine,
   runDyno
 } from '@sim/index'
+import type { OverlayCategory } from '@sim/index'
 import type {
   AspirationPart,
   DynoResult,
@@ -23,6 +25,7 @@ import type {
 } from '@sim/types'
 import DynoChart from './components/DynoChart'
 import Engine3D from './components/Engine3D'
+import EndurancePanel from './components/EndurancePanel'
 import EventCard from './components/EventCard'
 import ImportDialog from './components/ImportDialog'
 import MapEditor from './components/MapEditor'
@@ -122,6 +125,13 @@ export default function App(): React.JSX.Element {
     return runDyno(engine, tune, fuel)
   }, [engine, tune, fuel, hasErrors])
 
+  const [overlayMode, setOverlayMode] = useState<'normal' | OverlayCategory>('normal')
+  const overlay = useMemo(
+    () =>
+      dyno && overlayMode !== 'normal' ? computeUtilization(engine, dyno.points, overlayMode) : null,
+    [dyno, engine, overlayMode]
+  )
+
   const selectPart = (key: keyof Selection, id: string): void => {
     setSel((s) => ({ ...s, [key]: id }))
     if (key === 'aspiration') {
@@ -154,7 +164,7 @@ export default function App(): React.JSX.Element {
     <>
       <header className="topbar">
         <h1>MotorForge</h1>
-        <span className="sub">Banco de potencia · Fase 3 — mapas ECU, sistema de combustible, picado y transitorios</span>
+        <span className="sub">Banco de potencia · Fase 4 — desgaste acumulado, fatiga, overlays 3D y FEA vóxel</span>
       </header>
 
       <div className="layout">
@@ -323,8 +333,34 @@ export default function App(): React.JSX.Element {
 
           {!hasErrors && (
             <div className="chart-card">
-              <h3>Tren alternativo — geometría real del ensamblaje{failure ? ' · pieza rota en rojo' : ''}</h3>
-              <Engine3D geometry={g} failedKind={failedKind} />
+              <div className="chart-card-head">
+                <h3>Tren alternativo — geometría real del ensamblaje{failure ? ' · pieza rota en rojo' : ''}</h3>
+                <div className="segmented" role="group" aria-label="Overlay de utilización">
+                  {(
+                    [
+                      ['normal', 'Normal'],
+                      ['termico', 'Térmico'],
+                      ['estructural', 'Estructural']
+                    ] as Array<['normal' | OverlayCategory, string]>
+                  ).map(([mode, label]) => (
+                    <button
+                      key={mode}
+                      type="button"
+                      className={overlayMode === mode ? 'seg-btn active' : 'seg-btn'}
+                      onClick={() => setOverlayMode(mode)}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <Engine3D geometry={g} failedKind={failedKind} overlay={overlay} />
+              {overlay !== null && (
+                <p className="overlay-note">
+                  Color por utilización {overlayMode === 'termico' ? 'térmica' : 'estructural'} máxima en el
+                  barrido: azul frío → ámbar al 92% → rojo al límite. Gris: sin límite de esta categoría.
+                </p>
+              )}
             </div>
           )}
 
@@ -379,6 +415,8 @@ export default function App(): React.JSX.Element {
               </details>
 
               <TransientPanel engine={engine} tune={tune} fuel={fuel} />
+
+              <EndurancePanel engine={engine} tune={tune} fuel={fuel} />
 
               <section>
                 <h2 className="section-title">Eventos de la simulación</h2>

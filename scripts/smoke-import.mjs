@@ -42,6 +42,16 @@ await win.waitForSelector('.metrics-list', { timeout: 45000 })
 await win.waitForTimeout(700)
 await win.screenshot({ path: join(shots, 'import-dialog.png') })
 
+// FEA vóxel (nivel B): refina los límites analíticos de la biela
+const analyticLimit = (await win.textContent('.limit-card .limit-value')).trim()
+await win.click('.fea-row .btn')
+await win.waitForSelector('.fea-badge', { timeout: 60000 })
+const feaLimit = (await win.textContent('.limit-card .limit-value')).trim()
+const feaBadge = (await win.textContent('.fea-badge')).trim()
+console.log('FEA:', feaBadge, '· compresión analítica', analyticLimit, '→ FEA', feaLimit)
+await win.waitForTimeout(300)
+await win.screenshot({ path: join(shots, 'import-fea.png') })
+
 await win.fill('#imp-name', 'Biela STEP de prueba')
 await win.click('.modal-foot .btn.primary')
 await win.waitForSelector('.modal-overlay', { state: 'detached', timeout: 10000 })

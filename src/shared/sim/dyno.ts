@@ -26,7 +26,7 @@ const kN = (n: number): string => (n / 1000).toFixed(1)
 const degC = (k: number): string => (k - 273.15).toFixed(0)
 
 /** Valor medido en el punto de funcionamiento para cada variable de límite. */
-function measuredValue(v: LimitVariable, p: OperatingPointResult): number {
+export function measuredValue(v: LimitVariable, p: OperatingPointResult): number {
   switch (v) {
     case 'peakCylinderPressure':
       return p.peakPressure

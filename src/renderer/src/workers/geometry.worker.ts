@@ -9,28 +9,43 @@ import occtimportjs from 'occt-import-js'
 import wasmUrl from 'occt-import-js/dist/occt-import-js.wasm?url'
 import { analyzeMesh } from '@sim/import/metrics'
 import type { GeometryMetrics } from '@sim/import/metrics'
+import { runVoxelFea } from '@sim/import/fea'
+import type { FeaCase, FeaSummary } from '@sim/import/fea'
 import type { OcctMesh, OcctModule, OcctResult } from 'occt-import-js'
 
 export interface ParseRequest {
   id: number
+  type: 'parse'
   name: string
   data: ArrayBuffer
 }
+
+export interface FeaRequest {
+  id: number
+  type: 'fea'
+  feaCase: FeaCase
+  /** Soup de triángulos en metros (el que devolvió el parseo). */
+  positions: Float32Array
+}
+
+export type WorkerRequest = ParseRequest | FeaRequest
 
 export type ParseReply =
   | {
       id: number
       ok: true
+      kind: 'parse'
       metrics: GeometryMetrics
       /** Soup de triángulos en metros, para la vista previa. */
       positions: Float32Array
       triangleCount: number
     }
+  | { id: number; ok: true; kind: 'fea'; fea: FeaSummary }
   | { id: number; ok: false; error: string }
 
 const ctx = self as unknown as {
   postMessage(msg: ParseReply, options?: { transfer: Transferable[] }): void
-  addEventListener(type: 'message', cb: (e: MessageEvent<ParseRequest>) => void): void
+  addEventListener(type: 'message', cb: (e: MessageEvent<WorkerRequest>) => void): void
 }
 
 let occtPromise: Promise<OcctModule> | null = null
@@ -89,14 +104,20 @@ async function parseToSoup(name: string, data: ArrayBuffer): Promise<Float32Arra
 
 ctx.addEventListener('message', (e) => {
   void (async (): Promise<void> => {
-    const { id, name, data } = e.data
+    const req = e.data
+    const { id } = req
     try {
-      const positions = await parseToSoup(name, data)
+      if (req.type === 'fea') {
+        const fea = runVoxelFea(req.positions, undefined, req.feaCase)
+        ctx.postMessage({ id, ok: true, kind: 'fea', fea })
+        return
+      }
+      const positions = await parseToSoup(req.name, req.data)
       // mm → m
       for (let i = 0; i < positions.length; i++) positions[i] = (positions[i] as number) * 1e-3
       const metrics = analyzeMesh(positions)
       ctx.postMessage(
-        { id, ok: true, metrics, positions, triangleCount: positions.length / 9 },
+        { id, ok: true, kind: 'parse', metrics, positions, triangleCount: positions.length / 9 },
         { transfer: [positions.buffer] }
       )
     } catch (err) {

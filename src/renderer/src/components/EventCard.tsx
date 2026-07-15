@@ -19,7 +19,9 @@ export default function EventCard({ ev }: { ev: SimEvent }): React.JSX.Element {
         <div className="state-before">
           Rendimiento en el momento del fallo: {ev.state.torque.toFixed(0)} Nm ·{' '}
           {(ev.state.power / CV).toFixed(0)} CV @ {ev.state.rpm} rpm
-          {ev.time !== undefined ? ` · t = ${ev.time.toFixed(1)} s` : ''}
+          {ev.time !== undefined
+            ? ` · t = ${ev.time >= 120 ? `${(ev.time / 60).toFixed(0)} min` : `${ev.time.toFixed(1)} s`}`
+            : ''}
         </div>
       )}
     </article>
