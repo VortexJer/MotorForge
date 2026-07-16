@@ -1,0 +1,29 @@
+{
+  "comment": "Datums del modelo solidsight K20C1 (mm, coords de escena del model.py). El loader del renderer usa esto para recolocar pivotes de piezas móviles y escalar a metros.",
+  "units": "mm",
+  "bore": 86.0,
+  "stroke": 85.9,
+  "rodLength": 139.0,
+  "pitch": 94.0,
+  "crankZ": 120.0,
+  "deckZ": 332.0,
+  "camZ": 434.0,
+  "camY": 40.0,
+  "cylinderX": [-141.0, -47.0, 47.0, 141.0],
+  "pinPhaseDeg": [0, 180, 180, 0],
+  "emittedAt": {
+    "crankshaft": "eje en (y=0, z=crankZ), a lo largo de X; theta=0 con muñequillas 1 y 4 arriba",
+    "conrod_i": "cabeza de biela en (cylinderX[i], 0, crankZ ± throw), pie hacia +Z",
+    "piston_i": "eje del bulón en (cylinderX[i], 0, crankZ ± throw + rodLength), bulón a lo largo de X",
+    "crank_pulley": "eje X en z=crankZ, x 206..230",
+    "flywheel": "eje X en z=crankZ, x -228..-198",
+    "cam_intake": "eje X en (y=+camY, z=camZ)",
+    "cam_exhaust": "eje X en (y=-camY, z=camZ)",
+    "resto": "posición absoluta de escena, estáticos"
+  },
+  "mapToLab": {
+    "note": "El laboratorio usa metros, eje del cigüeñal = X, deck en +Y. Conversión: (x,y,z)_solidsight*0.001 -> (x, z-crankZ*0.001... ) — el loader rota Z-up a Y-up con matrix.makeRotationX(-PI/2) y centra el eje del cigüeñal en el origen del rig.",
+    "scale": 0.001,
+    "crankAxisOffsetMm": [0, 0, 120.0]
+  }
+}

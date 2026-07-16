@@ -138,6 +138,15 @@ export interface EngineDetail {
   dispose(): void
   /** Cinemática de distribución + LOD + vista seccionada/cerrada. */
   update(thetaVisual: number, tier: LodTier, cutaway?: boolean): void
+  /** El detalle trae bloque/cárter/cigüeñal propios (K20C1): el rig no debe
+   *  construir sus camisas, cárter ni cigüeñal procedurales. */
+  selfContained?: boolean
+  /** Geometrías para las piezas móviles del rig (origen: bulón / centro de
+   *  biela), disponibles tras onReady. */
+  pistonGeometry?: THREE.BufferGeometry
+  rodGeometry?: THREE.BufferGeometry
+  /** Callback al terminar la carga asíncrona (inmediato si ya está lista). */
+  onReady?(cb: () => void): void
 }
 
 export function buildEngineDetail(sockets: EngineSockets, cylinders: number): EngineDetail {

@@ -11,6 +11,7 @@ export default defineConfig({
   },
   renderer: {
     plugins: [react()],
+    assetsInclude: ['**/*.stl'],
     worker: {
       format: 'es'
     },

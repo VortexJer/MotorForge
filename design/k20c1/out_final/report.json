@@ -1,0 +1,6719 @@
+{
+  "tool": "solidsight 0.5.0",
+  "model": "model.py",
+  "mode": "free",
+  "units": "mm",
+  "status": "warnings",
+  "scene": {
+    "part_count": 32,
+    "bbox": {
+      "min": [
+        -230.0,
+        -268.0,
+        -5.0
+      ],
+      "max": [
+        283.0,
+        227.0,
+        512.0
+      ]
+    },
+    "size": [
+      513.0,
+      495.0,
+      517.0
+    ],
+    "total_volume_mm3": 33300011.063
+  },
+  "parts": {
+    "block": {
+      "volume_mm3": 11118570.404,
+      "surface_area_mm2": 843425.441,
+      "bbox": {
+        "min": [
+          -188.0,
+          -131.0,
+          88.0
+        ],
+        "max": [
+          188.0,
+          113.0,
+          332.0
+        ],
+        "size": [
+          376.0,
+          244.0,
+          244.0
+        ]
+      },
+      "center_of_mass": [
+        0.548,
+        -0.626,
+        230.239
+      ],
+      "triangles": 10012,
+      "shells": 1,
+      "watertight": true,
+      "genus": 15,
+      "wall_thickness": {
+        "min_mm": 0.508,
+        "at": [
+          187.493,
+          51.853,
+          306.5
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 90.0,
+        "area_mm2": 63395.62,
+        "worst_at": [
+          -156.333,
+          -93.0,
+          90.0
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 13787.0,
+        "material_g_petg": 14120.6,
+        "rough_time_min": 18531,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#6f6a94"
+    },
+    "head": {
+      "volume_mm3": 6686260.497,
+      "surface_area_mm2": 339441.135,
+      "bbox": {
+        "min": [
+          -188.0,
+          -154.0,
+          317.0
+        ],
+        "max": [
+          188.0,
+          100.0,
+          427.0
+        ],
+        "size": [
+          376.0,
+          254.0,
+          110.0
+        ]
+      },
+      "center_of_mass": [
+        -0.834,
+        -17.131,
+        373.897
+      ],
+      "triangles": 1804,
+      "shells": 1,
+      "watertight": true,
+      "genus": 0,
+      "wall_thickness": {
+        "min_mm": 4.0,
+        "at": [
+          184.0,
+          20.667,
+          417.667
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 90.0,
+        "area_mm2": 98143.58,
+        "worst_at": [
+          -60.313,
+          -99.233,
+          332.0
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 8291.0,
+        "material_g_petg": 8491.6,
+        "rough_time_min": 11144,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#8b8b88"
+    },
+    "valve_cover": {
+      "volume_mm3": 722758.844,
+      "surface_area_mm2": 199522.699,
+      "bbox": {
+        "min": [
+          -176.0,
+          -74.0,
+          422.0
+        ],
+        "max": [
+          188.0,
+          74.0,
+          479.0
+        ],
+        "size": [
+          364.0,
+          148.0,
+          57.0
+        ]
+      },
+      "center_of_mass": [
+        7.566,
+        0.583,
+        457.176
+      ],
+      "triangles": 580,
+      "shells": 1,
+      "watertight": true,
+      "genus": 0,
+      "wall_thickness": {
+        "min_mm": 3.674,
+        "at": [
+          -175.459,
+          -67.211,
+          438.0
+        ],
+        "samples": 580,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 90.0,
+        "area_mm2": 46992.0,
+        "worst_at": [
+          -53.333,
+          -22.0,
+          462.0
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 896.2,
+        "material_g_petg": 917.9,
+        "rough_time_min": 1205,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#b3202a"
+    },
+    "chain_cover": {
+      "volume_mm3": 1265947.335,
+      "surface_area_mm2": 186348.473,
+      "bbox": {
+        "min": [
+          188.0,
+          -113.0,
+          90.0
+        ],
+        "max": [
+          228.0,
+          113.0,
+          470.0
+        ],
+        "size": [
+          40.0,
+          226.0,
+          380.0
+        ]
+      },
+      "center_of_mass": [
+        197.34,
+        5.511,
+        281.673
+      ],
+      "triangles": 1320,
+      "shells": 1,
+      "watertight": true,
+      "genus": 1,
+      "wall_thickness": {
+        "min_mm": 1.048,
+        "at": [
+          197.333,
+          -0.947,
+          91.047
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 87.2,
+        "area_mm2": 2558.19,
+        "worst_at": [
+          204.0,
+          38.824,
+          398.058
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 1569.8,
+        "material_g_petg": 1607.8,
+        "rough_time_min": 2110,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#6f6a94"
+    },
+    "oil_pan": {
+      "volume_mm3": 885443.343,
+      "surface_area_mm2": 358021.079,
+      "bbox": {
+        "min": [
+          -188.0,
+          -124.0,
+          0.0
+        ],
+        "max": [
+          188.0,
+          115.0,
+          90.0
+        ],
+        "size": [
+          376.0,
+          239.0,
+          90.0
+        ]
+      },
+      "center_of_mass": [
+        -12.509,
+        -0.399,
+        35.094
+      ],
+      "triangles": 1102,
+      "shells": 1,
+      "watertight": true,
+      "genus": 0,
+      "wall_thickness": {
+        "min_mm": 4.675,
+        "at": [
+          185.649,
+          -111.755,
+          46.0
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 90.0,
+        "area_mm2": 45928.2,
+        "worst_at": [
+          -184.517,
+          -112.811,
+          82.0
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 1097.9,
+        "material_g_petg": 1124.5,
+        "rough_time_min": 1476,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": true,
+        "com_margin_mm": 4.51
+      },
+      "color": "#4a4a48"
+    },
+    "crankshaft": {
+      "volume_mm3": 2282826.394,
+      "surface_area_mm2": 241866.148,
+      "bbox": {
+        "min": [
+          -200.0,
+          -55.5,
+          46.05
+        ],
+        "max": [
+          248.0,
+          55.5,
+          193.95
+        ],
+        "size": [
+          448.0,
+          111.0,
+          147.9
+        ]
+      },
+      "center_of_mass": [
+        1.771,
+        0.0,
+        120.0
+      ],
+      "triangles": 5308,
+      "shells": 1,
+      "watertight": true,
+      "genus": 0,
+      "wall_thickness": {
+        "min_mm": 10.0,
+        "at": [
+          -190.0,
+          -10.607,
+          86.203
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 90.0,
+        "area_mm2": 24771.71,
+        "worst_at": [
+          -76.167,
+          -47.259,
+          120.0
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 2830.7,
+        "material_g_petg": 2899.2,
+        "rough_time_min": 3805,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#5b7c99"
+    },
+    "conrod_1": {
+      "volume_mm3": 70950.387,
+      "surface_area_mm2": 25193.21,
+      "bbox": {
+        "min": [
+          -153.0,
+          -33.0,
+          129.95
+        ],
+        "max": [
+          -129.0,
+          33.0,
+          318.95
+        ],
+        "size": [
+          24.0,
+          66.0,
+          189.0
+        ]
+      },
+      "center_of_mass": [
+        -141.0,
+        0.0,
+        207.268
+      ],
+      "triangles": 1156,
+      "shells": 1,
+      "watertight": true,
+      "genus": 2,
+      "wall_thickness": {
+        "min_mm": 4.5,
+        "at": [
+          -136.5,
+          -9.079,
+          223.669
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 90.0,
+        "area_mm2": 2366.95,
+        "worst_at": [
+          -135.0,
+          -2.227,
+          282.45
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 88.0,
+        "material_g_petg": 90.1,
+        "rough_time_min": 118,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#5b7c99"
+    },
+    "piston_1": {
+      "volume_mm3": 178317.04,
+      "surface_area_mm2": 46212.649,
+      "bbox": {
+        "min": [
+          -183.7,
+          -42.7,
+          263.95
+        ],
+        "max": [
+          -98.3,
+          42.7,
+          331.95
+        ],
+        "size": [
+          85.4,
+          85.4,
+          68.0
+        ]
+      },
+      "center_of_mass": [
+        -141.0,
+        -0.0,
+        307.123
+      ],
+      "triangles": 3132,
+      "shells": 1,
+      "watertight": true,
+      "genus": 1,
+      "wall_thickness": {
+        "min_mm": 2.4,
+        "at": [
+          -107.639,
+          23.873,
+          325.15
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 90.0,
+        "area_mm2": 8058.85,
+        "worst_at": [
+          -173.529,
+          -24.995,
+          326.75
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 221.1,
+        "material_g_petg": 226.5,
+        "rough_time_min": 297,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#b8b8b4"
+    },
+    "conrod_2": {
+      "volume_mm3": 70950.387,
+      "surface_area_mm2": 25193.21,
+      "bbox": {
+        "min": [
+          -59.0,
+          -33.0,
+          44.05
+        ],
+        "max": [
+          -35.0,
+          33.0,
+          233.05
+        ],
+        "size": [
+          24.0,
+          66.0,
+          189.0
+        ]
+      },
+      "center_of_mass": [
+        -47.0,
+        0.0,
+        121.368
+      ],
+      "triangles": 1156,
+      "shells": 1,
+      "watertight": true,
+      "genus": 2,
+      "wall_thickness": {
+        "min_mm": 4.5,
+        "at": [
+          -42.5,
+          -9.079,
+          137.769
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 90.0,
+        "area_mm2": 2366.95,
+        "worst_at": [
+          -41.0,
+          -2.227,
+          196.55
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 88.0,
+        "material_g_petg": 90.1,
+        "rough_time_min": 118,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#5b7c99"
+    },
+    "piston_2": {
+      "volume_mm3": 178317.04,
+      "surface_area_mm2": 46212.649,
+      "bbox": {
+        "min": [
+          -89.7,
+          -42.7,
+          178.05
+        ],
+        "max": [
+          -4.3,
+          42.7,
+          246.05
+        ],
+        "size": [
+          85.4,
+          85.4,
+          68.0
+        ]
+      },
+      "center_of_mass": [
+        -47.0,
+        0.0,
+        221.223
+      ],
+      "triangles": 3132,
+      "shells": 1,
+      "watertight": true,
+      "genus": 1,
+      "wall_thickness": {
+        "min_mm": 2.4,
+        "at": [
+          -70.873,
+          33.361,
+          239.25
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 90.0,
+        "area_mm2": 8058.85,
+        "worst_at": [
+          -79.529,
+          -24.995,
+          240.85
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 221.1,
+        "material_g_petg": 226.5,
+        "rough_time_min": 297,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#b8b8b4"
+    },
+    "conrod_3": {
+      "volume_mm3": 70950.387,
+      "surface_area_mm2": 25193.21,
+      "bbox": {
+        "min": [
+          35.0,
+          -33.0,
+          44.05
+        ],
+        "max": [
+          59.0,
+          33.0,
+          233.05
+        ],
+        "size": [
+          24.0,
+          66.0,
+          189.0
+        ]
+      },
+      "center_of_mass": [
+        47.0,
+        0.0,
+        121.368
+      ],
+      "triangles": 1156,
+      "shells": 1,
+      "watertight": true,
+      "genus": 2,
+      "wall_thickness": {
+        "min_mm": 4.5,
+        "at": [
+          51.5,
+          -9.079,
+          137.769
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 90.0,
+        "area_mm2": 2366.95,
+        "worst_at": [
+          53.0,
+          -2.227,
+          196.55
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 88.0,
+        "material_g_petg": 90.1,
+        "rough_time_min": 118,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#5b7c99"
+    },
+    "piston_3": {
+      "volume_mm3": 178317.04,
+      "surface_area_mm2": 46212.649,
+      "bbox": {
+        "min": [
+          4.3,
+          -42.7,
+          178.05
+        ],
+        "max": [
+          89.7,
+          42.7,
+          246.05
+        ],
+        "size": [
+          85.4,
+          85.4,
+          68.0
+        ]
+      },
+      "center_of_mass": [
+        47.0,
+        -0.0,
+        221.223
+      ],
+      "triangles": 3132,
+      "shells": 1,
+      "watertight": true,
+      "genus": 1,
+      "wall_thickness": {
+        "min_mm": 2.4,
+        "at": [
+          23.127,
+          33.361,
+          239.25
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 90.0,
+        "area_mm2": 8058.85,
+        "worst_at": [
+          14.471,
+          -24.995,
+          240.85
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 221.1,
+        "material_g_petg": 226.5,
+        "rough_time_min": 297,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#b8b8b4"
+    },
+    "conrod_4": {
+      "volume_mm3": 70950.387,
+      "surface_area_mm2": 25193.21,
+      "bbox": {
+        "min": [
+          129.0,
+          -33.0,
+          129.95
+        ],
+        "max": [
+          153.0,
+          33.0,
+          318.95
+        ],
+        "size": [
+          24.0,
+          66.0,
+          189.0
+        ]
+      },
+      "center_of_mass": [
+        141.0,
+        0.0,
+        207.268
+      ],
+      "triangles": 1156,
+      "shells": 1,
+      "watertight": true,
+      "genus": 2,
+      "wall_thickness": {
+        "min_mm": 4.5,
+        "at": [
+          145.5,
+          -9.079,
+          223.669
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 90.0,
+        "area_mm2": 2366.95,
+        "worst_at": [
+          147.0,
+          -2.227,
+          282.45
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 88.0,
+        "material_g_petg": 90.1,
+        "rough_time_min": 118,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#5b7c99"
+    },
+    "piston_4": {
+      "volume_mm3": 178317.04,
+      "surface_area_mm2": 46212.649,
+      "bbox": {
+        "min": [
+          98.3,
+          -42.7,
+          263.95
+        ],
+        "max": [
+          183.7,
+          42.7,
+          331.95
+        ],
+        "size": [
+          85.4,
+          85.4,
+          68.0
+        ]
+      },
+      "center_of_mass": [
+        141.0,
+        0.0,
+        307.123
+      ],
+      "triangles": 3132,
+      "shells": 1,
+      "watertight": true,
+      "genus": 1,
+      "wall_thickness": {
+        "min_mm": 2.4,
+        "at": [
+          107.792,
+          25.449,
+          322.75
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 90.0,
+        "area_mm2": 8058.85,
+        "worst_at": [
+          108.471,
+          -24.995,
+          326.75
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 221.1,
+        "material_g_petg": 226.5,
+        "rough_time_min": 297,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#b8b8b4"
+    },
+    "cam_intake": {
+      "volume_mm3": 231277.739,
+      "surface_area_mm2": 43558.149,
+      "bbox": {
+        "min": [
+          -166.0,
+          17.0,
+          411.0
+        ],
+        "max": [
+          182.0,
+          63.0,
+          457.0
+        ],
+        "size": [
+          348.0,
+          46.0,
+          46.0
+        ]
+      },
+      "center_of_mass": [
+        11.329,
+        40.0,
+        434.0
+      ],
+      "triangles": 4756,
+      "shells": 1,
+      "watertight": true,
+      "genus": 0,
+      "wall_thickness": {
+        "min_mm": 6.0,
+        "at": [
+          176.0,
+          37.066,
+          412.244
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 88.4,
+        "area_mm2": 6863.28,
+        "worst_at": [
+          -66.0,
+          39.215,
+          416.036
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 286.8,
+        "material_g_petg": 293.7,
+        "rough_time_min": 385,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#5b7c99"
+    },
+    "cam_exhaust": {
+      "volume_mm3": 231277.739,
+      "surface_area_mm2": 43558.149,
+      "bbox": {
+        "min": [
+          -166.0,
+          -63.0,
+          411.0
+        ],
+        "max": [
+          182.0,
+          -17.0,
+          457.0
+        ],
+        "size": [
+          348.0,
+          46.0,
+          46.0
+        ]
+      },
+      "center_of_mass": [
+        11.329,
+        -40.0,
+        434.0
+      ],
+      "triangles": 4756,
+      "shells": 1,
+      "watertight": true,
+      "genus": 0,
+      "wall_thickness": {
+        "min_mm": 6.0,
+        "at": [
+          176.0,
+          -56.791,
+          424.506
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 88.4,
+        "area_mm2": 6863.28,
+        "worst_at": [
+          -160.0,
+          -39.804,
+          416.02
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 286.8,
+        "material_g_petg": 293.7,
+        "rough_time_min": 385,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#5b7c99"
+    },
+    "intake_manifold": {
+      "volume_mm3": 2420202.62,
+      "surface_area_mm2": 185314.414,
+      "bbox": {
+        "min": [
+          -170.0,
+          54.0,
+          260.0
+        ],
+        "max": [
+          170.0,
+          227.0,
+          484.0
+        ],
+        "size": [
+          340.0,
+          173.0,
+          224.0
+        ]
+      },
+      "center_of_mass": [
+        2.37,
+        171.008,
+        320.49
+      ],
+      "triangles": 2666,
+      "shells": 1,
+      "watertight": true,
+      "genus": 3,
+      "wall_thickness": {
+        "min_mm": 11.75,
+        "at": [
+          -97.118,
+          167.541,
+          428.749
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 90.0,
+        "area_mm2": 24121.52,
+        "worst_at": [
+          -56.667,
+          104.0,
+          346.0
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 3001.1,
+        "material_g_petg": 3073.7,
+        "rough_time_min": 4034,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#4a4a48"
+    },
+    "throttle_body": {
+      "volume_mm3": 372718.707,
+      "surface_area_mm2": 34245.353,
+      "bbox": {
+        "min": [
+          165.2,
+          146.0,
+          263.0
+        ],
+        "max": [
+          283.0,
+          224.0,
+          370.0
+        ],
+        "size": [
+          117.8,
+          78.0,
+          107.0
+        ]
+      },
+      "center_of_mass": [
+        219.224,
+        185.0,
+        312.769
+      ],
+      "triangles": 5802,
+      "shells": 1,
+      "watertight": true,
+      "genus": 0,
+      "wall_thickness": {
+        "min_mm": 5.982,
+        "at": [
+          279.41,
+          179.947,
+          339.003
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 90.0,
+        "area_mm2": 4271.04,
+        "worst_at": [
+          228.995,
+          200.842,
+          339.0
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 462.2,
+        "material_g_petg": 473.4,
+        "rough_time_min": 621,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#5b7c99"
+    },
+    "fuel_rail": {
+      "volume_mm3": 84188.916,
+      "surface_area_mm2": 22603.087,
+      "bbox": {
+        "min": [
+          -150.0,
+          101.5,
+          332.0
+        ],
+        "max": [
+          150.0,
+          143.0,
+          348.0
+        ],
+        "size": [
+          300.0,
+          41.5,
+          16.0
+        ]
+      },
+      "center_of_mass": [
+        0.0,
+        133.254,
+        339.903
+      ],
+      "triangles": 932,
+      "shells": 1,
+      "watertight": true,
+      "genus": 0,
+      "wall_thickness": {
+        "min_mm": 9.824,
+        "at": [
+          -142.724,
+          106.959,
+          332.912
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 79.5,
+        "area_mm2": 721.37,
+        "worst_at": [
+          -141.431,
+          106.069,
+          332.614
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 104.4,
+        "material_g_petg": 106.9,
+        "rough_time_min": 140,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#5b7c99"
+    },
+    "hp_pump": {
+      "volume_mm3": 59938.561,
+      "surface_area_mm2": 12414.736,
+      "bbox": {
+        "min": [
+          -228.0,
+          4.0,
+          336.0
+        ],
+        "max": [
+          -154.0,
+          139.0,
+          416.0
+        ],
+        "size": [
+          74.0,
+          135.0,
+          80.0
+        ]
+      },
+      "center_of_mass": [
+        -203.441,
+        36.767,
+        387.029
+      ],
+      "triangles": 1074,
+      "shells": 1,
+      "watertight": true,
+      "genus": 0,
+      "wall_thickness": {
+        "min_mm": 7.818,
+        "at": [
+          -181.096,
+          113.999,
+          351.35
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 87.2,
+        "area_mm2": 1718.47,
+        "worst_at": [
+          -196.0,
+          30.849,
+          364.042
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 74.3,
+        "material_g_petg": 76.1,
+        "rough_time_min": 100,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#5b7c99"
+    },
+    "turbo_hot": {
+      "volume_mm3": 575691.112,
+      "surface_area_mm2": 53690.364,
+      "bbox": {
+        "min": [
+          -76.0,
+          -261.0,
+          319.0
+        ],
+        "max": [
+          19.0,
+          -153.0,
+          454.0
+        ],
+        "size": [
+          95.0,
+          108.0,
+          135.0
+        ]
+      },
+      "center_of_mass": [
+        -21.117,
+        -203.386,
+        376.883
+      ],
+      "triangles": 9250,
+      "shells": 1,
+      "watertight": true,
+      "genus": 0,
+      "wall_thickness": {
+        "min_mm": 7.856,
+        "at": [
+          -6.857,
+          -185.94,
+          423.721
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 90.0,
+        "area_mm2": 6641.87,
+        "worst_at": [
+          -27.019,
+          -182.819,
+          344.0
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 713.9,
+        "material_g_petg": 731.1,
+        "rough_time_min": 959,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#4a4a48"
+    },
+    "turbo_core": {
+      "volume_mm3": 138998.267,
+      "surface_area_mm2": 23098.383,
+      "bbox": {
+        "min": [
+          18.0,
+          -234.0,
+          244.0
+        ],
+        "max": [
+          73.0,
+          -113.5,
+          431.0
+        ],
+        "size": [
+          55.0,
+          120.5,
+          187.0
+        ]
+      },
+      "center_of_mass": [
+        45.419,
+        -201.395,
+        362.863
+      ],
+      "triangles": 1192,
+      "shells": 1,
+      "watertight": true,
+      "genus": 0,
+      "wall_thickness": {
+        "min_mm": 5.894,
+        "at": [
+          47.853,
+          -145.041,
+          295.671
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 87.2,
+        "area_mm2": 2573.16,
+        "worst_at": [
+          57.85,
+          -210.193,
+          346.108
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 172.4,
+        "material_g_petg": 176.5,
+        "rough_time_min": 232,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#5b7c99"
+    },
+    "turbo_cold": {
+      "volume_mm3": 791606.449,
+      "surface_area_mm2": 62629.022,
+      "bbox": {
+        "min": [
+          71.0,
+          -268.0,
+          312.0
+        ],
+        "max": [
+          168.0,
+          -103.0,
+          487.195
+        ],
+        "size": [
+          97.0,
+          165.0,
+          175.195
+        ]
+      },
+      "center_of_mass": [
+        108.043,
+        -194.357,
+        392.294
+      ],
+      "triangles": 18820,
+      "shells": 1,
+      "watertight": true,
+      "genus": 0,
+      "wall_thickness": {
+        "min_mm": 5.958,
+        "at": [
+          120.557,
+          -137.288,
+          474.868
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 87.3,
+        "area_mm2": 6028.45,
+        "worst_at": [
+          99.046,
+          -123.544,
+          428.899
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 981.6,
+        "material_g_petg": 1005.3,
+        "rough_time_min": 1319,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#8b8b88"
+    },
+    "downpipe": {
+      "volume_mm3": 904518.984,
+      "surface_area_mm2": 74192.229,
+      "bbox": {
+        "min": [
+          -202.0,
+          -250.5,
+          90.0
+        ],
+        "max": [
+          -77.2,
+          -165.5,
+          414.5
+        ],
+        "size": [
+          124.8,
+          85.0,
+          324.5
+        ]
+      },
+      "center_of_mass": [
+        -154.033,
+        -208.0,
+        257.455
+      ],
+      "triangles": 784,
+      "shells": 1,
+      "watertight": true,
+      "genus": 0,
+      "wall_thickness": {
+        "min_mm": 8.0,
+        "at": [
+          -85.2,
+          -219.779,
+          397.845
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 87.2,
+        "area_mm2": 1750.39,
+        "worst_at": [
+          -82.533,
+          -210.777,
+          329.636
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 1121.6,
+        "material_g_petg": 1148.7,
+        "rough_time_min": 1508,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#4a4a48"
+    },
+    "flywheel": {
+      "volume_mm3": 1444441.314,
+      "surface_area_mm2": 121667.772,
+      "bbox": {
+        "min": [
+          -230.0,
+          -125.0,
+          -5.0
+        ],
+        "max": [
+          -200.0,
+          125.0,
+          245.0
+        ],
+        "size": [
+          30.0,
+          250.0,
+          250.0
+        ]
+      },
+      "center_of_mass": [
+        -215.032,
+        0.0,
+        120.0
+      ],
+      "triangles": 4534,
+      "shells": 1,
+      "watertight": true,
+      "genus": 1,
+      "wall_thickness": {
+        "min_mm": 9.041,
+        "at": [
+          -229.333,
+          20.891,
+          108.165
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 89.9,
+        "area_mm2": 4913.68,
+        "worst_at": [
+          -212.0,
+          0.564,
+          134.974
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 1791.1,
+        "material_g_petg": 1834.4,
+        "rough_time_min": 2407,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": true,
+        "com_margin_mm": 0.0
+      },
+      "color": "#5b7c99"
+    },
+    "crank_pulley": {
+      "volume_mm3": 376845.762,
+      "surface_area_mm2": 59467.93,
+      "bbox": {
+        "min": [
+          206.0,
+          -75.0,
+          45.0
+        ],
+        "max": [
+          230.0,
+          75.0,
+          195.0
+        ],
+        "size": [
+          24.0,
+          150.0,
+          150.0
+        ]
+      },
+      "center_of_mass": [
+        218.025,
+        0.0,
+        120.0
+      ],
+      "triangles": 1536,
+      "shells": 1,
+      "watertight": true,
+      "genus": 1,
+      "wall_thickness": {
+        "min_mm": 5.0,
+        "at": [
+          215.0,
+          -72.546,
+          117.55
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 87.2,
+        "area_mm2": 2783.43,
+        "worst_at": [
+          214.0,
+          -0.627,
+          139.169
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 467.3,
+        "material_g_petg": 478.6,
+        "rough_time_min": 628,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#4a4a48"
+    },
+    "alternator": {
+      "volume_mm3": 780191.17,
+      "surface_area_mm2": 49057.165,
+      "bbox": {
+        "min": [
+          130.0,
+          114.0,
+          147.5
+        ],
+        "max": [
+          228.0,
+          222.5,
+          252.5
+        ],
+        "size": [
+          98.0,
+          108.5,
+          105.0
+        ]
+      },
+      "center_of_mass": [
+        174.597,
+        169.355,
+        200.249
+      ],
+      "triangles": 560,
+      "shells": 1,
+      "watertight": true,
+      "genus": 0,
+      "wall_thickness": {
+        "min_mm": 30.0,
+        "at": [
+          135.0,
+          117.423,
+          220.494
+        ],
+        "samples": 560,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 90.0,
+        "area_mm2": 5973.24,
+        "worst_at": [
+          145.0,
+          115.491,
+          190.0
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 967.4,
+        "material_g_petg": 990.8,
+        "rough_time_min": 1300,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#8b8b88"
+    },
+    "belt": {
+      "volume_mm3": 48193.299,
+      "surface_area_mm2": 25827.622,
+      "bbox": {
+        "min": [
+          214.0,
+          -82.0,
+          38.0
+        ],
+        "max": [
+          222.0,
+          212.0,
+          335.0
+        ],
+        "size": [
+          8.0,
+          294.0,
+          297.0
+        ]
+      },
+      "center_of_mass": [
+        218.0,
+        55.306,
+        181.467
+      ],
+      "triangles": 536,
+      "shells": 1,
+      "watertight": true,
+      "genus": 1,
+      "wall_thickness": {
+        "min_mm": 6.992,
+        "at": [
+          216.667,
+          24.271,
+          322.808
+        ],
+        "samples": 536,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 87.2,
+        "area_mm2": 3880.6,
+        "worst_at": [
+          219.333,
+          -5.358,
+          38.263
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 59.8,
+        "material_g_petg": 61.2,
+        "rough_time_min": 80,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#4a4a48"
+    },
+    "ignition_coils": {
+      "volume_mm3": 92951.46,
+      "surface_area_mm2": 19962.559,
+      "bbox": {
+        "min": [
+          -156.0,
+          -13.0,
+          470.0
+        ],
+        "max": [
+          156.0,
+          13.0,
+          512.0
+        ],
+        "size": [
+          312.0,
+          26.0,
+          42.0
+        ]
+      },
+      "center_of_mass": [
+        -0.0,
+        0.0,
+        491.6
+      ],
+      "triangles": 1136,
+      "shells": 4,
+      "watertight": true,
+      "genus": null,
+      "wall_thickness": {
+        "min_mm": 12.0,
+        "at": [
+          -152.414,
+          -9.147,
+          500.0
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 90.0,
+        "area_mm2": 550.82,
+        "worst_at": [
+          -151.831,
+          -9.731,
+          500.0
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 115.3,
+        "material_g_petg": 118.0,
+        "rough_time_min": 155,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#4a4a48"
+    },
+    "oil_filter": {
+      "volume_mm3": 345475.133,
+      "surface_area_mm2": 27347.058,
+      "bbox": {
+        "min": [
+          81.0,
+          -204.5,
+          131.0
+        ],
+        "max": [
+          159.0,
+          -131.5,
+          209.0
+        ],
+        "size": [
+          78.0,
+          73.0,
+          78.0
+        ]
+      },
+      "center_of_mass": [
+        120.0,
+        -167.718,
+        170.0
+      ],
+      "triangles": 508,
+      "shells": 1,
+      "watertight": true,
+      "genus": 0,
+      "wall_thickness": {
+        "min_mm": 69.916,
+        "at": [
+          143.9,
+          -202.5,
+          144.482
+        ],
+        "samples": 508,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 87.2,
+        "area_mm2": 3359.17,
+        "worst_at": [
+          117.713,
+          -203.5,
+          135.112
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 428.4,
+        "material_g_petg": 438.8,
+        "rough_time_min": 576,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#a56a6a"
+    },
+    "starter": {
+      "volume_mm3": 435113.413,
+      "surface_area_mm2": 36622.87,
+      "bbox": {
+        "min": [
+          -130.0,
+          -183.0,
+          117.0
+        ],
+        "max": [
+          -30.0,
+          -113.2,
+          216.0
+        ],
+        "size": [
+          100.0,
+          69.8,
+          99.0
+        ]
+      },
+      "center_of_mass": [
+        -80.0,
+        -149.034,
+        159.439
+      ],
+      "triangles": 540,
+      "shells": 1,
+      "watertight": true,
+      "genus": 0,
+      "wall_thickness": {
+        "min_mm": 20.0,
+        "at": [
+          -90.0,
+          -116.781,
+          160.0
+        ],
+        "samples": 532,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 90.0,
+        "area_mm2": 4208.45,
+        "worst_at": [
+          -90.0,
+          -116.781,
+          160.0
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 539.5,
+        "material_g_petg": 552.6,
+        "rough_time_min": 725,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#4a4a48"
+    },
+    "dipstick": {
+      "volume_mm3": 7503.891,
+      "surface_area_mm2": 4470.011,
+      "bbox": {
+        "min": [
+          154.0,
+          113.5,
+          236.5
+        ],
+        "max": [
+          178.0,
+          130.5,
+          416.0
+        ],
+        "size": [
+          24.0,
+          17.0,
+          179.5
+        ]
+      },
+      "center_of_mass": [
+        168.226,
+        123.399,
+        334.225
+      ],
+      "triangles": 8258,
+      "shells": 1,
+      "watertight": true,
+      "genus": 1,
+      "wall_thickness": {
+        "min_mm": 4.84,
+        "at": [
+          160.236,
+          124.043,
+          410.176
+        ],
+        "samples": 600,
+        "method": "inward-normal-ray"
+      },
+      "overhangs": {
+        "max_deg": 86.0,
+        "area_mm2": 71.7,
+        "worst_at": [
+          165.803,
+          127.196,
+          410.0
+        ],
+        "threshold_deg": 50.0
+      },
+      "internal_voids": {
+        "count": 0,
+        "res_mm": null,
+        "voids": []
+      },
+      "print_estimate": {
+        "material_g_pla": 9.3,
+        "material_g_petg": 9.5,
+        "rough_time_min": 13,
+        "note": "solid part at 100% infill; time is +-50%, slicer-dependent"
+      },
+      "stability": {
+        "standing": null,
+        "com_margin_mm": null,
+        "note": "part does not rest on the build plate"
+      },
+      "color": "#c2884e"
+    }
+  },
+  "pairs": [
+    {
+      "a": "block",
+      "b": "head",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.0,
+      "suggestion": null,
+      "expected": "touching",
+      "expectation": "met"
+    },
+    {
+      "a": "block",
+      "b": "valve_cover",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 90.0,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "chain_cover",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.0,
+      "suggestion": "surfaces are 0 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "block",
+      "b": "oil_pan",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.0,
+      "suggestion": null,
+      "expected": "touching",
+      "expectation": "met"
+    },
+    {
+      "a": "block",
+      "b": "crankshaft",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 1.998,
+      "suggestion": null,
+      "expected": "clearance 0.5..5 mm",
+      "expectation": "met"
+    },
+    {
+      "a": "block",
+      "b": "conrod_1",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 19.093,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "piston_1",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.3,
+      "suggestion": null,
+      "expected": "clearance 0.05..2 mm",
+      "expectation": "met"
+    },
+    {
+      "a": "block",
+      "b": "conrod_2",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 23.226,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "piston_2",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.3,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "conrod_3",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 23.226,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "piston_3",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.3,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "conrod_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 19.093,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "piston_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.3,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "cam_intake",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 79.0,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "cam_exhaust",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 79.0,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "intake_manifold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 14.0,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "throttle_body",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 33.0,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "fuel_rail",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.5,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "hp_pump",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 16.617,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "turbo_hot",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 42.72,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.5,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 43.08,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 60.579,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 12.0,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 18.0,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 1.0,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 26.0,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 141.216,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.5,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.2,
+      "suggestion": null
+    },
+    {
+      "a": "block",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.5,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "valve_cover",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.0,
+      "suggestion": null,
+      "expected": "touching",
+      "expectation": "met"
+    },
+    {
+      "a": "head",
+      "b": "chain_cover",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.0,
+      "suggestion": "surfaces are 0 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "head",
+      "b": "oil_pan",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 229.107,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "crankshaft",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 138.05,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "conrod_1",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 13.05,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "piston_1",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.05,
+      "suggestion": null,
+      "expected": "clearance 0.02..3 mm",
+      "expectation": "met"
+    },
+    {
+      "a": "head",
+      "b": "conrod_2",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 98.95,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "piston_2",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 85.95,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "conrod_3",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 98.95,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "piston_3",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 85.95,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "conrod_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 13.05,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "piston_4",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.05,
+      "suggestion": "surfaces are 0.05 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "head",
+      "b": "cam_intake",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 2.0,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "cam_exhaust",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 2.0,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "intake_manifold",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.0,
+      "suggestion": "surfaces are 0 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "head",
+      "b": "throttle_body",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 51.185,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "fuel_rail",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 1.5,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "hp_pump",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.0,
+      "suggestion": "surfaces are 0 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "head",
+      "b": "turbo_hot",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.0,
+      "suggestion": "surfaces are 0 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "head",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 3.0,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 13.989,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 20.69,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 88.284,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 138.177,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 96.913,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 26.0,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 50.0,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 126.969,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 106.11,
+      "suggestion": null
+    },
+    {
+      "a": "head",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 20.156,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "chain_cover",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.0,
+      "suggestion": "surfaces are 0 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "valve_cover",
+      "b": "oil_pan",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 332.0,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "crankshaft",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 228.05,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "conrod_1",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 105.168,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "piston_1",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 90.05,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "conrod_2",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 199.269,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "piston_2",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 177.486,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "conrod_3",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 199.269,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "piston_3",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 177.486,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "conrod_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 108.205,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "piston_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 90.05,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "cam_intake",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 2.0,
+      "suggestion": null,
+      "expected": "clearance >= 0.5 mm",
+      "expectation": "met"
+    },
+    {
+      "a": "valve_cover",
+      "b": "cam_exhaust",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 2.0,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "intake_manifold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 1.123,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "throttle_body",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 124.504,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "fuel_rail",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 85.564,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "hp_pump",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 13.416,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "turbo_hot",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 79.0,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 83.0,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 29.0,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 100.563,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 179.047,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 227.713,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 189.376,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 90.802,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "ignition_coils",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.0,
+      "suggestion": "surfaces are 0 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "valve_cover",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 220.625,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 218.446,
+      "suggestion": null
+    },
+    {
+      "a": "valve_cover",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 50.76,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "oil_pan",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.0,
+      "suggestion": "surfaces are 0 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "chain_cover",
+      "b": "crankshaft",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 1.498,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "conrod_1",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 317.0,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "piston_1",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 286.3,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "conrod_2",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 223.0,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "piston_2",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 192.3,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "conrod_3",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 129.0,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "piston_3",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 98.3,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "conrod_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 35.0,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "piston_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 4.3,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "cam_intake",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 6.0,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "cam_exhaust",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 6.0,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "intake_manifold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 18.0,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "throttle_body",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 36.167,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "fuel_rail",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 40.497,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "hp_pump",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 342.734,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "turbo_hot",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 175.05,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 135.949,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 63.959,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 271.05,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 388.0,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 4.0,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 4.5,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "belt",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.0,
+      "suggestion": "surfaces are 0 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "chain_cover",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 38.471,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 34.398,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 218.037,
+      "suggestion": null
+    },
+    {
+      "a": "chain_cover",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 14.943,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "crankshaft",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 2.0,
+      "suggestion": null,
+      "expected": "clearance >= 1 mm",
+      "expectation": "met"
+    },
+    {
+      "a": "oil_pan",
+      "b": "conrod_1",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 49.96,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "piston_1",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 174.227,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "conrod_2",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 24.619,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "piston_2",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 109.622,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "conrod_3",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 11.05,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "piston_3",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 109.622,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "conrod_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 49.96,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "piston_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 174.227,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "cam_intake",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 321.002,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "cam_exhaust",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 321.002,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "intake_manifold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 181.273,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "throttle_body",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 184.272,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "fuel_rail",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 242.297,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "hp_pump",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 246.812,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "turbo_hot",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 243.958,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 154.066,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 236.961,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 67.774,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 12.0,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 18.0,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 70.518,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 26.0,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 381.105,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 44.196,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 36.497,
+      "suggestion": null
+    },
+    {
+      "a": "oil_pan",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 146.514,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "conrod_1",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.05,
+      "suggestion": null,
+      "expected": "clearance 0.005..0.5 mm",
+      "expectation": "met"
+    },
+    {
+      "a": "crankshaft",
+      "b": "piston_1",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 73.822,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "conrod_2",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.05,
+      "suggestion": "surfaces are 0.05 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "crankshaft",
+      "b": "piston_2",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 9.015,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "conrod_3",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.05,
+      "suggestion": "surfaces are 0.05 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "crankshaft",
+      "b": "piston_3",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 9.015,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "conrod_4",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.05,
+      "suggestion": "surfaces are 0.05 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "crankshaft",
+      "b": "piston_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 73.822,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "cam_intake",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 220.051,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "cam_exhaust",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 220.051,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "intake_manifold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 158.513,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "throttle_body",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 161.51,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "fuel_rail",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 168.97,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "hp_pump",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 172.327,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "turbo_hot",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 216.337,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 115.627,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 203.916,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 122.5,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "flywheel",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.0,
+      "suggestion": "surfaces are 0 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "crankshaft",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.2,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 86.194,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 40.492,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 276.05,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 76.792,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 64.471,
+      "suggestion": null
+    },
+    {
+      "a": "crankshaft",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 105.598,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "piston_1",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.05,
+      "suggestion": "surfaces are 0.05 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "conrod_1",
+      "b": "conrod_2",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 72.067,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "piston_2",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 41.753,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "conrod_3",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 165.203,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "piston_3",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 134.044,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "conrod_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 258.0,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "piston_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 229.3,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "cam_intake",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 102.985,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "cam_exhaust",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 102.985,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "intake_manifold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 92.277,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "throttle_body",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 323.072,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "fuel_rail",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 90.296,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "hp_pump",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 62.251,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "turbo_hot",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 169.205,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 200.049,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 260.769,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 146.24,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 47.0,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 335.0,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 273.709,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 343.617,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 151.05,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 232.05,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 82.42,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_1",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 314.115,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "conrod_2",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 64.556,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "piston_2",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 30.915,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "conrod_3",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 149.206,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "piston_3",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 114.091,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "conrod_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 229.3,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "piston_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 196.6,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "cam_intake",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 83.815,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "cam_exhaust",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 84.054,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "intake_manifold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 58.997,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "throttle_body",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 296.576,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "fuel_rail",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 59.061,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "hp_pump",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 34.202,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "turbo_hot",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 139.541,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 173.538,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 231.98,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 135.564,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 36.431,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 320.608,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 260.047,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 312.352,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 138.972,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 232.646,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 109.149,
+      "suggestion": null
+    },
+    {
+      "a": "piston_1",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 287.029,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "piston_2",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.05,
+      "suggestion": null,
+      "expected": "clearance 0.005..0.5 mm",
+      "expectation": "met"
+    },
+    {
+      "a": "conrod_2",
+      "b": "conrod_3",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 70.0,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "piston_3",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 41.3,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "conrod_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 165.203,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "piston_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 149.206,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "cam_intake",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 186.595,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "cam_exhaust",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 186.595,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "intake_manifold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 145.057,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "throttle_body",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 250.609,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "fuel_rail",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 139.551,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "hp_pump",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 187.064,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "turbo_hot",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 183.439,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 129.018,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 224.495,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 182.285,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 141.0,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 241.0,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 195.3,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 249.0,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 236.95,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 168.787,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 100.441,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_2",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 227.478,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "conrod_3",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 41.3,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "piston_3",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 8.6,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "conrod_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 134.044,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "piston_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 114.091,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "cam_intake",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 169.954,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "cam_exhaust",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 169.954,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "intake_manifold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 110.914,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "throttle_body",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 220.405,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "fuel_rail",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 106.525,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "hp_pump",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 155.337,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "turbo_hot",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 149.155,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 102.263,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 192.212,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 167.443,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 110.3,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 210.838,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 169.961,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 218.64,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 224.519,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 141.009,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 70.564,
+      "suggestion": null
+    },
+    {
+      "a": "piston_2",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 200.335,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "piston_3",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.05,
+      "suggestion": "surfaces are 0.05 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "conrod_3",
+      "b": "conrod_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 72.067,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "piston_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 64.556,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "cam_intake",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 186.595,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "cam_exhaust",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 186.595,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "intake_manifold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 145.057,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "throttle_body",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 183.377,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "fuel_rail",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 139.551,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "hp_pump",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 252.333,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "turbo_hot",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 184.201,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 101.233,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 187.641,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 230.775,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 235.0,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 147.0,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 124.471,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 155.0,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 236.95,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 118.452,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 119.997,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_3",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 149.052,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "conrod_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 41.753,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "piston_4",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 30.915,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "cam_intake",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 169.954,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "cam_exhaust",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 169.954,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "intake_manifold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 110.914,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "throttle_body",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 153.072,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "fuel_rail",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 106.525,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "hp_pump",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 219.512,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "turbo_hot",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 150.308,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 70.938,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 154.236,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 198.447,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 204.3,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 117.27,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 101.179,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 124.799,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 224.519,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 93.309,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 100.249,
+      "suggestion": null
+    },
+    {
+      "a": "piston_3",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 123.581,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_4",
+      "b": "piston_4",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.05,
+      "suggestion": "surfaces are 0.05 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "conrod_4",
+      "b": "cam_intake",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 101.115,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_4",
+      "b": "cam_exhaust",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 101.115,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_4",
+      "b": "intake_manifold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 92.277,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_4",
+      "b": "throttle_body",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 129.779,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_4",
+      "b": "fuel_rail",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 90.296,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_4",
+      "b": "hp_pump",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 310.245,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_4",
+      "b": "turbo_hot",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 181.98,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_4",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 129.865,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_4",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 145.188,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_4",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 262.588,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_4",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 329.0,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_4",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 53.0,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_4",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 84.196,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_4",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 63.0,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_4",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 151.05,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_4",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 98.5,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_4",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 180.09,
+      "suggestion": null
+    },
+    {
+      "a": "conrod_4",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 102.705,
+      "suggestion": null
+    },
+    {
+      "a": "piston_4",
+      "b": "cam_intake",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 79.651,
+      "suggestion": null
+    },
+    {
+      "a": "piston_4",
+      "b": "cam_exhaust",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 79.651,
+      "suggestion": null
+    },
+    {
+      "a": "piston_4",
+      "b": "intake_manifold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 58.997,
+      "suggestion": null
+    },
+    {
+      "a": "piston_4",
+      "b": "throttle_body",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 105.323,
+      "suggestion": null
+    },
+    {
+      "a": "piston_4",
+      "b": "fuel_rail",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 59.061,
+      "suggestion": null
+    },
+    {
+      "a": "piston_4",
+      "b": "hp_pump",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 281.522,
+      "suggestion": null
+    },
+    {
+      "a": "piston_4",
+      "b": "turbo_hot",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 154.866,
+      "suggestion": null
+    },
+    {
+      "a": "piston_4",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 105.552,
+      "suggestion": null
+    },
+    {
+      "a": "piston_4",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 114.575,
+      "suggestion": null
+    },
+    {
+      "a": "piston_4",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 233.857,
+      "suggestion": null
+    },
+    {
+      "a": "piston_4",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 303.14,
+      "suggestion": null
+    },
+    {
+      "a": "piston_4",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 78.808,
+      "suggestion": null
+    },
+    {
+      "a": "piston_4",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 76.583,
+      "suggestion": null
+    },
+    {
+      "a": "piston_4",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 30.574,
+      "suggestion": null
+    },
+    {
+      "a": "piston_4",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 138.972,
+      "suggestion": null
+    },
+    {
+      "a": "piston_4",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 105.4,
+      "suggestion": null
+    },
+    {
+      "a": "piston_4",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 192.916,
+      "suggestion": null
+    },
+    {
+      "a": "piston_4",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 76.08,
+      "suggestion": null
+    },
+    {
+      "a": "cam_intake",
+      "b": "cam_exhaust",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 34.0,
+      "suggestion": null
+    },
+    {
+      "a": "cam_intake",
+      "b": "intake_manifold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 29.308,
+      "suggestion": null
+    },
+    {
+      "a": "cam_intake",
+      "b": "throttle_body",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 134.188,
+      "suggestion": null
+    },
+    {
+      "a": "cam_intake",
+      "b": "fuel_rail",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 91.872,
+      "suggestion": null
+    },
+    {
+      "a": "cam_intake",
+      "b": "hp_pump",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 22.985,
+      "suggestion": null
+    },
+    {
+      "a": "cam_intake",
+      "b": "turbo_hot",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 174.673,
+      "suggestion": null
+    },
+    {
+      "a": "cam_intake",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 179.318,
+      "suggestion": null
+    },
+    {
+      "a": "cam_intake",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 128.059,
+      "suggestion": null
+    },
+    {
+      "a": "cam_intake",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 193.266,
+      "suggestion": null
+    },
+    {
+      "a": "cam_intake",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 177.956,
+      "suggestion": null
+    },
+    {
+      "a": "cam_intake",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 219.909,
+      "suggestion": null
+    },
+    {
+      "a": "cam_intake",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 188.713,
+      "suggestion": null
+    },
+    {
+      "a": "cam_intake",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 83.183,
+      "suggestion": null
+    },
+    {
+      "a": "cam_intake",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 25.355,
+      "suggestion": null
+    },
+    {
+      "a": "cam_intake",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 264.91,
+      "suggestion": null
+    },
+    {
+      "a": "cam_intake",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 264.143,
+      "suggestion": null
+    },
+    {
+      "a": "cam_intake",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 64.012,
+      "suggestion": null
+    },
+    {
+      "a": "cam_exhaust",
+      "b": "intake_manifold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 86.358,
+      "suggestion": null
+    },
+    {
+      "a": "cam_exhaust",
+      "b": "throttle_body",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 198.945,
+      "suggestion": null
+    },
+    {
+      "a": "cam_exhaust",
+      "b": "fuel_rail",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 149.848,
+      "suggestion": null
+    },
+    {
+      "a": "cam_exhaust",
+      "b": "hp_pump",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 45.548,
+      "suggestion": null
+    },
+    {
+      "a": "cam_exhaust",
+      "b": "turbo_hot",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 95.004,
+      "suggestion": null
+    },
+    {
+      "a": "cam_exhaust",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 99.563,
+      "suggestion": null
+    },
+    {
+      "a": "cam_exhaust",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 50.137,
+      "suggestion": null
+    },
+    {
+      "a": "cam_exhaust",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 118.843,
+      "suggestion": null
+    },
+    {
+      "a": "cam_exhaust",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 177.956,
+      "suggestion": null
+    },
+    {
+      "a": "cam_exhaust",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 219.909,
+      "suggestion": null
+    },
+    {
+      "a": "cam_exhaust",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 228.113,
+      "suggestion": null
+    },
+    {
+      "a": "cam_exhaust",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 109.305,
+      "suggestion": null
+    },
+    {
+      "a": "cam_exhaust",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 25.355,
+      "suggestion": null
+    },
+    {
+      "a": "cam_exhaust",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 222.273,
+      "suggestion": null
+    },
+    {
+      "a": "cam_exhaust",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 224.213,
+      "suggestion": null
+    },
+    {
+      "a": "cam_exhaust",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 142.565,
+      "suggestion": null
+    },
+    {
+      "a": "intake_manifold",
+      "b": "throttle_body",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.2,
+      "suggestion": null
+    },
+    {
+      "a": "intake_manifold",
+      "b": "fuel_rail",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.392,
+      "suggestion": null
+    },
+    {
+      "a": "intake_manifold",
+      "b": "hp_pump",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 8.875,
+      "suggestion": null
+    },
+    {
+      "a": "intake_manifold",
+      "b": "turbo_hot",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 221.751,
+      "suggestion": null
+    },
+    {
+      "a": "intake_manifold",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 222.411,
+      "suggestion": null
+    },
+    {
+      "a": "intake_manifold",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 208.829,
+      "suggestion": null
+    },
+    {
+      "a": "intake_manifold",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 240.203,
+      "suggestion": null
+    },
+    {
+      "a": "intake_manifold",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 104.241,
+      "suggestion": null
+    },
+    {
+      "a": "intake_manifold",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 148.304,
+      "suggestion": null
+    },
+    {
+      "a": "intake_manifold",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 8.711,
+      "suggestion": null
+    },
+    {
+      "a": "intake_manifold",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 49.206,
+      "suggestion": null
+    },
+    {
+      "a": "intake_manifold",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 53.692,
+      "suggestion": null
+    },
+    {
+      "a": "intake_manifold",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 269.0,
+      "suggestion": null
+    },
+    {
+      "a": "intake_manifold",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 270.204,
+      "suggestion": null
+    },
+    {
+      "a": "intake_manifold",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 2.624,
+      "suggestion": null
+    },
+    {
+      "a": "throttle_body",
+      "b": "fuel_rail",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 19.777,
+      "suggestion": null
+    },
+    {
+      "a": "throttle_body",
+      "b": "hp_pump",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 320.089,
+      "suggestion": null
+    },
+    {
+      "a": "throttle_body",
+      "b": "turbo_hot",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 336.509,
+      "suggestion": null
+    },
+    {
+      "a": "throttle_body",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 286.654,
+      "suggestion": null
+    },
+    {
+      "a": "throttle_body",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 292.494,
+      "suggestion": null
+    },
+    {
+      "a": "throttle_body",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 399.618,
+      "suggestion": null
+    },
+    {
+      "a": "throttle_body",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 378.259,
+      "suggestion": null
+    },
+    {
+      "a": "throttle_body",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 149.174,
+      "suggestion": null
+    },
+    {
+      "a": "throttle_body",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 11.707,
+      "suggestion": null
+    },
+    {
+      "a": "throttle_body",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 14.537,
+      "suggestion": null
+    },
+    {
+      "a": "throttle_body",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 202.776,
+      "suggestion": null
+    },
+    {
+      "a": "throttle_body",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 293.297,
+      "suggestion": null
+    },
+    {
+      "a": "throttle_body",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 354.502,
+      "suggestion": null
+    },
+    {
+      "a": "throttle_body",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 20.353,
+      "suggestion": null
+    },
+    {
+      "a": "fuel_rail",
+      "b": "hp_pump",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 4.0,
+      "suggestion": null
+    },
+    {
+      "a": "fuel_rail",
+      "b": "turbo_hot",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 256.288,
+      "suggestion": null
+    },
+    {
+      "a": "fuel_rail",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 221.596,
+      "suggestion": null
+    },
+    {
+      "a": "fuel_rail",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 236.88,
+      "suggestion": null
+    },
+    {
+      "a": "fuel_rail",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 270.611,
+      "suggestion": null
+    },
+    {
+      "a": "fuel_rail",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 127.721,
+      "suggestion": null
+    },
+    {
+      "a": "fuel_rail",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 174.503,
+      "suggestion": null
+    },
+    {
+      "a": "fuel_rail",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 82.234,
+      "suggestion": null
+    },
+    {
+      "a": "fuel_rail",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 71.978,
+      "suggestion": null
+    },
+    {
+      "a": "fuel_rail",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 157.189,
+      "suggestion": null
+    },
+    {
+      "a": "fuel_rail",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 266.12,
+      "suggestion": null
+    },
+    {
+      "a": "fuel_rail",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 265.364,
+      "suggestion": null
+    },
+    {
+      "a": "fuel_rail",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 14.661,
+      "suggestion": null
+    },
+    {
+      "a": "hp_pump",
+      "b": "turbo_hot",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 203.749,
+      "suggestion": null
+    },
+    {
+      "a": "hp_pump",
+      "b": "turbo_core",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 276.683,
+      "suggestion": null
+    },
+    {
+      "a": "hp_pump",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 296.629,
+      "suggestion": null
+    },
+    {
+      "a": "hp_pump",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 191.667,
+      "suggestion": null
+    },
+    {
+      "a": "hp_pump",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 120.725,
+      "suggestion": null
+    },
+    {
+      "a": "hp_pump",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 403.53,
+      "suggestion": null
+    },
+    {
+      "a": "hp_pump",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 298.313,
+      "suggestion": null
+    },
+    {
+      "a": "hp_pump",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 370.66,
+      "suggestion": null
+    },
+    {
+      "a": "hp_pump",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 67.581,
+      "suggestion": null
+    },
+    {
+      "a": "hp_pump",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 358.796,
+      "suggestion": null
+    },
+    {
+      "a": "hp_pump",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 230.545,
+      "suggestion": null
+    },
+    {
+      "a": "hp_pump",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 314.371,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_hot",
+      "b": "turbo_core",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.0,
+      "suggestion": "surfaces are 0 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "turbo_hot",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 55.0,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_hot",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 1.2,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_hot",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 203.694,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_hot",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 272.195,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_hot",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 311.732,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_hot",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 255.016,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_hot",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 143.186,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_hot",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 150.828,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_hot",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 118.132,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_hot",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 310.527,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_core",
+      "b": "turbo_cold",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 1.0,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_core",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 95.2,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_core",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 245.13,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_core",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 184.496,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_core",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 244.68,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_core",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 183.864,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_core",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 149.896,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_core",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 65.79,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_core",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 93.346,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_core",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 258.202,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_cold",
+      "b": "downpipe",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 151.2,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_cold",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 320.071,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_cold",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 215.773,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_cold",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 291.372,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_cold",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 195.046,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_cold",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 96.785,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_cold",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 104.275,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_cold",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 170.415,
+      "suggestion": null
+    },
+    {
+      "a": "turbo_cold",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 238.072,
+      "suggestion": null
+    },
+    {
+      "a": "downpipe",
+      "b": "flywheel",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 58.802,
+      "suggestion": null
+    },
+    {
+      "a": "downpipe",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 352.122,
+      "suggestion": null
+    },
+    {
+      "a": "downpipe",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 373.235,
+      "suggestion": null
+    },
+    {
+      "a": "downpipe",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 343.1,
+      "suggestion": null
+    },
+    {
+      "a": "downpipe",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 178.142,
+      "suggestion": null
+    },
+    {
+      "a": "downpipe",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 214.729,
+      "suggestion": null
+    },
+    {
+      "a": "downpipe",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 18.884,
+      "suggestion": null
+    },
+    {
+      "a": "downpipe",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 372.862,
+      "suggestion": null
+    },
+    {
+      "a": "flywheel",
+      "b": "crank_pulley",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 406.0,
+      "suggestion": null
+    },
+    {
+      "a": "flywheel",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 330.28,
+      "suggestion": null
+    },
+    {
+      "a": "flywheel",
+      "b": "belt",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 414.0,
+      "suggestion": null
+    },
+    {
+      "a": "flywheel",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 230.274,
+      "suggestion": null
+    },
+    {
+      "a": "flywheel",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 281.629,
+      "suggestion": null
+    },
+    {
+      "a": "flywheel",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 70.0,
+      "suggestion": null
+    },
+    {
+      "a": "flywheel",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 369.33,
+      "suggestion": null
+    },
+    {
+      "a": "crank_pulley",
+      "b": "alternator",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 60.536,
+      "suggestion": null
+    },
+    {
+      "a": "crank_pulley",
+      "b": "belt",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.0,
+      "suggestion": "surfaces are 0 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "crank_pulley",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 279.873,
+      "suggestion": null
+    },
+    {
+      "a": "crank_pulley",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 78.887,
+      "suggestion": null
+    },
+    {
+      "a": "crank_pulley",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 240.246,
+      "suggestion": null
+    },
+    {
+      "a": "crank_pulley",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 95.906,
+      "suggestion": null
+    },
+    {
+      "a": "alternator",
+      "b": "belt",
+      "status": "touching",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 0.0,
+      "suggestion": "surfaces are 0 mm apart \u2014 parts that must slide or snap need real clearance (0.15-0.3 mm printed); if they should be one rigid piece, union them into a single part"
+    },
+    {
+      "a": "alternator",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 254.867,
+      "suggestion": null
+    },
+    {
+      "a": "alternator",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 245.5,
+      "suggestion": null
+    },
+    {
+      "a": "alternator",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 286.365,
+      "suggestion": null
+    },
+    {
+      "a": "alternator",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 2.932,
+      "suggestion": null
+    },
+    {
+      "a": "belt",
+      "b": "ignition_coils",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 154.34,
+      "suggestion": null
+    },
+    {
+      "a": "belt",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 79.032,
+      "suggestion": null
+    },
+    {
+      "a": "belt",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 246.937,
+      "suggestion": null
+    },
+    {
+      "a": "belt",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 40.5,
+      "suggestion": null
+    },
+    {
+      "a": "ignition_coils",
+      "b": "oil_filter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 287.279,
+      "suggestion": null
+    },
+    {
+      "a": "ignition_coils",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 286.349,
+      "suggestion": null
+    },
+    {
+      "a": "ignition_coils",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 126.385,
+      "suggestion": null
+    },
+    {
+      "a": "oil_filter",
+      "b": "starter",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 111.0,
+      "suggestion": null
+    },
+    {
+      "a": "oil_filter",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 249.459,
+      "suggestion": null
+    },
+    {
+      "a": "starter",
+      "b": "dipstick",
+      "status": "clear",
+      "overlap_volume_mm3": 0.0,
+      "overlap_bbox": null,
+      "min_clearance_mm": 315.718,
+      "suggestion": null
+    }
+  ],
+  "checks": [
+    {
+      "id": "barely-stable",
+      "level": "warn",
+      "part": "flywheel",
+      "message": "part \"flywheel\" is barely stable: the center of mass sits only 0 mm inside the footprint edge",
+      "where": null,
+      "suggestion": "a nudge will tip it; widen the base or lower the center of mass"
+    },
+    {
+      "id": "multiple-shells",
+      "level": "warn",
+      "part": "ignition_coils",
+      "message": "part \"ignition_coils\" is 4 disconnected pieces, not one solid",
+      "where": "piece 1 at (-156, -13, 470)..(-126, 13, 512), 23237.9 mm3; piece 2 at (-62, -13, 470)..(-32, 13, 512), 23237.9 mm3; piece 3 at (32, -13, 470)..(62, 13, 512), 23237.9 mm3; piece 4 at (126, -13, 470)..(156, 13, 512), 23237.9 mm3",
+      "suggestion": "pieces must overlap (not just touch) to fuse in a union; extend one into the other by ~0.1 mm. If separate pieces are intentional, emit() them as separate named parts, or pass --allow-multiple-shells"
+    }
+  ],
+  "files": {
+    "report": "report.json",
+    "renders": [
+      "renders/01_top.png",
+      "renders/slice_x_m141.png",
+      "renders/slice_z_300.png"
+    ],
+    "exports": [
+      "stl/block.stl",
+      "stl/head.stl",
+      "stl/valve_cover.stl",
+      "stl/chain_cover.stl",
+      "stl/oil_pan.stl",
+      "stl/crankshaft.stl",
+      "stl/conrod_1.stl",
+      "stl/piston_1.stl",
+      "stl/conrod_2.stl",
+      "stl/piston_2.stl",
+      "stl/conrod_3.stl",
+      "stl/piston_3.stl",
+      "stl/conrod_4.stl",
+      "stl/piston_4.stl",
+      "stl/cam_intake.stl",
+      "stl/cam_exhaust.stl",
+      "stl/intake_manifold.stl",
+      "stl/throttle_body.stl",
+      "stl/fuel_rail.stl",
+      "stl/hp_pump.stl",
+      "stl/turbo_hot.stl",
+      "stl/turbo_core.stl",
+      "stl/turbo_cold.stl",
+      "stl/downpipe.stl",
+      "stl/flywheel.stl",
+      "stl/crank_pulley.stl",
+      "stl/alternator.stl",
+      "stl/belt.stl",
+      "stl/ignition_coils.stl",
+      "stl/oil_filter.stl",
+      "stl/starter.stl",
+      "stl/dipstick.stl",
+      "stl/combined.stl"
+    ]
+  }
+}

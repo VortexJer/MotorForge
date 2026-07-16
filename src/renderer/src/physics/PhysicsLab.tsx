@@ -29,6 +29,7 @@ import { TICK_DT as CORE_DT, defaultHarness } from '@sim/hil/types'
 import { EngineAudio } from './audio'
 import { PULSE_COLOR, buildEngineDetail, engineFloorY, setActuatorPulse } from './engineDetail'
 import type { EngineDetail, LodTier } from './engineDetail'
+import { buildK20C1Detail } from './k20c1Detail'
 import SocketEditor from './SocketEditor'
 import Tachometer from './Tachometer'
 
@@ -188,6 +189,8 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
     scene.fog = new THREE.FogExp2('#05070c', 0.0085)
     gl.toneMapping = THREE.ACESFilmicToneMapping
     gl.toneMappingExposure = 1.12
+    // la vista seccionada del K20C1 corta con planos de recorte por material
+    gl.localClippingEnabled = true
     return () => {
       scene.environment = null
       scene.fog = null
@@ -227,29 +230,31 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
     wall(0.1, deckY, cageD / 2, -cageW / 2, floorY + deckY, 0)
     wall(0.1, deckY, cageD / 2, cageW / 2, floorY + deckY, 0)
 
-    // visual del bloque: camisas transparentes + cárter (macro, siempre visible)
-    const linerMat = new THREE.MeshStandardMaterial({
-      color: '#8fa3bd',
-      metalness: 0.05,
-      roughness: 0.85,
-      transparent: true,
-      opacity: 0.18,
-      side: THREE.DoubleSide,
-      depthWrite: false
-    })
-    for (let i = 0; i < cyls; i++) {
-      const liner = new THREE.Mesh(new THREE.CylinderGeometry(boreR, boreR, r * 2.6, 32, 1, true), linerMat)
-      liner.position.set(block.cylinders[i]!.x, deckY - r * 1.3, 0)
-      root.add(liner)
-    }
-    const pan = new THREE.Mesh(new THREE.BoxGeometry(cageW * 0.9, 0.12, cageD * 0.8), cadMat('#2c323d'))
-    pan.position.set(0, floorY, 0)
-    root.add(pan)
-
-    // ---- Árbol maestro de componentes (pliego LOD): culata, distribución,
-    // turbo, tuberías, tornillería instanciada y sensores ----
-    const det = buildEngineDetail(sockets, cyls)
+    // ---- Árbol maestro de componentes: Honda K20C1 (solidsight → STL) para
+    // el I4; árbol procedural (pliego LOD) para el resto de arquitecturas ----
+    const det = cyls === 4 ? buildK20C1Detail(sockets, cyls) : buildEngineDetail(sockets, cyls)
     root.add(det.root)
+
+    if (!det.selfContained) {
+      // visual del bloque procedural: camisas transparentes + cárter
+      const linerMat = new THREE.MeshStandardMaterial({
+        color: '#8fa3bd',
+        metalness: 0.05,
+        roughness: 0.85,
+        transparent: true,
+        opacity: 0.18,
+        side: THREE.DoubleSide,
+        depthWrite: false
+      })
+      for (let i = 0; i < cyls; i++) {
+        const liner = new THREE.Mesh(new THREE.CylinderGeometry(boreR, boreR, r * 2.6, 32, 1, true), linerMat)
+        liner.position.set(block.cylinders[i]!.x, deckY - r * 1.3, 0)
+        root.add(liner)
+      }
+      const pan = new THREE.Mesh(new THREE.BoxGeometry(cageW * 0.9, 0.12, cageD * 0.8), cadMat('#2c323d'))
+      pan.position.set(0, floorY, 0)
+      root.add(pan)
+    }
     detailRef.current = det
     ;(window as unknown as Record<string, unknown>)['__mfTier'] = 0
 
@@ -323,35 +328,37 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
 
     const crankGroup = new THREE.Group()
     const crankMat = crankMatRef.current
-    const shaft = new THREE.Mesh(
-      new THREE.CylinderGeometry(boreR * 0.16, boreR * 0.16, spacing * (cyls + 0.6), 14),
-      crankMat
-    )
-    shaft.rotation.z = Math.PI / 2
-    crankGroup.add(shaft)
-    for (let i = 0; i < cyls; i++) {
-      const pin = sockets.crank.rodPins[i]!
-      const web = new THREE.Group()
-      web.position.x = pin.position.x
-      web.rotation.x = pin.phase
-      const journal = new THREE.Mesh(new THREE.CylinderGeometry(boreR * 0.14, boreR * 0.14, spacing * 0.4, 12), crankMat)
-      journal.position.y = r
-      journal.rotation.z = Math.PI / 2
-      web.add(journal)
-      for (const sSign of [-1, 1]) {
-        // brazo hacia la muñequilla + contrapeso de media luna en oposición
-        const arm = new THREE.Mesh(new THREE.BoxGeometry(spacing * 0.1, r * 1.15, boreR * 0.42), crankMat)
-        arm.position.set(sSign * spacing * 0.2, r * 0.5, 0)
-        web.add(arm)
-        const weight = new THREE.Mesh(
-          new THREE.CylinderGeometry(r * 0.95, r * 0.95, spacing * 0.1, 20, 1, false, Math.PI, Math.PI),
-          crankMat
-        )
-        weight.rotation.z = Math.PI / 2
-        weight.position.set(sSign * spacing * 0.2, -r * 0.25, 0)
-        web.add(weight)
+    if (!det.selfContained) {
+      const shaft = new THREE.Mesh(
+        new THREE.CylinderGeometry(boreR * 0.16, boreR * 0.16, spacing * (cyls + 0.6), 14),
+        crankMat
+      )
+      shaft.rotation.z = Math.PI / 2
+      crankGroup.add(shaft)
+      for (let i = 0; i < cyls; i++) {
+        const pin = sockets.crank.rodPins[i]!
+        const web = new THREE.Group()
+        web.position.x = pin.position.x
+        web.rotation.x = pin.phase
+        const journal = new THREE.Mesh(new THREE.CylinderGeometry(boreR * 0.14, boreR * 0.14, spacing * 0.4, 12), crankMat)
+        journal.position.y = r
+        journal.rotation.z = Math.PI / 2
+        web.add(journal)
+        for (const sSign of [-1, 1]) {
+          // brazo hacia la muñequilla + contrapeso de media luna en oposición
+          const arm = new THREE.Mesh(new THREE.BoxGeometry(spacing * 0.1, r * 1.15, boreR * 0.42), crankMat)
+          arm.position.set(sSign * spacing * 0.2, r * 0.5, 0)
+          web.add(arm)
+          const weight = new THREE.Mesh(
+            new THREE.CylinderGeometry(r * 0.95, r * 0.95, spacing * 0.1, 20, 1, false, Math.PI, Math.PI),
+            crankMat
+          )
+          weight.rotation.z = Math.PI / 2
+          weight.position.set(sSign * spacing * 0.2, -r * 0.25, 0)
+          web.add(weight)
+        }
+        crankGroup.add(web)
       }
-      crankGroup.add(web)
     }
     // volante + corona dentada + piñón de distribución giran con el cigüeñal
     crankGroup.add(det.crankAttach)
@@ -520,6 +527,35 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
       })
     }
     rigsRef.current = rigs
+
+    // K20C1: cuando terminan de cargar los STL, las piezas móviles del rig
+    // adoptan las mallas reales conservando SUS materiales (el pintado de
+    // estrés térmico/estructural y la rotura en rojo siguen funcionando)
+    det.onReady?.(() => {
+      det.crankAttach.traverse((o) => {
+        if (o instanceof THREE.Mesh && o.name === 'crankshaft') o.material = crankMat
+      })
+      const pg = det.pistonGeometry
+      const rgeo = det.rodGeometry
+      if (!pg || !rgeo) return
+      for (const rig of rigs) {
+        if (rig.broken) continue
+        for (const grp of [rig.pistonMesh, rig.rodMesh] as const) {
+          for (const child of [...grp.children]) {
+            grp.remove(child)
+            if (child instanceof THREE.Mesh) child.geometry.dispose()
+          }
+        }
+        const pm = new THREE.Mesh(pg, rig.pistonMat)
+        pm.castShadow = true
+        pm.receiveShadow = true
+        rig.pistonMesh.add(pm)
+        const rm = new THREE.Mesh(rgeo, rig.rodMat)
+        rm.castShadow = true
+        rm.receiveShadow = true
+        rig.rodMesh.add(rm)
+      }
+    })
 
     return () => {
       scene.remove(root)

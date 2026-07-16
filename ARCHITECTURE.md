@@ -104,6 +104,21 @@ src/
     import/       Métricas de malla (BVH), derivación analítica (nivel A) y FEA vóxel (nivel B)
 ```
 
+8. **Hecha** (K20C1): el motor de exhibición del laboratorio es un Honda K20C1 (Civic Type R)
+   modelado con solidsight en `design/k20c1/model.py` (spec de características con provenance
+   [researched]/[assumed], 31 piezas, 10 `expect()` de holguras cumplidos: 0.3 mm pistón-camisa,
+   0.05 mm cojinetes, 2 mm cigüeñal-bloque) y exportado a STL por pieza en
+   `src/renderer/src/assets/k20c1/`. `physics/k20c1Detail.ts` lo adapta al contrato
+   `EngineDetail`: escala ANISÓTROPA (kx = spacing/94 mm, k = bore/86 mm — todo gira sobre X,
+   así que el estiramiento no se deforma al girar), pivotes recentrados con `datums.json`,
+   carga STL asíncrona con `onReady()` (el rig intercambia las geometrías de pistón/biela
+   conservando SUS materiales → el pintado de estrés y la rotura en rojo siguen vivos), vista
+   seccionada por clipping plane (requiere `gl.localClippingEnabled`, lo activa PhysicsLab) y
+   pulsos §4 sobre cuerpos propios en las posiciones reales de bobina/inyector/bomba HP.
+   Con ≠4 cilindros se usa el árbol procedural de la fase 7 (fallback intacto). Fuera de
+   escena a propósito: radiador/intercooler/ventiladores (el K20C1 termina en las bocas
+   de admisión y downpipe).
+
 ## Gemelo digital HIL (en curso)
 
 `src/shared/sim/hil/` — el motor como caja negra física y la ECU como caja negra lógica,

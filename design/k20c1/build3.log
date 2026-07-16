@@ -1,0 +1,573 @@
+solidsight build: WARNINGS  (mode: free)
+  scene: 32 part(s), 513.0 x 495.0 x 517.0 mm, 33300011.063 mm3
+  part 'block': vol 11118570.404 mm3, 1 shell(s), min wall 0.508 mm
+  part 'head': vol 6686260.497 mm3, 1 shell(s), min wall 4.0 mm
+  part 'valve_cover': vol 722758.844 mm3, 1 shell(s), min wall 3.674 mm
+  part 'chain_cover': vol 1265947.335 mm3, 1 shell(s), min wall 1.048 mm
+  part 'oil_pan': vol 885443.343 mm3, 1 shell(s), min wall 4.675 mm
+  part 'crankshaft': vol 2282826.394 mm3, 1 shell(s), min wall 10.0 mm
+  part 'conrod_1': vol 70950.387 mm3, 1 shell(s), min wall 4.5 mm
+  part 'piston_1': vol 178317.04 mm3, 1 shell(s), min wall 2.4 mm
+  part 'conrod_2': vol 70950.387 mm3, 1 shell(s), min wall 4.5 mm
+  part 'piston_2': vol 178317.04 mm3, 1 shell(s), min wall 2.4 mm
+  part 'conrod_3': vol 70950.387 mm3, 1 shell(s), min wall 4.5 mm
+  part 'piston_3': vol 178317.04 mm3, 1 shell(s), min wall 2.4 mm
+  part 'conrod_4': vol 70950.387 mm3, 1 shell(s), min wall 4.5 mm
+  part 'piston_4': vol 178317.04 mm3, 1 shell(s), min wall 2.4 mm
+  part 'cam_intake': vol 231277.739 mm3, 1 shell(s), min wall 6.0 mm
+  part 'cam_exhaust': vol 231277.739 mm3, 1 shell(s), min wall 6.0 mm
+  part 'intake_manifold': vol 2420202.62 mm3, 1 shell(s), min wall 11.75 mm
+  part 'throttle_body': vol 372718.707 mm3, 1 shell(s), min wall 5.982 mm
+  part 'fuel_rail': vol 84188.916 mm3, 1 shell(s), min wall 9.824 mm
+  part 'hp_pump': vol 59938.561 mm3, 1 shell(s), min wall 7.818 mm
+  part 'turbo_hot': vol 575691.112 mm3, 1 shell(s), min wall 7.856 mm
+  part 'turbo_core': vol 138998.267 mm3, 1 shell(s), min wall 5.894 mm
+  part 'turbo_cold': vol 791606.449 mm3, 1 shell(s), min wall 5.958 mm
+  part 'downpipe': vol 904518.984 mm3, 1 shell(s), min wall 8.0 mm
+  part 'flywheel': vol 1444441.314 mm3, 1 shell(s), min wall 9.041 mm
+  part 'crank_pulley': vol 376845.762 mm3, 1 shell(s), min wall 5.0 mm
+  part 'alternator': vol 780191.17 mm3, 1 shell(s), min wall 30.0 mm
+  part 'belt': vol 48193.299 mm3, 1 shell(s), min wall 6.992 mm
+  part 'ignition_coils': vol 92951.46 mm3, 4 shell(s), min wall 12.0 mm
+  part 'oil_filter': vol 345475.133 mm3, 1 shell(s), min wall 69.916 mm
+  part 'starter': vol 435113.413 mm3, 1 shell(s), min wall 20.0 mm
+  part 'dipstick': vol 7503.891 mm3, 1 shell(s), min wall 4.84 mm
+  pair 'block' <-> 'head': touching, clearance 0.0 mm  [spec MET: touching]
+  pair 'block' <-> 'valve_cover': clear, clearance 90.0 mm
+  pair 'block' <-> 'chain_cover': touching, clearance 0.0 mm
+  pair 'block' <-> 'oil_pan': touching, clearance 0.0 mm  [spec MET: touching]
+  pair 'block' <-> 'crankshaft': clear, clearance 1.998 mm  [spec MET: clearance 0.5..5 mm]
+  pair 'block' <-> 'conrod_1': clear, clearance 19.093 mm
+  pair 'block' <-> 'piston_1': clear, clearance 0.3 mm  [spec MET: clearance 0.05..2 mm]
+  pair 'block' <-> 'conrod_2': clear, clearance 23.226 mm
+  pair 'block' <-> 'piston_2': clear, clearance 0.3 mm
+  pair 'block' <-> 'conrod_3': clear, clearance 23.226 mm
+  pair 'block' <-> 'piston_3': clear, clearance 0.3 mm
+  pair 'block' <-> 'conrod_4': clear, clearance 19.093 mm
+  pair 'block' <-> 'piston_4': clear, clearance 0.3 mm
+  pair 'block' <-> 'cam_intake': clear, clearance 79.0 mm
+  pair 'block' <-> 'cam_exhaust': clear, clearance 79.0 mm
+  pair 'block' <-> 'intake_manifold': clear, clearance 14.0 mm
+  pair 'block' <-> 'throttle_body': clear, clearance 33.0 mm
+  pair 'block' <-> 'fuel_rail': clear, clearance 0.5 mm
+  pair 'block' <-> 'hp_pump': clear, clearance 16.617 mm
+  pair 'block' <-> 'turbo_hot': clear, clearance 42.72 mm
+  pair 'block' <-> 'turbo_core': clear, clearance 0.5 mm
+  pair 'block' <-> 'turbo_cold': clear, clearance 43.08 mm
+  pair 'block' <-> 'downpipe': clear, clearance 60.579 mm
+  pair 'block' <-> 'flywheel': clear, clearance 12.0 mm
+  pair 'block' <-> 'crank_pulley': clear, clearance 18.0 mm
+  pair 'block' <-> 'alternator': clear, clearance 1.0 mm
+  pair 'block' <-> 'belt': clear, clearance 26.0 mm
+  pair 'block' <-> 'ignition_coils': clear, clearance 141.216 mm
+  pair 'block' <-> 'oil_filter': clear, clearance 0.5 mm
+  pair 'block' <-> 'starter': clear, clearance 0.2 mm
+  pair 'block' <-> 'dipstick': clear, clearance 0.5 mm
+  pair 'head' <-> 'valve_cover': touching, clearance 0.0 mm  [spec MET: touching]
+  pair 'head' <-> 'chain_cover': touching, clearance 0.0 mm
+  pair 'head' <-> 'oil_pan': clear, clearance 229.107 mm
+  pair 'head' <-> 'crankshaft': clear, clearance 138.05 mm
+  pair 'head' <-> 'conrod_1': clear, clearance 13.05 mm
+  pair 'head' <-> 'piston_1': touching, clearance 0.05 mm  [spec MET: clearance 0.02..3 mm]
+  pair 'head' <-> 'conrod_2': clear, clearance 98.95 mm
+  pair 'head' <-> 'piston_2': clear, clearance 85.95 mm
+  pair 'head' <-> 'conrod_3': clear, clearance 98.95 mm
+  pair 'head' <-> 'piston_3': clear, clearance 85.95 mm
+  pair 'head' <-> 'conrod_4': clear, clearance 13.05 mm
+  pair 'head' <-> 'piston_4': touching, clearance 0.05 mm
+  pair 'head' <-> 'cam_intake': clear, clearance 2.0 mm
+  pair 'head' <-> 'cam_exhaust': clear, clearance 2.0 mm
+  pair 'head' <-> 'intake_manifold': touching, clearance 0.0 mm
+  pair 'head' <-> 'throttle_body': clear, clearance 51.185 mm
+  pair 'head' <-> 'fuel_rail': clear, clearance 1.5 mm
+  pair 'head' <-> 'hp_pump': touching, clearance 0.0 mm
+  pair 'head' <-> 'turbo_hot': touching, clearance 0.0 mm
+  pair 'head' <-> 'turbo_core': clear, clearance 3.0 mm
+  pair 'head' <-> 'turbo_cold': clear, clearance 13.989 mm
+  pair 'head' <-> 'downpipe': clear, clearance 20.69 mm
+  pair 'head' <-> 'flywheel': clear, clearance 88.284 mm
+  pair 'head' <-> 'crank_pulley': clear, clearance 138.177 mm
+  pair 'head' <-> 'alternator': clear, clearance 96.913 mm
+  pair 'head' <-> 'belt': clear, clearance 26.0 mm
+  pair 'head' <-> 'ignition_coils': clear, clearance 50.0 mm
+  pair 'head' <-> 'oil_filter': clear, clearance 126.969 mm
+  pair 'head' <-> 'starter': clear, clearance 106.11 mm
+  pair 'head' <-> 'dipstick': clear, clearance 20.156 mm
+  pair 'valve_cover' <-> 'chain_cover': touching, clearance 0.0 mm
+  pair 'valve_cover' <-> 'oil_pan': clear, clearance 332.0 mm
+  pair 'valve_cover' <-> 'crankshaft': clear, clearance 228.05 mm
+  pair 'valve_cover' <-> 'conrod_1': clear, clearance 105.168 mm
+  pair 'valve_cover' <-> 'piston_1': clear, clearance 90.05 mm
+  pair 'valve_cover' <-> 'conrod_2': clear, clearance 199.269 mm
+  pair 'valve_cover' <-> 'piston_2': clear, clearance 177.486 mm
+  pair 'valve_cover' <-> 'conrod_3': clear, clearance 199.269 mm
+  pair 'valve_cover' <-> 'piston_3': clear, clearance 177.486 mm
+  pair 'valve_cover' <-> 'conrod_4': clear, clearance 108.205 mm
+  pair 'valve_cover' <-> 'piston_4': clear, clearance 90.05 mm
+  pair 'valve_cover' <-> 'cam_intake': clear, clearance 2.0 mm  [spec MET: clearance >= 0.5 mm]
+  pair 'valve_cover' <-> 'cam_exhaust': clear, clearance 2.0 mm
+  pair 'valve_cover' <-> 'intake_manifold': clear, clearance 1.123 mm
+  pair 'valve_cover' <-> 'throttle_body': clear, clearance 124.504 mm
+  pair 'valve_cover' <-> 'fuel_rail': clear, clearance 85.564 mm
+  pair 'valve_cover' <-> 'hp_pump': clear, clearance 13.416 mm
+  pair 'valve_cover' <-> 'turbo_hot': clear, clearance 79.0 mm
+  pair 'valve_cover' <-> 'turbo_core': clear, clearance 83.0 mm
+  pair 'valve_cover' <-> 'turbo_cold': clear, clearance 29.0 mm
+  pair 'valve_cover' <-> 'downpipe': clear, clearance 100.563 mm
+  pair 'valve_cover' <-> 'flywheel': clear, clearance 179.047 mm
+  pair 'valve_cover' <-> 'crank_pulley': clear, clearance 227.713 mm
+  pair 'valve_cover' <-> 'alternator': clear, clearance 189.376 mm
+  pair 'valve_cover' <-> 'belt': clear, clearance 90.802 mm
+  pair 'valve_cover' <-> 'ignition_coils': touching, clearance 0.0 mm
+  pair 'valve_cover' <-> 'oil_filter': clear, clearance 220.625 mm
+  pair 'valve_cover' <-> 'starter': clear, clearance 218.446 mm
+  pair 'valve_cover' <-> 'dipstick': clear, clearance 50.76 mm
+  pair 'chain_cover' <-> 'oil_pan': touching, clearance 0.0 mm
+  pair 'chain_cover' <-> 'crankshaft': clear, clearance 1.498 mm
+  pair 'chain_cover' <-> 'conrod_1': clear, clearance 317.0 mm
+  pair 'chain_cover' <-> 'piston_1': clear, clearance 286.3 mm
+  pair 'chain_cover' <-> 'conrod_2': clear, clearance 223.0 mm
+  pair 'chain_cover' <-> 'piston_2': clear, clearance 192.3 mm
+  pair 'chain_cover' <-> 'conrod_3': clear, clearance 129.0 mm
+  pair 'chain_cover' <-> 'piston_3': clear, clearance 98.3 mm
+  pair 'chain_cover' <-> 'conrod_4': clear, clearance 35.0 mm
+  pair 'chain_cover' <-> 'piston_4': clear, clearance 4.3 mm
+  pair 'chain_cover' <-> 'cam_intake': clear, clearance 6.0 mm
+  pair 'chain_cover' <-> 'cam_exhaust': clear, clearance 6.0 mm
+  pair 'chain_cover' <-> 'intake_manifold': clear, clearance 18.0 mm
+  pair 'chain_cover' <-> 'throttle_body': clear, clearance 36.167 mm
+  pair 'chain_cover' <-> 'fuel_rail': clear, clearance 40.497 mm
+  pair 'chain_cover' <-> 'hp_pump': clear, clearance 342.734 mm
+  pair 'chain_cover' <-> 'turbo_hot': clear, clearance 175.05 mm
+  pair 'chain_cover' <-> 'turbo_core': clear, clearance 135.949 mm
+  pair 'chain_cover' <-> 'turbo_cold': clear, clearance 63.959 mm
+  pair 'chain_cover' <-> 'downpipe': clear, clearance 271.05 mm
+  pair 'chain_cover' <-> 'flywheel': clear, clearance 388.0 mm
+  pair 'chain_cover' <-> 'crank_pulley': clear, clearance 4.0 mm
+  pair 'chain_cover' <-> 'alternator': clear, clearance 4.5 mm
+  pair 'chain_cover' <-> 'belt': touching, clearance 0.0 mm
+  pair 'chain_cover' <-> 'ignition_coils': clear, clearance 38.471 mm
+  pair 'chain_cover' <-> 'oil_filter': clear, clearance 34.398 mm
+  pair 'chain_cover' <-> 'starter': clear, clearance 218.037 mm
+  pair 'chain_cover' <-> 'dipstick': clear, clearance 14.943 mm
+  pair 'oil_pan' <-> 'crankshaft': clear, clearance 2.0 mm  [spec MET: clearance >= 1 mm]
+  pair 'oil_pan' <-> 'conrod_1': clear, clearance 49.96 mm
+  pair 'oil_pan' <-> 'piston_1': clear, clearance 174.227 mm
+  pair 'oil_pan' <-> 'conrod_2': clear, clearance 24.619 mm
+  pair 'oil_pan' <-> 'piston_2': clear, clearance 109.622 mm
+  pair 'oil_pan' <-> 'conrod_3': clear, clearance 11.05 mm
+  pair 'oil_pan' <-> 'piston_3': clear, clearance 109.622 mm
+  pair 'oil_pan' <-> 'conrod_4': clear, clearance 49.96 mm
+  pair 'oil_pan' <-> 'piston_4': clear, clearance 174.227 mm
+  pair 'oil_pan' <-> 'cam_intake': clear, clearance 321.002 mm
+  pair 'oil_pan' <-> 'cam_exhaust': clear, clearance 321.002 mm
+  pair 'oil_pan' <-> 'intake_manifold': clear, clearance 181.273 mm
+  pair 'oil_pan' <-> 'throttle_body': clear, clearance 184.272 mm
+  pair 'oil_pan' <-> 'fuel_rail': clear, clearance 242.297 mm
+  pair 'oil_pan' <-> 'hp_pump': clear, clearance 246.812 mm
+  pair 'oil_pan' <-> 'turbo_hot': clear, clearance 243.958 mm
+  pair 'oil_pan' <-> 'turbo_core': clear, clearance 154.066 mm
+  pair 'oil_pan' <-> 'turbo_cold': clear, clearance 236.961 mm
+  pair 'oil_pan' <-> 'downpipe': clear, clearance 67.774 mm
+  pair 'oil_pan' <-> 'flywheel': clear, clearance 12.0 mm
+  pair 'oil_pan' <-> 'crank_pulley': clear, clearance 18.0 mm
+  pair 'oil_pan' <-> 'alternator': clear, clearance 70.518 mm
+  pair 'oil_pan' <-> 'belt': clear, clearance 26.0 mm
+  pair 'oil_pan' <-> 'ignition_coils': clear, clearance 381.105 mm
+  pair 'oil_pan' <-> 'oil_filter': clear, clearance 44.196 mm
+  pair 'oil_pan' <-> 'starter': clear, clearance 36.497 mm
+  pair 'oil_pan' <-> 'dipstick': clear, clearance 146.514 mm
+  pair 'crankshaft' <-> 'conrod_1': touching, clearance 0.05 mm  [spec MET: clearance 0.005..0.5 mm]
+  pair 'crankshaft' <-> 'piston_1': clear, clearance 73.822 mm
+  pair 'crankshaft' <-> 'conrod_2': touching, clearance 0.05 mm
+  pair 'crankshaft' <-> 'piston_2': clear, clearance 9.015 mm
+  pair 'crankshaft' <-> 'conrod_3': touching, clearance 0.05 mm
+  pair 'crankshaft' <-> 'piston_3': clear, clearance 9.015 mm
+  pair 'crankshaft' <-> 'conrod_4': touching, clearance 0.05 mm
+  pair 'crankshaft' <-> 'piston_4': clear, clearance 73.822 mm
+  pair 'crankshaft' <-> 'cam_intake': clear, clearance 220.051 mm
+  pair 'crankshaft' <-> 'cam_exhaust': clear, clearance 220.051 mm
+  pair 'crankshaft' <-> 'intake_manifold': clear, clearance 158.513 mm
+  pair 'crankshaft' <-> 'throttle_body': clear, clearance 161.51 mm
+  pair 'crankshaft' <-> 'fuel_rail': clear, clearance 168.97 mm
+  pair 'crankshaft' <-> 'hp_pump': clear, clearance 172.327 mm
+  pair 'crankshaft' <-> 'turbo_hot': clear, clearance 216.337 mm
+  pair 'crankshaft' <-> 'turbo_core': clear, clearance 115.627 mm
+  pair 'crankshaft' <-> 'turbo_cold': clear, clearance 203.916 mm
+  pair 'crankshaft' <-> 'downpipe': clear, clearance 122.5 mm
+  pair 'crankshaft' <-> 'flywheel': touching, clearance 0.0 mm
+  pair 'crankshaft' <-> 'crank_pulley': clear, clearance 0.2 mm
+  pair 'crankshaft' <-> 'alternator': clear, clearance 86.194 mm
+  pair 'crankshaft' <-> 'belt': clear, clearance 40.492 mm
+  pair 'crankshaft' <-> 'ignition_coils': clear, clearance 276.05 mm
+  pair 'crankshaft' <-> 'oil_filter': clear, clearance 76.792 mm
+  pair 'crankshaft' <-> 'starter': clear, clearance 64.471 mm
+  pair 'crankshaft' <-> 'dipstick': clear, clearance 105.598 mm
+  pair 'conrod_1' <-> 'piston_1': touching, clearance 0.05 mm
+  pair 'conrod_1' <-> 'conrod_2': clear, clearance 72.067 mm
+  pair 'conrod_1' <-> 'piston_2': clear, clearance 41.753 mm
+  pair 'conrod_1' <-> 'conrod_3': clear, clearance 165.203 mm
+  pair 'conrod_1' <-> 'piston_3': clear, clearance 134.044 mm
+  pair 'conrod_1' <-> 'conrod_4': clear, clearance 258.0 mm
+  pair 'conrod_1' <-> 'piston_4': clear, clearance 229.3 mm
+  pair 'conrod_1' <-> 'cam_intake': clear, clearance 102.985 mm
+  pair 'conrod_1' <-> 'cam_exhaust': clear, clearance 102.985 mm
+  pair 'conrod_1' <-> 'intake_manifold': clear, clearance 92.277 mm
+  pair 'conrod_1' <-> 'throttle_body': clear, clearance 323.072 mm
+  pair 'conrod_1' <-> 'fuel_rail': clear, clearance 90.296 mm
+  pair 'conrod_1' <-> 'hp_pump': clear, clearance 62.251 mm
+  pair 'conrod_1' <-> 'turbo_hot': clear, clearance 169.205 mm
+  pair 'conrod_1' <-> 'turbo_core': clear, clearance 200.049 mm
+  pair 'conrod_1' <-> 'turbo_cold': clear, clearance 260.769 mm
+  pair 'conrod_1' <-> 'downpipe': clear, clearance 146.24 mm
+  pair 'conrod_1' <-> 'flywheel': clear, clearance 47.0 mm
+  pair 'conrod_1' <-> 'crank_pulley': clear, clearance 335.0 mm
+  pair 'conrod_1' <-> 'alternator': clear, clearance 273.709 mm
+  pair 'conrod_1' <-> 'belt': clear, clearance 343.617 mm
+  pair 'conrod_1' <-> 'ignition_coils': clear, clearance 151.05 mm
+  pair 'conrod_1' <-> 'oil_filter': clear, clearance 232.05 mm
+  pair 'conrod_1' <-> 'starter': clear, clearance 82.42 mm
+  pair 'conrod_1' <-> 'dipstick': clear, clearance 314.115 mm
+  pair 'piston_1' <-> 'conrod_2': clear, clearance 64.556 mm
+  pair 'piston_1' <-> 'piston_2': clear, clearance 30.915 mm
+  pair 'piston_1' <-> 'conrod_3': clear, clearance 149.206 mm
+  pair 'piston_1' <-> 'piston_3': clear, clearance 114.091 mm
+  pair 'piston_1' <-> 'conrod_4': clear, clearance 229.3 mm
+  pair 'piston_1' <-> 'piston_4': clear, clearance 196.6 mm
+  pair 'piston_1' <-> 'cam_intake': clear, clearance 83.815 mm
+  pair 'piston_1' <-> 'cam_exhaust': clear, clearance 84.054 mm
+  pair 'piston_1' <-> 'intake_manifold': clear, clearance 58.997 mm
+  pair 'piston_1' <-> 'throttle_body': clear, clearance 296.576 mm
+  pair 'piston_1' <-> 'fuel_rail': clear, clearance 59.061 mm
+  pair 'piston_1' <-> 'hp_pump': clear, clearance 34.202 mm
+  pair 'piston_1' <-> 'turbo_hot': clear, clearance 139.541 mm
+  pair 'piston_1' <-> 'turbo_core': clear, clearance 173.538 mm
+  pair 'piston_1' <-> 'turbo_cold': clear, clearance 231.98 mm
+  pair 'piston_1' <-> 'downpipe': clear, clearance 135.564 mm
+  pair 'piston_1' <-> 'flywheel': clear, clearance 36.431 mm
+  pair 'piston_1' <-> 'crank_pulley': clear, clearance 320.608 mm
+  pair 'piston_1' <-> 'alternator': clear, clearance 260.047 mm
+  pair 'piston_1' <-> 'belt': clear, clearance 312.352 mm
+  pair 'piston_1' <-> 'ignition_coils': clear, clearance 138.972 mm
+  pair 'piston_1' <-> 'oil_filter': clear, clearance 232.646 mm
+  pair 'piston_1' <-> 'starter': clear, clearance 109.149 mm
+  pair 'piston_1' <-> 'dipstick': clear, clearance 287.029 mm
+  pair 'conrod_2' <-> 'piston_2': touching, clearance 0.05 mm  [spec MET: clearance 0.005..0.5 mm]
+  pair 'conrod_2' <-> 'conrod_3': clear, clearance 70.0 mm
+  pair 'conrod_2' <-> 'piston_3': clear, clearance 41.3 mm
+  pair 'conrod_2' <-> 'conrod_4': clear, clearance 165.203 mm
+  pair 'conrod_2' <-> 'piston_4': clear, clearance 149.206 mm
+  pair 'conrod_2' <-> 'cam_intake': clear, clearance 186.595 mm
+  pair 'conrod_2' <-> 'cam_exhaust': clear, clearance 186.595 mm
+  pair 'conrod_2' <-> 'intake_manifold': clear, clearance 145.057 mm
+  pair 'conrod_2' <-> 'throttle_body': clear, clearance 250.609 mm
+  pair 'conrod_2' <-> 'fuel_rail': clear, clearance 139.551 mm
+  pair 'conrod_2' <-> 'hp_pump': clear, clearance 187.064 mm
+  pair 'conrod_2' <-> 'turbo_hot': clear, clearance 183.439 mm
+  pair 'conrod_2' <-> 'turbo_core': clear, clearance 129.018 mm
+  pair 'conrod_2' <-> 'turbo_cold': clear, clearance 224.495 mm
+  pair 'conrod_2' <-> 'downpipe': clear, clearance 182.285 mm
+  pair 'conrod_2' <-> 'flywheel': clear, clearance 141.0 mm
+  pair 'conrod_2' <-> 'crank_pulley': clear, clearance 241.0 mm
+  pair 'conrod_2' <-> 'alternator': clear, clearance 195.3 mm
+  pair 'conrod_2' <-> 'belt': clear, clearance 249.0 mm
+  pair 'conrod_2' <-> 'ignition_coils': clear, clearance 236.95 mm
+  pair 'conrod_2' <-> 'oil_filter': clear, clearance 168.787 mm
+  pair 'conrod_2' <-> 'starter': clear, clearance 100.441 mm
+  pair 'conrod_2' <-> 'dipstick': clear, clearance 227.478 mm
+  pair 'piston_2' <-> 'conrod_3': clear, clearance 41.3 mm
+  pair 'piston_2' <-> 'piston_3': clear, clearance 8.6 mm
+  pair 'piston_2' <-> 'conrod_4': clear, clearance 134.044 mm
+  pair 'piston_2' <-> 'piston_4': clear, clearance 114.091 mm
+  pair 'piston_2' <-> 'cam_intake': clear, clearance 169.954 mm
+  pair 'piston_2' <-> 'cam_exhaust': clear, clearance 169.954 mm
+  pair 'piston_2' <-> 'intake_manifold': clear, clearance 110.914 mm
+  pair 'piston_2' <-> 'throttle_body': clear, clearance 220.405 mm
+  pair 'piston_2' <-> 'fuel_rail': clear, clearance 106.525 mm
+  pair 'piston_2' <-> 'hp_pump': clear, clearance 155.337 mm
+  pair 'piston_2' <-> 'turbo_hot': clear, clearance 149.155 mm
+  pair 'piston_2' <-> 'turbo_core': clear, clearance 102.263 mm
+  pair 'piston_2' <-> 'turbo_cold': clear, clearance 192.212 mm
+  pair 'piston_2' <-> 'downpipe': clear, clearance 167.443 mm
+  pair 'piston_2' <-> 'flywheel': clear, clearance 110.3 mm
+  pair 'piston_2' <-> 'crank_pulley': clear, clearance 210.838 mm
+  pair 'piston_2' <-> 'alternator': clear, clearance 169.961 mm
+  pair 'piston_2' <-> 'belt': clear, clearance 218.64 mm
+  pair 'piston_2' <-> 'ignition_coils': clear, clearance 224.519 mm
+  pair 'piston_2' <-> 'oil_filter': clear, clearance 141.009 mm
+  pair 'piston_2' <-> 'starter': clear, clearance 70.564 mm
+  pair 'piston_2' <-> 'dipstick': clear, clearance 200.335 mm
+  pair 'conrod_3' <-> 'piston_3': touching, clearance 0.05 mm
+  pair 'conrod_3' <-> 'conrod_4': clear, clearance 72.067 mm
+  pair 'conrod_3' <-> 'piston_4': clear, clearance 64.556 mm
+  pair 'conrod_3' <-> 'cam_intake': clear, clearance 186.595 mm
+  pair 'conrod_3' <-> 'cam_exhaust': clear, clearance 186.595 mm
+  pair 'conrod_3' <-> 'intake_manifold': clear, clearance 145.057 mm
+  pair 'conrod_3' <-> 'throttle_body': clear, clearance 183.377 mm
+  pair 'conrod_3' <-> 'fuel_rail': clear, clearance 139.551 mm
+  pair 'conrod_3' <-> 'hp_pump': clear, clearance 252.333 mm
+  pair 'conrod_3' <-> 'turbo_hot': clear, clearance 184.201 mm
+  pair 'conrod_3' <-> 'turbo_core': clear, clearance 101.233 mm
+  pair 'conrod_3' <-> 'turbo_cold': clear, clearance 187.641 mm
+  pair 'conrod_3' <-> 'downpipe': clear, clearance 230.775 mm
+  pair 'conrod_3' <-> 'flywheel': clear, clearance 235.0 mm
+  pair 'conrod_3' <-> 'crank_pulley': clear, clearance 147.0 mm
+  pair 'conrod_3' <-> 'alternator': clear, clearance 124.471 mm
+  pair 'conrod_3' <-> 'belt': clear, clearance 155.0 mm
+  pair 'conrod_3' <-> 'ignition_coils': clear, clearance 236.95 mm
+  pair 'conrod_3' <-> 'oil_filter': clear, clearance 118.452 mm
+  pair 'conrod_3' <-> 'starter': clear, clearance 119.997 mm
+  pair 'conrod_3' <-> 'dipstick': clear, clearance 149.052 mm
+  pair 'piston_3' <-> 'conrod_4': clear, clearance 41.753 mm
+  pair 'piston_3' <-> 'piston_4': clear, clearance 30.915 mm
+  pair 'piston_3' <-> 'cam_intake': clear, clearance 169.954 mm
+  pair 'piston_3' <-> 'cam_exhaust': clear, clearance 169.954 mm
+  pair 'piston_3' <-> 'intake_manifold': clear, clearance 110.914 mm
+  pair 'piston_3' <-> 'throttle_body': clear, clearance 153.072 mm
+  pair 'piston_3' <-> 'fuel_rail': clear, clearance 106.525 mm
+  pair 'piston_3' <-> 'hp_pump': clear, clearance 219.512 mm
+  pair 'piston_3' <-> 'turbo_hot': clear, clearance 150.308 mm
+  pair 'piston_3' <-> 'turbo_core': clear, clearance 70.938 mm
+  pair 'piston_3' <-> 'turbo_cold': clear, clearance 154.236 mm
+  pair 'piston_3' <-> 'downpipe': clear, clearance 198.447 mm
+  pair 'piston_3' <-> 'flywheel': clear, clearance 204.3 mm
+  pair 'piston_3' <-> 'crank_pulley': clear, clearance 117.27 mm
+  pair 'piston_3' <-> 'alternator': clear, clearance 101.179 mm
+  pair 'piston_3' <-> 'belt': clear, clearance 124.799 mm
+  pair 'piston_3' <-> 'ignition_coils': clear, clearance 224.519 mm
+  pair 'piston_3' <-> 'oil_filter': clear, clearance 93.309 mm
+  pair 'piston_3' <-> 'starter': clear, clearance 100.249 mm
+  pair 'piston_3' <-> 'dipstick': clear, clearance 123.581 mm
+  pair 'conrod_4' <-> 'piston_4': touching, clearance 0.05 mm
+  pair 'conrod_4' <-> 'cam_intake': clear, clearance 101.115 mm
+  pair 'conrod_4' <-> 'cam_exhaust': clear, clearance 101.115 mm
+  pair 'conrod_4' <-> 'intake_manifold': clear, clearance 92.277 mm
+  pair 'conrod_4' <-> 'throttle_body': clear, clearance 129.779 mm
+  pair 'conrod_4' <-> 'fuel_rail': clear, clearance 90.296 mm
+  pair 'conrod_4' <-> 'hp_pump': clear, clearance 310.245 mm
+  pair 'conrod_4' <-> 'turbo_hot': clear, clearance 181.98 mm
+  pair 'conrod_4' <-> 'turbo_core': clear, clearance 129.865 mm
+  pair 'conrod_4' <-> 'turbo_cold': clear, clearance 145.188 mm
+  pair 'conrod_4' <-> 'downpipe': clear, clearance 262.588 mm
+  pair 'conrod_4' <-> 'flywheel': clear, clearance 329.0 mm
+  pair 'conrod_4' <-> 'crank_pulley': clear, clearance 53.0 mm
+  pair 'conrod_4' <-> 'alternator': clear, clearance 84.196 mm
+  pair 'conrod_4' <-> 'belt': clear, clearance 63.0 mm
+  pair 'conrod_4' <-> 'ignition_coils': clear, clearance 151.05 mm
+  pair 'conrod_4' <-> 'oil_filter': clear, clearance 98.5 mm
+  pair 'conrod_4' <-> 'starter': clear, clearance 180.09 mm
+  pair 'conrod_4' <-> 'dipstick': clear, clearance 102.705 mm
+  pair 'piston_4' <-> 'cam_intake': clear, clearance 79.651 mm
+  pair 'piston_4' <-> 'cam_exhaust': clear, clearance 79.651 mm
+  pair 'piston_4' <-> 'intake_manifold': clear, clearance 58.997 mm
+  pair 'piston_4' <-> 'throttle_body': clear, clearance 105.323 mm
+  pair 'piston_4' <-> 'fuel_rail': clear, clearance 59.061 mm
+  pair 'piston_4' <-> 'hp_pump': clear, clearance 281.522 mm
+  pair 'piston_4' <-> 'turbo_hot': clear, clearance 154.866 mm
+  pair 'piston_4' <-> 'turbo_core': clear, clearance 105.552 mm
+  pair 'piston_4' <-> 'turbo_cold': clear, clearance 114.575 mm
+  pair 'piston_4' <-> 'downpipe': clear, clearance 233.857 mm
+  pair 'piston_4' <-> 'flywheel': clear, clearance 303.14 mm
+  pair 'piston_4' <-> 'crank_pulley': clear, clearance 78.808 mm
+  pair 'piston_4' <-> 'alternator': clear, clearance 76.583 mm
+  pair 'piston_4' <-> 'belt': clear, clearance 30.574 mm
+  pair 'piston_4' <-> 'ignition_coils': clear, clearance 138.972 mm
+  pair 'piston_4' <-> 'oil_filter': clear, clearance 105.4 mm
+  pair 'piston_4' <-> 'starter': clear, clearance 192.916 mm
+  pair 'piston_4' <-> 'dipstick': clear, clearance 76.08 mm
+  pair 'cam_intake' <-> 'cam_exhaust': clear, clearance 34.0 mm
+  pair 'cam_intake' <-> 'intake_manifold': clear, clearance 29.308 mm
+  pair 'cam_intake' <-> 'throttle_body': clear, clearance 134.188 mm
+  pair 'cam_intake' <-> 'fuel_rail': clear, clearance 91.872 mm
+  pair 'cam_intake' <-> 'hp_pump': clear, clearance 22.985 mm
+  pair 'cam_intake' <-> 'turbo_hot': clear, clearance 174.673 mm
+  pair 'cam_intake' <-> 'turbo_core': clear, clearance 179.318 mm
+  pair 'cam_intake' <-> 'turbo_cold': clear, clearance 128.059 mm
+  pair 'cam_intake' <-> 'downpipe': clear, clearance 193.266 mm
+  pair 'cam_intake' <-> 'flywheel': clear, clearance 177.956 mm
+  pair 'cam_intake' <-> 'crank_pulley': clear, clearance 219.909 mm
+  pair 'cam_intake' <-> 'alternator': clear, clearance 188.713 mm
+  pair 'cam_intake' <-> 'belt': clear, clearance 83.183 mm
+  pair 'cam_intake' <-> 'ignition_coils': clear, clearance 25.355 mm
+  pair 'cam_intake' <-> 'oil_filter': clear, clearance 264.91 mm
+  pair 'cam_intake' <-> 'starter': clear, clearance 264.143 mm
+  pair 'cam_intake' <-> 'dipstick': clear, clearance 64.012 mm
+  pair 'cam_exhaust' <-> 'intake_manifold': clear, clearance 86.358 mm
+  pair 'cam_exhaust' <-> 'throttle_body': clear, clearance 198.945 mm
+  pair 'cam_exhaust' <-> 'fuel_rail': clear, clearance 149.848 mm
+  pair 'cam_exhaust' <-> 'hp_pump': clear, clearance 45.548 mm
+  pair 'cam_exhaust' <-> 'turbo_hot': clear, clearance 95.004 mm
+  pair 'cam_exhaust' <-> 'turbo_core': clear, clearance 99.563 mm
+  pair 'cam_exhaust' <-> 'turbo_cold': clear, clearance 50.137 mm
+  pair 'cam_exhaust' <-> 'downpipe': clear, clearance 118.843 mm
+  pair 'cam_exhaust' <-> 'flywheel': clear, clearance 177.956 mm
+  pair 'cam_exhaust' <-> 'crank_pulley': clear, clearance 219.909 mm
+  pair 'cam_exhaust' <-> 'alternator': clear, clearance 228.113 mm
+  pair 'cam_exhaust' <-> 'belt': clear, clearance 109.305 mm
+  pair 'cam_exhaust' <-> 'ignition_coils': clear, clearance 25.355 mm
+  pair 'cam_exhaust' <-> 'oil_filter': clear, clearance 222.273 mm
+  pair 'cam_exhaust' <-> 'starter': clear, clearance 224.213 mm
+  pair 'cam_exhaust' <-> 'dipstick': clear, clearance 142.565 mm
+  pair 'intake_manifold' <-> 'throttle_body': clear, clearance 0.2 mm
+  pair 'intake_manifold' <-> 'fuel_rail': clear, clearance 0.392 mm
+  pair 'intake_manifold' <-> 'hp_pump': clear, clearance 8.875 mm
+  pair 'intake_manifold' <-> 'turbo_hot': clear, clearance 221.751 mm
+  pair 'intake_manifold' <-> 'turbo_core': clear, clearance 222.411 mm
+  pair 'intake_manifold' <-> 'turbo_cold': clear, clearance 208.829 mm
+  pair 'intake_manifold' <-> 'downpipe': clear, clearance 240.203 mm
+  pair 'intake_manifold' <-> 'flywheel': clear, clearance 104.241 mm
+  pair 'intake_manifold' <-> 'crank_pulley': clear, clearance 148.304 mm
+  pair 'intake_manifold' <-> 'alternator': clear, clearance 8.711 mm
+  pair 'intake_manifold' <-> 'belt': clear, clearance 49.206 mm
+  pair 'intake_manifold' <-> 'ignition_coils': clear, clearance 53.692 mm
+  pair 'intake_manifold' <-> 'oil_filter': clear, clearance 269.0 mm
+  pair 'intake_manifold' <-> 'starter': clear, clearance 270.204 mm
+  pair 'intake_manifold' <-> 'dipstick': clear, clearance 2.624 mm
+  pair 'throttle_body' <-> 'fuel_rail': clear, clearance 19.777 mm
+  pair 'throttle_body' <-> 'hp_pump': clear, clearance 320.089 mm
+  pair 'throttle_body' <-> 'turbo_hot': clear, clearance 336.509 mm
+  pair 'throttle_body' <-> 'turbo_core': clear, clearance 286.654 mm
+  pair 'throttle_body' <-> 'turbo_cold': clear, clearance 292.494 mm
+  pair 'throttle_body' <-> 'downpipe': clear, clearance 399.618 mm
+  pair 'throttle_body' <-> 'flywheel': clear, clearance 378.259 mm
+  pair 'throttle_body' <-> 'crank_pulley': clear, clearance 149.174 mm
+  pair 'throttle_body' <-> 'alternator': clear, clearance 11.707 mm
+  pair 'throttle_body' <-> 'belt': clear, clearance 14.537 mm
+  pair 'throttle_body' <-> 'ignition_coils': clear, clearance 202.776 mm
+  pair 'throttle_body' <-> 'oil_filter': clear, clearance 293.297 mm
+  pair 'throttle_body' <-> 'starter': clear, clearance 354.502 mm
+  pair 'throttle_body' <-> 'dipstick': clear, clearance 20.353 mm
+  pair 'fuel_rail' <-> 'hp_pump': clear, clearance 4.0 mm
+  pair 'fuel_rail' <-> 'turbo_hot': clear, clearance 256.288 mm
+  pair 'fuel_rail' <-> 'turbo_core': clear, clearance 221.596 mm
+  pair 'fuel_rail' <-> 'turbo_cold': clear, clearance 236.88 mm
+  pair 'fuel_rail' <-> 'downpipe': clear, clearance 270.611 mm
+  pair 'fuel_rail' <-> 'flywheel': clear, clearance 127.721 mm
+  pair 'fuel_rail' <-> 'crank_pulley': clear, clearance 174.503 mm
+  pair 'fuel_rail' <-> 'alternator': clear, clearance 82.234 mm
+  pair 'fuel_rail' <-> 'belt': clear, clearance 71.978 mm
+  pair 'fuel_rail' <-> 'ignition_coils': clear, clearance 157.189 mm
+  pair 'fuel_rail' <-> 'oil_filter': clear, clearance 266.12 mm
+  pair 'fuel_rail' <-> 'starter': clear, clearance 265.364 mm
+  pair 'fuel_rail' <-> 'dipstick': clear, clearance 14.661 mm
+  pair 'hp_pump' <-> 'turbo_hot': clear, clearance 203.749 mm
+  pair 'hp_pump' <-> 'turbo_core': clear, clearance 276.683 mm
+  pair 'hp_pump' <-> 'turbo_cold': clear, clearance 296.629 mm
+  pair 'hp_pump' <-> 'downpipe': clear, clearance 191.667 mm
+  pair 'hp_pump' <-> 'flywheel': clear, clearance 120.725 mm
+  pair 'hp_pump' <-> 'crank_pulley': clear, clearance 403.53 mm
+  pair 'hp_pump' <-> 'alternator': clear, clearance 298.313 mm
+  pair 'hp_pump' <-> 'belt': clear, clearance 370.66 mm
+  pair 'hp_pump' <-> 'ignition_coils': clear, clearance 67.581 mm
+  pair 'hp_pump' <-> 'oil_filter': clear, clearance 358.796 mm
+  pair 'hp_pump' <-> 'starter': clear, clearance 230.545 mm
+  pair 'hp_pump' <-> 'dipstick': clear, clearance 314.371 mm
+  pair 'turbo_hot' <-> 'turbo_core': touching, clearance 0.0 mm
+  pair 'turbo_hot' <-> 'turbo_cold': clear, clearance 55.0 mm
+  pair 'turbo_hot' <-> 'downpipe': clear, clearance 1.2 mm
+  pair 'turbo_hot' <-> 'flywheel': clear, clearance 203.694 mm
+  pair 'turbo_hot' <-> 'crank_pulley': clear, clearance 272.195 mm
+  pair 'turbo_hot' <-> 'alternator': clear, clearance 311.732 mm
+  pair 'turbo_hot' <-> 'belt': clear, clearance 255.016 mm
+  pair 'turbo_hot' <-> 'ignition_coils': clear, clearance 143.186 mm
+  pair 'turbo_hot' <-> 'oil_filter': clear, clearance 150.828 mm
+  pair 'turbo_hot' <-> 'starter': clear, clearance 118.132 mm
+  pair 'turbo_hot' <-> 'dipstick': clear, clearance 310.527 mm
+  pair 'turbo_core' <-> 'turbo_cold': clear, clearance 1.0 mm
+  pair 'turbo_core' <-> 'downpipe': clear, clearance 95.2 mm
+  pair 'turbo_core' <-> 'flywheel': clear, clearance 245.13 mm
+  pair 'turbo_core' <-> 'crank_pulley': clear, clearance 184.496 mm
+  pair 'turbo_core' <-> 'alternator': clear, clearance 244.68 mm
+  pair 'turbo_core' <-> 'belt': clear, clearance 183.864 mm
+  pair 'turbo_core' <-> 'ignition_coils': clear, clearance 149.896 mm
+  pair 'turbo_core' <-> 'oil_filter': clear, clearance 65.79 mm
+  pair 'turbo_core' <-> 'starter': clear, clearance 93.346 mm
+  pair 'turbo_core' <-> 'dipstick': clear, clearance 258.202 mm
+  pair 'turbo_cold' <-> 'downpipe': clear, clearance 151.2 mm
+  pair 'turbo_cold' <-> 'flywheel': clear, clearance 320.071 mm
+  pair 'turbo_cold' <-> 'crank_pulley': clear, clearance 215.773 mm
+  pair 'turbo_cold' <-> 'alternator': clear, clearance 291.372 mm
+  pair 'turbo_cold' <-> 'belt': clear, clearance 195.046 mm
+  pair 'turbo_cold' <-> 'ignition_coils': clear, clearance 96.785 mm
+  pair 'turbo_cold' <-> 'oil_filter': clear, clearance 104.275 mm
+  pair 'turbo_cold' <-> 'starter': clear, clearance 170.415 mm
+  pair 'turbo_cold' <-> 'dipstick': clear, clearance 238.072 mm
+  pair 'downpipe' <-> 'flywheel': clear, clearance 58.802 mm
+  pair 'downpipe' <-> 'crank_pulley': clear, clearance 352.122 mm
+  pair 'downpipe' <-> 'alternator': clear, clearance 373.235 mm
+  pair 'downpipe' <-> 'belt': clear, clearance 343.1 mm
+  pair 'downpipe' <-> 'ignition_coils': clear, clearance 178.142 mm
+  pair 'downpipe' <-> 'oil_filter': clear, clearance 214.729 mm
+  pair 'downpipe' <-> 'starter': clear, clearance 18.884 mm
+  pair 'downpipe' <-> 'dipstick': clear, clearance 372.862 mm
+  pair 'flywheel' <-> 'crank_pulley': clear, clearance 406.0 mm
+  pair 'flywheel' <-> 'alternator': clear, clearance 330.28 mm
+  pair 'flywheel' <-> 'belt': clear, clearance 414.0 mm
+  pair 'flywheel' <-> 'ignition_coils': clear, clearance 230.274 mm
+  pair 'flywheel' <-> 'oil_filter': clear, clearance 281.629 mm
+  pair 'flywheel' <-> 'starter': clear, clearance 70.0 mm
+  pair 'flywheel' <-> 'dipstick': clear, clearance 369.33 mm
+  pair 'crank_pulley' <-> 'alternator': clear, clearance 60.536 mm
+  pair 'crank_pulley' <-> 'belt': touching, clearance 0.0 mm
+  pair 'crank_pulley' <-> 'ignition_coils': clear, clearance 279.873 mm
+  pair 'crank_pulley' <-> 'oil_filter': clear, clearance 78.887 mm
+  pair 'crank_pulley' <-> 'starter': clear, clearance 240.246 mm
+  pair 'crank_pulley' <-> 'dipstick': clear, clearance 95.906 mm
+  pair 'alternator' <-> 'belt': touching, clearance 0.0 mm
+  pair 'alternator' <-> 'ignition_coils': clear, clearance 254.867 mm
+  pair 'alternator' <-> 'oil_filter': clear, clearance 245.5 mm
+  pair 'alternator' <-> 'starter': clear, clearance 286.365 mm
+  pair 'alternator' <-> 'dipstick': clear, clearance 2.932 mm
+  pair 'belt' <-> 'ignition_coils': clear, clearance 154.34 mm
+  pair 'belt' <-> 'oil_filter': clear, clearance 79.032 mm
+  pair 'belt' <-> 'starter': clear, clearance 246.937 mm
+  pair 'belt' <-> 'dipstick': clear, clearance 40.5 mm
+  pair 'ignition_coils' <-> 'oil_filter': clear, clearance 287.279 mm
+  pair 'ignition_coils' <-> 'starter': clear, clearance 286.349 mm
+  pair 'ignition_coils' <-> 'dipstick': clear, clearance 126.385 mm
+  pair 'oil_filter' <-> 'starter': clear, clearance 111.0 mm
+  pair 'oil_filter' <-> 'dipstick': clear, clearance 249.459 mm
+  pair 'starter' <-> 'dipstick': clear, clearance 315.718 mm
+  [WARN] part "flywheel" is barely stable: the center of mass sits only 0 mm inside the footprint edge
+         try:   a nudge will tip it; widen the base or lower the center of mass
+  [WARN] part "ignition_coils" is 4 disconnected pieces, not one solid
+         where: piece 1 at (-156, -13, 470)..(-126, 13, 512), 23237.9 mm3; piece 2 at (-62, -13, 470)..(-32, 13, 512), 23237.9 mm3; piece 3 at (32, -13, 470)..(62, 13, 512), 23237.9 mm3; piece 4 at (126, -13, 470)..(156, 13, 512), 23237.9 mm3
+         try:   pieces must overlap (not just touch) to fuse in a union; extend one into the other by ~0.1 mm. If separate pieces are intentional, emit() them as separate named parts, or pass --allow-multiple-shells
+  report:  out_final\report.json
+  render:  out_final\renders\01_top.png
+  render:  out_final\renders\slice_x_m141.png
+  render:  out_final\renders\slice_z_300.png
+  export:  out_final\stl\block.stl
+  export:  out_final\stl\head.stl
+  export:  out_final\stl\valve_cover.stl
+  export:  out_final\stl\chain_cover.stl
+  export:  out_final\stl\oil_pan.stl
+  export:  out_final\stl\crankshaft.stl
+  export:  out_final\stl\conrod_1.stl
+  export:  out_final\stl\piston_1.stl
+  export:  out_final\stl\conrod_2.stl
+  export:  out_final\stl\piston_2.stl
+  export:  out_final\stl\conrod_3.stl
+  export:  out_final\stl\piston_3.stl
+  export:  out_final\stl\conrod_4.stl
+  export:  out_final\stl\piston_4.stl
+  export:  out_final\stl\cam_intake.stl
+  export:  out_final\stl\cam_exhaust.stl
+  export:  out_final\stl\intake_manifold.stl
+  export:  out_final\stl\throttle_body.stl
+  export:  out_final\stl\fuel_rail.stl
+  export:  out_final\stl\hp_pump.stl
+  export:  out_final\stl\turbo_hot.stl
+  export:  out_final\stl\turbo_core.stl
+  export:  out_final\stl\turbo_cold.stl
+  export:  out_final\stl\downpipe.stl
+  export:  out_final\stl\flywheel.stl
+  export:  out_final\stl\crank_pulley.stl
+  export:  out_final\stl\alternator.stl
+  export:  out_final\stl\belt.stl
+  export:  out_final\stl\ignition_coils.stl
+  export:  out_final\stl\oil_filter.stl
+  export:  out_final\stl\starter.stl
+  export:  out_final\stl\dipstick.stl
+  export:  out_final\stl\combined.stl
+  NEXT: open the renders and LOOK at them (Read tool), then read report.json checks.
