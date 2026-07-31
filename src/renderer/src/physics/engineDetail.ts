@@ -136,8 +136,10 @@ export interface EngineDetail {
   fanBlades: THREE.Group[]
   tier: LodTier
   dispose(): void
-  /** Cinemática de distribución + LOD + vista seccionada/cerrada. */
-  update(thetaVisual: number, tier: LodTier, cutaway?: boolean): void
+  /** Cinemática de distribución + LOD + vista seccionada/cerrada.
+   *  `cutExhaustSide`: el corte elimina el lado del escape en vez del de
+   *  admisión (solo lo honra el detalle K20C1; el procedural lo ignora). */
+  update(thetaVisual: number, tier: LodTier, cutaway?: boolean, cutExhaustSide?: boolean): void
   /** El detalle trae bloque/cárter/cigüeñal propios (K20C1): el rig no debe
    *  construir sus camisas, cárter ni cigüeñal procedurales. */
   selfContained?: boolean

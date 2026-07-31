@@ -78,6 +78,8 @@ export interface LabControls {
   paused: boolean // Custom Sandbox
   /** Vista seccionada (cutaway) o carcasas cerradas. */
   cutaway: boolean
+  /** Lado que ELIMINA el corte (mira la sección desde ese lado). */
+  cutSide: 'admision' | 'escape'
 }
 
 export interface Telemetry {
@@ -864,7 +866,7 @@ function PhysicsScene({ engine, controls, onTelemetry, audio, customRod }: Scene
     const tier: LodTier = camDist < sockets.spacing * 5 ? 0 : camDist < sockets.spacing * 9.5 ? 1 : 2
     const det = detailRef.current
     if (det) {
-      det.update(thetaVisRef.current, tier, c.cutaway)
+      det.update(thetaVisRef.current, tier, c.cutaway, c.cutSide === 'escape')
       // electroventiladores: giran según el caudal de agua configurado y
       // solo con el motor en marcha (variable física real)
       const fanSpeed = rpm > 200 ? (3 + 26 * c.waterFlow) * dt : 0
@@ -1068,7 +1070,8 @@ export default function PhysicsLab({ engine }: Props): React.JSX.Element {
     materialId: 'acero',
     boltKit: 'arp',
     paused: false,
-    cutaway: true
+    cutaway: true,
+    cutSide: 'admision'
   })
   // estado espejo para re-render de la UI (la escena lee el ref)
   const [ui, setUi] = useState({ ...controls.current })
@@ -1190,7 +1193,7 @@ export default function PhysicsLab({ engine }: Props): React.JSX.Element {
     <div className="phys-lab">
       <div className="phys-canvas">
         {ready ? (
-          <Canvas key={sceneKey} shadows dpr={[1, 1.75]} camera={{ position: [5.2, 5.2, 6.2], fov: 40 }} gl={{ antialias: true }}>
+          <Canvas key={sceneKey} shadows dpr={[1, 1.75]} camera={{ position: [5.2, 5.2, -6.2], fov: 40 }} gl={{ antialias: true }}>
             <PhysicsScene
               engine={engine}
               controls={controls}
@@ -1325,6 +1328,25 @@ export default function PhysicsLab({ engine }: Props): React.JSX.Element {
                 />
                 VISTA SECCIONADA
               </label>
+              {ui.cutaway && (
+                <div className="phys-field" role="radiogroup" aria-label="Lado del corte">
+                  <label>LADO DEL CORTE</label>
+                  <div className="phys-buttons">
+                    <button
+                      className={`pbtn ${ui.cutSide === 'admision' ? 'armed' : ''}`}
+                      onClick={() => setControl('cutSide', 'admision')}
+                    >
+                      ADMISIÓN
+                    </button>
+                    <button
+                      className={`pbtn ${ui.cutSide === 'escape' ? 'armed' : ''}`}
+                      onClick={() => setControl('cutSide', 'escape')}
+                    >
+                      ESCAPE
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </section>
         </div>

@@ -1,5 +1,7 @@
 import * as THREE from 'three'
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js'
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
+import { CRANK_PHASE } from './sockets'
 import type { EngineSockets } from './sockets'
 import type { EngineDetail, LodTier } from './engineDetail'
 
@@ -68,8 +70,10 @@ const ALL_PARTS = [...STATIC_PARTS, ...CRANK_PARTS, 'cam_intake', 'cam_exhaust',
 
 /** Piezas que se ocultan en vista global (tier 2). */
 const FINE_PARTS = new Set(['fuel_rail', 'hp_pump', 'dipstick', 'ignition_coils'])
-/** Materiales que reciben el plano de corte de la vista seccionada. */
-const CLIPPED_PARTS = new Set(['block', 'head', 'valve_cover', 'chain_cover', 'oil_pan'])
+/** Piezas EXENTAS del plano de corte: los internos giratorios que el corte
+ *  existe para enseñar (el resto — carcasas Y accesorios — se secciona, para
+ *  que nada quede flotando delante de la sección). */
+const UNCLIPPED_PARTS = new Set(['crankshaft', 'flywheel', 'crank_pulley', 'cam_intake', 'cam_exhaust'])
 
 // URLs de los STL empaquetados por vite
 const stlUrls = import.meta.glob('../assets/k20c1/*.stl', {
@@ -164,6 +168,7 @@ export function buildK20C1Detail(sockets: EngineSockets, cylinders: number): Eng
   const glowInjector: THREE.MeshStandardMaterial[] = []
   const glowCoil: THREE.MeshStandardMaterial[] = []
   const glowPump = mat(CAD_GRAY, 0.4, 0.5)
+  glowPump.clippingPlanes = [clipPlane]
   materials.push(glowPump)
   const glowGroup = new THREE.Group()
   root.add(glowGroup)
@@ -171,6 +176,8 @@ export function buildK20C1Detail(sockets: EngineSockets, cylinders: number): Eng
     const cx = MM.cylX[i]!
     const gi = mat(CAD_GRAY, 0.4, 0.5)
     const gc = mat(CAD_GRAY, 0.4, 0.5)
+    gi.clippingPlanes = [clipPlane]
+    gc.clippingPlanes = [clipPlane]
     glowInjector.push(gi)
     glowCoil.push(gc)
     materials.push(gi, gc)
@@ -194,7 +201,7 @@ export function buildK20C1Detail(sockets: EngineSockets, cylinders: number): Eng
     .then((geos) => {
       const addMesh = (name: string, geo: THREE.BufferGeometry, parent: THREE.Object3D): THREE.Mesh => {
         const m = materialFor(name)
-        if (CLIPPED_PARTS.has(name)) {
+        if (!UNCLIPPED_PARTS.has(name)) {
           m.clippingPlanes = [clipPlane]
           m.clipShadows = true
           m.side = THREE.DoubleSide
@@ -288,14 +295,16 @@ export function buildK20C1Detail(sockets: EngineSockets, cylinders: number): Eng
       if (ready) cb()
       else readyCbs.push(cb)
     },
-    update(thetaVisual: number, tier: LodTier, cutaway = true): void {
+    update(thetaVisual: number, tier: LodTier, cutaway = true, cutExhaustSide = false): void {
       camIntake.rotation.x = thetaVisual / 2
       camExhaust.rotation.x = thetaVisual / 2
       if (!ready) return
-      const stateKey = tier * 2 + (cutaway ? 1 : 0)
+      const stateKey = tier * 4 + (cutaway ? 1 : 0) + (cutExhaustSide ? 2 : 0)
       if (stateKey === lastKey) return
       lastKey = stateKey
       d.tier = tier
+      // lado eliminado: admisión (z<0 del laboratorio) o escape (z>0)
+      clipPlane.normal.set(0, 0, cutExhaustSide ? -1 : 1)
       clipPlane.constant = cutaway ? 0 : 1e6
       const fineOn = tier < 2
       for (const [name, mesh] of meshByName) {

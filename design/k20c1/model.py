@@ -93,6 +93,14 @@ for hx in [-183, -PITCH, 0, PITCH, 183]:
 # boss del filtro de aceite (-Y, hacia fuera) y boss del sensor de picado
 blk += cylinder(h=22, d=60).rotate(x=90).translate(120, -109, 170)
 blk += cylinder(h=14, d=26).rotate(x=90).translate(0, -111, 255)
+# racores REALES: cada tubo entra en un taladro con holgura, nada flota
+blk += cylinder(h=24, d=28).rotate(x=-90).translate(150, 111, 130)   # entrada de agua (manguito inferior)
+blk += cylinder(h=10, d=16).rotate(x=-90).translate(94, 111, 240)    # guía de la varilla de aceite
+blk -= parts.hole(9, 20).rotate(x=-90).translate(94, 122, 240)
+blk += cylinder(h=10, d=14).rotate(x=90).translate(45, -111, 285)    # racor de engrase del turbo
+blk -= parts.hole(8, 16).rotate(x=90).translate(45, -122, 285)
+blk += cylinder(h=10, d=20).rotate(x=90).translate(45, -111, 250)    # racor de retorno del turbo
+blk -= parts.hole(14, 16).rotate(x=90).translate(45, -122, 250)
 
 # ================================================================ REGION B: internos
 # --- cigüeñal (construido con eje X en z=0, luego subido a CRANK_Z)
@@ -151,6 +159,20 @@ head += hull(
 )
 head += cylinder(h=8, d=110).rotate(x=90).translate(EXIT_X, -146, TURBO_Z)   # brida (solapa 2 con el bulto)
 head -= cylinder(h=70, d=56).rotate(x=90).translate(EXIT_X, -90, TURBO_Z)    # conducto único
+head += cylinder(h=24, d=30).rotate(y=-90).translate(-186, 75, 408)          # salida de agua (lado volante)
+# cámaras de combustión pent-roof + pozo central de bujía por cilindro
+for cx in CYL_X:
+    head -= cone(h=12, d1=82, d2=36).translate(cx, 0, DECK_Z - 0.5)
+    head -= cylinder(h=42, d=24).translate(cx, 0, 368)
+
+# --- bujías asentadas en sus pozos (visibles en el corte y bajo las bobinas)
+plugs = None
+for cx in CYL_X:
+    p = cylinder(h=24, d=18).translate(cx, 0, 372)
+    p += prism(6, 9, across_flats=19).translate(cx, 0, 396)
+    p += cylinder(h=16, d=11).translate(cx, 0, 405)
+    p += cylinder(h=5, d=6).translate(cx, 0, 421)
+    plugs = p if plugs is None else plugs + p
 
 # --- levas (8 lóbulos c/u, fases del orden 1-3-4-2) + piñón VTC
 def camshaft(exhaust):
@@ -181,6 +203,8 @@ vcover -= box(356, 132, 44).translate(6, 0, HEAD_TOP - 4)        # hueco interio
 vcover += box(300, 6, 4).translate(6, 25, 469)                   # nervios
 vcover += box(300, 6, 4).translate(6, -25, 469)
 vcover += cylinder(h=10, d=38).translate(120, 42, 469)           # tapón de aceite
+vcover += cylinder(h=11, d=16).translate(-100, 60, 467)          # racor PCV
+vcover -= cylinder(h=24, d=13).translate(-100, 60, 466)
 
 coils = None
 for cx in CYL_X:
@@ -192,17 +216,19 @@ plenum = cylinder(h=320, d=84).rotate(y=90).translate(-155, 185, 302)
 intake = plenum + box(340, 12, 60).translate(0, 106, 346)        # brida sobre las lumbreras
 for cx in CYL_X:
     intake += parts.tube_path([(cx, 124, 368), (cx, 150, 372), (cx, 178, 340), (cx, 185, 312)], d=40)
-intake += parts.tube_path([(-100, 60, 478), (-100, 76, 477), (-100, 135, 468),
-                           (-100, 178, 404), (-100, 185, 344)], d=12)   # PCV
+intake += parts.tube_path([(-100, 60, 477), (-100, 60, 490), (-100, 90, 488), (-100, 135, 470),
+                           (-100, 178, 404), (-100, 185, 344)], d=12)   # PCV (entra en su racor)
 throttle = cylinder(h=8, d=78).rotate(y=90).translate(165.2, 185, 302)
 throttle += cylinder(h=40, d=64).rotate(y=90).translate(173, 185, 302)
 throttle += parts.tube_path([(213, 185, 302), (240, 185, 306), (252, 185, 326), (252, 185, 342)], d=56)
-throttle += torus(28, 3).translate(252, 185, 342)                # abrazadera al intercooler
+# tubo de carga frío: intercooler → mariposa (rodea el radiador por +Y)
+throttle += parts.tube_path([(252, 185, 340), (256, 192, 344), (300, 255, 345), (360, 270, 250),
+                             (380, 270, 170), (385, 238, 150)], d=54)
 
 # --- raíl DI + inyectores + bomba HP
 rail = box(300, 16, 16).translate(0, 135, 332)
 for cx in CYL_X:
-    rail += parts.tube_path([(cx, 135, 342), (cx, 106.5, 337.5)], d=10)
+    rail += parts.tube_path([(cx, 135, 342), (cx, 106.5, 337.5)], d=12)   # inyectores DI
 hp_pump = cylinder(h=40, d=36).rotate(y=-90).translate(-188, 30, 390)
 hp_pump += cylinder(h=12, d=52).rotate(y=-90).translate(-188, 30, 390)
 hp_pump += parts.tube_path([(-212, 42, 384), (-206, 95, 362), (-172, 128, 348), (-158, 135, 340)], d=8)
@@ -217,14 +243,15 @@ turbo_hot += parts.tube_path([(EXIT_X, -178, 432), (EXIT_X, -200, 420)], d=8)  #
 
 turbo_core = cylinder(h=55, d=52).rotate(y=90).translate(18, TURBO_Y, TURBO_Z)
 turbo_core += parts.tube_path([(45, TURBO_Y, 396), (45, TURBO_Y, 428), (45, -160, 428),
-                               (45, -160, 300), (45, -117, 285)], d=6)         # engrase
-turbo_core += parts.tube_path([(45, TURBO_Y, 348), (45, -160, 270), (45, -119.5, 250)], d=12)  # retorno
+                               (45, -160, 300), (45, -116, 285)], d=6)         # engrase (entra en su racor)
+turbo_core += parts.tube_path([(45, TURBO_Y, 348), (45, -160, 270), (45, -116, 250)], d=12)  # retorno (ídem)
 
 turbo_cold = torus(34, 26).rotate(y=90).translate(101, TURBO_Y, TURBO_Z)
 turbo_cold += cone(h=40, d1=68, d2=58).rotate(y=90).translate(125, TURBO_Y, TURBO_Z)
 turbo_cold += torus(30, 3).rotate(y=90).translate(165, TURBO_Y, TURBO_Z)       # boca de admisión
-turbo_cold += parts.tube_path([(101, TURBO_Y, 398), (101, -170, 448), (101, -130, 458)], d=54)  # salida al IC
-turbo_cold += torus(27, 3).rotate(x=-76).translate(101, -130, 458)
+# tubo de carga caliente: compresor → intercooler (rodea el radiador por -Y)
+turbo_cold += parts.tube_path([(101, TURBO_Y, 398), (101, -170, 448), (150, -170, 478), (230, -170, 460),
+                               (300, -210, 380), (330, -270, 250), (362, -270, 160), (385, -238, 150)], d=54)
 
 downpipe = cylinder(h=8, d=85).rotate(y=-90).translate(EXIT_X - 72.2, TURBO_Y, TURBO_Z)
 downpipe += parts.tube_path([(-112, TURBO_Y, TURBO_Z), (-150, TURBO_Y, 335),
@@ -266,8 +293,45 @@ starter = cylinder(h=100, d=66).rotate(y=90).translate(-130, -150, 150)
 starter += cylinder(h=70, d=40).rotate(y=90).translate(-115, -150, 196)
 starter += box(60, 36, 20).translate(-80, -131.2, 160)
 
-dipstick = parts.tube_path([(170, 117, 240), (170, 122, 300), (166, 127, 395)], d=7)
-dipstick += torus(9, 3).rotate(x=90).translate(166, 127, 404)
+# varilla de aceite: ENTRA en su guía taladrada del bloque (reubicada entre
+# los runners 2 y 3 para dejar sitio a la salida de agua)
+dipstick = parts.tube_path([(94, 116, 240), (94, 122, 300), (90, 127, 395)], d=7)
+dipstick += torus(9, 3).rotate(x=90).translate(90, 127, 404)
+
+# ================================================================ REGION H: celda de refrigeración
+RAD_X = 337
+rad = box(30, 400, 380).translate(RAD_X, 0, 50)                       # núcleo
+rad += box(44, 36, 396).translate(RAD_X, 218, 44)                     # tanque +Y
+rad += box(44, 36, 396).translate(RAD_X, -218, 44)                    # tanque -Y
+rad += cylinder(h=12, d=34).translate(RAD_X, 218, 438)                # cuello de llenado
+rad += cylinder(h=8, d=42).translate(RAD_X, 218, 450)                 # tapón
+rad += box(24, 20, 54).translate(RAD_X, 120, 0)                       # patas
+rad += box(24, 20, 54).translate(RAD_X, -120, 0)
+rad += cylinder(h=14, d=36).rotate(y=-90).translate(316, 214, 400)    # boca del manguito superior
+rad += cylinder(h=14, d=36).rotate(y=-90).translate(316, 205, 65)     # boca del manguito inferior
+
+
+def cooling_fan():
+    blade = box(70, 18, 4).rotate(x=26).translate(48, 0, 10)
+    f = cylinder(h=16, d=44) + parts.circular_pattern(blade, 7)
+    return f.rotate(y=90)
+
+
+fan1 = cooling_fan().translate(294, -95, 250)
+fan2 = cooling_fan().translate(294, 95, 250)
+
+ic = box(28, 310, 110).translate(385, 0, 60)                          # intercooler
+ic += box(40, 34, 124).translate(385, 172, 53)
+ic += box(40, 34, 124).translate(385, -172, 53)
+ic += cylinder(h=16, d=58).rotate(x=-90).translate(385, 189, 150)     # boca fría (+Y)
+ic += cylinder(h=16, d=58).rotate(x=90).translate(385, -189, 150)     # boca caliente (-Y)
+ic += box(24, 18, 64).translate(385, 120, 0)
+ic += box(24, 18, 64).translate(385, -120, 0)
+
+# manguitos de agua: culata → radiador (superior) y radiador → bloque (inferior)
+hoses = parts.tube_path([(-230, 75, 408), (-228, 130, 422), (-180, 205, 430), (0, 235, 430),
+                         (200, 235, 425), (285, 216, 402)], d=32)
+hoses += parts.tube_path([(150, 152, 132), (210, 190, 100), (255, 205, 75), (285, 207, 66)], d=32)
 
 # ================================================================ emits
 emit(blk, name="block", color="slate")
@@ -300,6 +364,12 @@ emit(coils, name="ignition_coils", color="dark")
 emit(oil_filter, name="oil_filter", color="clay")
 emit(starter, name="starter", color="dark")
 emit(dipstick, name="dipstick", color="amber")
+emit(plugs, name="spark_plugs", color="light")
+emit(rad, name="radiator", color="dark")
+emit(fan1, name="fan_1", color="dark")
+emit(fan2, name="fan_2", color="dark")
+emit(ic, name="intercooler", color="gray")
+emit(hoses, name="coolant_hoses", color="dark")
 
 # ---- intención de ajustes (holguras de diseño)
 expect("piston_1", "block", clearance=(0.05, 2.0))
@@ -312,3 +382,8 @@ expect("valve_cover", "head", status="touching")
 expect("oil_pan", "block", status="touching")
 expect("cam_intake", "valve_cover", clearance=0.5)
 expect("crankshaft", "oil_pan", clearance=1.0)
+expect("spark_plugs", "head", clearance=(0.3, 5.0))
+expect("dipstick", "block", clearance=(0.3, 6.0))
+expect("fan_1", "radiator", clearance=(0.5, 30.0))
+expect("coolant_hoses", "radiator", clearance=(0.3, 10.0))
+expect("coolant_hoses", "block", clearance=(0.3, 10.0))
