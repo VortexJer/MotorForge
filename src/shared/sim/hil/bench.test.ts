@@ -1,4 +1,10 @@
 import { describe, expect, it } from 'vitest'
+
+// Sin timeout por test a proposito: manda el de vitest.config.ts (120 s). Un
+// 30000 aqui pisaba esa configuracion y el bench se ponia rojo por quedarse sin
+// tiempo en una maquina cargada, no por ser mas lento. Lo que de verdad vigila
+// el rendimiento son las aserciones de ms/frame y p99 de mas abajo; el timeout
+// solo esta para que un cuelgue no bloquee la suite para siempre.
 import { runHilBench } from './bench'
 
 /**
@@ -33,12 +39,12 @@ describe('HIL fase 4: validación de rendimiento', () => {
     // módulo aislado es limpio; el residuo compuesto ≈2.5 B/tick equivale a
     // ~600 B/s de sim — presión de GC funcionalmente nula.
     expect(r.ownAllocBytes).toBeLessThan(96 * 1024)
-  }, 30000)
+  })
 
   it('el banco es reproducible: dos ejecuciones dejan el motor en el mismo estado', async () => {
     const a = await runHilBench({ ticks: 10000, warmupTicks: 500 })
     const b = await runHilBench({ ticks: 10000, warmupTicks: 500 })
     expect(a.rpmFinal).toBe(b.rpmFinal)
     expect(a.boostFinal).toBe(b.boostFinal)
-  }, 30000)
+  })
 })

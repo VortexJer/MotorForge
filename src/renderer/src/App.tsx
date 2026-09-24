@@ -28,6 +28,9 @@ import type {
 import DynoChart from './components/DynoChart'
 import Engine3D from './components/Engine3D'
 import EndurancePanel from './components/EndurancePanel'
+import { EngineDesigner } from './components/EngineDesigner'
+import { Assembler, ProjectGate } from './components/Assembler'
+import type { AssemblyProject } from '@sim/assemble/project'
 import EventCard from './components/EventCard'
 import ImportDialog from './components/ImportDialog'
 import MapEditor from './components/MapEditor'
@@ -100,7 +103,9 @@ export default function App(): React.JSX.Element {
   const [projectName, setProjectName] = useState<string | null>(null)
   const [restored, setRestored] = useState(false)
   /** Vista activa: banco (dyno/tandas) o laboratorio físico (Rapier). */
-  const [view, setView] = useState<'banco' | 'fisica'>('banco')
+  const [view, setView] = useState<'banco' | 'fisica' | 'diseno' | 'montaje'>('banco')
+  /** Proyecto de montaje 3D. Null = aun no se ha abierto ninguno. */
+  const [montaje, setMontaje] = useState<AssemblyProject | null>(null)
 
   // Tema: modo oscuro/claro + acento configurable, persistido en localStorage
   const [theme, setTheme] = useState<ThemeSettings>(() => loadTheme())
@@ -288,6 +293,26 @@ export default function App(): React.JSX.Element {
     if (file) setImportFile(file)
   }
 
+  /**
+   * Monta un motor recien disenado: mete sus piezas en el mismo saco de
+   * "importadas" que usa el resto de la app y las selecciona de golpe. Asi el
+   * banco, el laboratorio y el desgaste lo cogen sin cambiar nada suyo.
+   */
+  const aplicarDiseno = (parts: Part[], nombre: string): void => {
+    const ids = new Set(parts.map((p) => p.id))
+    const next = [...imported.filter((p) => !ids.has(p.id)), ...parts]
+    setImported(next)
+    setSel((s) => {
+      const n = { ...s }
+      for (const p of parts) n[p.kind as keyof Selection] = p.id
+      return n
+    })
+    setProjectName(nombre)
+    setWear(freshWear())
+    setView('banco')
+    void window.motorforge.saveImportedParts(JSON.stringify(next))
+  }
+
   const saveImported = (part: Part): void => {
     const next = [...imported, part]
     setImported(next)
@@ -312,6 +337,20 @@ export default function App(): React.JSX.Element {
         </span>
         <div className="topbar-actions">
           <div className="segmented" role="group" aria-label="Vista">
+            <button
+              type="button"
+              className={view === 'montaje' ? 'seg-btn active' : 'seg-btn'}
+              onClick={() => setView('montaje')}
+            >
+              Montaje 3D
+            </button>
+            <button
+              type="button"
+              className={view === 'diseno' ? 'seg-btn active' : 'seg-btn'}
+              onClick={() => setView('diseno')}
+            >
+              Diseñar motor
+            </button>
             <button
               type="button"
               className={view === 'banco' ? 'seg-btn active' : 'seg-btn'}
@@ -340,6 +379,7 @@ export default function App(): React.JSX.Element {
       </header>
 
       <div className="layout">
+        {view !== 'montaje' && (
         <aside className="sidebar">
           <section>
             <h2 className="section-title"><em>01</em> Piezas</h2>
@@ -465,8 +505,26 @@ export default function App(): React.JSX.Element {
             </div>
           </section>
         </aside>
+        )}
 
-        {view === 'fisica' ? (
+        {view === 'montaje' ? (
+          <main className="main main-asm">
+            {montaje ? (
+              <Assembler
+                project={montaje}
+                onChange={setMontaje}
+                onSalir={() => setView('banco')}
+                onAlBanco={aplicarDiseno}
+              />
+            ) : (
+              <ProjectGate onNuevo={setMontaje} onAbrir={setMontaje} />
+            )}
+          </main>
+        ) : view === 'diseno' ? (
+          <main className="main main-designer">
+            <EngineDesigner onApply={aplicarDiseno} />
+          </main>
+        ) : view === 'fisica' ? (
           <main className="main main-phys">
             {hasErrors ? (
               <p className="empty-note">

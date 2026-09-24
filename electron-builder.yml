@@ -1,0 +1,46 @@
+appId: dev.vortexjer.motorforge
+productName: MotorForge
+copyright: Joaquin Escriva
+
+directories:
+  output: release
+  buildResources: build
+
+# El renderer lo empaqueta Vite en un solo bundle, y main/preload solo importan
+# 'electron' y modulos nativos de node (comprobado sobre out/ ya compilado). Por
+# eso NO se copia node_modules: meterlo sumaria cientos de MB de three, rapier y
+# react que ya estan dentro del bundle. Si algun dia el proceso principal importa
+# una dependencia de verdad, hay que anadirla aqui o dejara de arrancar.
+files:
+  - out/**
+  - package.json
+  - '!**/*.map'
+  - '!**/*.ts'
+
+asar: true
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+  icon: build/icon.ico
+  artifactName: ${productName}-${version}-${arch}.${ext}
+
+nsis:
+  # Instalador con pasos, no de un clic: deja elegir carpeta y no sorprende.
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: MotorForge
+  deleteAppDataOnUninstall: false
+
+portable:
+  artifactName: ${productName}-${version}-portable.${ext}
+
+# Sin firma de codigo: no hay certificado. Windows SmartScreen avisara la primera
+# vez, es lo esperado en una app sin firmar.
+forceCodeSigning: false

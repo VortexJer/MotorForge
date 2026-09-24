@@ -507,6 +507,10 @@ export class SimCore {
   }
 
   // ---------------------------------------------------------- lecturas
+  /** Nº de cilindros. Lo necesita quien recorra `perCyl` desde fuera. */
+  get cylinders(): number {
+    return this.n
+  }
   get omega(): number {
     return this.scalars[St.CrankOmega]!
   }

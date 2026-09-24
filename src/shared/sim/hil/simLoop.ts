@@ -6,6 +6,8 @@ import { SimCore } from './engineCore'
 import type { CoreConfig } from './engineCore'
 import { St, Tap } from './types'
 import type { HarnessConfig } from './types'
+import { BlackBox, bankChannels, bankTriggers } from './blackBox'
+import type { BlackBoxConfig } from './blackBox'
 
 /**
  * SimLoop (Fase 3): el lazo HIL completo por tick, en este orden estricto:
@@ -34,6 +36,12 @@ export class SimLoop {
   readonly actuators: ActuatorBank
   readonly ecu: VirtualEcu
   readonly physical: PhysicalInputs
+  /**
+   * Caja negra opcional. Se conecta con `attachBlackBox()` y graba al FINAL de
+   * cada tick. Nula por defecto: el bench de rendimiento mide la física sin
+   * registrador, y quien no la enchufa no paga nada por ella.
+   */
+  blackBox: BlackBox | null = null
 
   constructor(coreCfg: CoreConfig, harness: HarnessConfig, calib: EcuCalib) {
     this.core = new SimCore(coreCfg)
@@ -107,5 +115,35 @@ export class SimLoop {
 
     // ---- 6. física ----
     core.tick(dt)
+
+    // ---- 7. caja negra: graba el tick YA cerrado ----
+    // Va la última a propósito: si grabase antes de core.tick(), la "verdad"
+    // sería la del tick anterior y no cuadraría con las lecturas de sensores
+    // de esta misma fila del CSV.
+    if (this.blackBox) this.blackBox.record()
+  }
+
+  /**
+   * Conecta una caja negra y la deja armada. Sin argumentos usa el juego de
+   * canales y disparos de banco, que es lo que se quiere el 90% de las veces.
+   */
+  attachBlackBox(cfg?: Partial<BlackBoxConfig>): BlackBox {
+    const nCyl = this.core.cylinders
+    const completa: BlackBoxConfig = {
+      channels: cfg?.channels ?? bankChannels(nCyl),
+      triggers: cfg?.triggers ?? bankTriggers(),
+      preRollS: cfg?.preRollS ?? 10,
+      postRollS: cfg?.postRollS ?? 2,
+      rateHz: cfg?.rateHz ?? 60
+    }
+    this.blackBox = new BlackBox(completa, {
+      truth: this.sensors.truth,
+      scalars: this.core.scalars,
+      perCyl: this.core.perCyl,
+      sensor: (id) => this.sensors.sensor(id),
+      actuator: (id) => this.actuators.actuator(id)
+    })
+    this.blackBox.arm()
+    return this.blackBox
   }
 }

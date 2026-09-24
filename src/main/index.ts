@@ -63,6 +63,26 @@ function registerIpc(): void {
     return basename(result.filePath)
   })
 
+  // ---- Caja negra: exportar la captura congelada ----
+  // Se guardan DOS archivos con el mismo nombre base: el .csv con las muestras
+  // y un .json con el manifiesto (qué disparó, cuándo, a qué frecuencia, qué
+  // canales). Sin el manifiesto, dentro de un mes el CSV es una tabla de
+  // números sin contexto y no sabes ni de qué ensayo salió.
+  ipcMain.handle('save-blackbox', async (_e, csv: string, manifest: string, suggestedName: string) => {
+    const base = suggestedName || 'captura'
+    const result = await dialog.showSaveDialog({
+      defaultPath: `${base}.csv`,
+      filters: [
+        { name: 'Captura de caja negra (CSV)', extensions: ['csv'] },
+        { name: 'Todos', extensions: ['*'] }
+      ]
+    })
+    if (result.canceled || !result.filePath) return null
+    await writeFile(result.filePath, csv, 'utf8')
+    await writeFile(result.filePath.replace(/\.csv$/i, '') + '.json', manifest, 'utf8')
+    return basename(result.filePath)
+  })
+
   ipcMain.handle('open-project', async () => {
     const result = await dialog.showOpenDialog({ properties: ['openFile'], filters: PROJECT_FILTERS })
     const filePath = result.filePaths[0]

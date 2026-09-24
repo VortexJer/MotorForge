@@ -15,7 +15,10 @@ const api = {
   saveSession: (json: string): Promise<void> => ipcRenderer.invoke('save-session', json),
   loadSession: (): Promise<string | null> => ipcRenderer.invoke('load-session'),
   exportText: (defaultName: string, content: string): Promise<string | null> =>
-    ipcRenderer.invoke('export-text', defaultName, content)
+    ipcRenderer.invoke('export-text', defaultName, content),
+  /** Guarda la captura de la caja negra: .csv de muestras + .json de manifiesto. */
+  saveBlackBox: (csv: string, manifest: string, suggestedName: string): Promise<string | null> =>
+    ipcRenderer.invoke('save-blackbox', csv, manifest, suggestedName)
 }
 
 export type MotorForgeApi = typeof api

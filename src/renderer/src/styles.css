@@ -1731,3 +1731,219 @@ details.map-card summary {
   font-weight: 400;
   font-size: 11px;
 }
+
+/* ─────────────────────────── Diseñador de motores ─────────────────────────── */
+/* Dos columnas: a la izquierda las cotas que tocas, a la derecha lo que sale.
+   La forma importa aquí: diseñar es un bucle de mover-mirar, y si el resultado
+   queda debajo del formulario hay que hacer scroll para ver el efecto de cada
+   ajuste, que es exactamente lo que rompe el bucle. */
+.main-designer {
+  overflow-y: auto;
+}
+
+.designer {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .designer {
+    grid-template-columns: 1fr;
+  }
+}
+
+.designer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px 20px;
+  position: sticky;
+  top: 0;
+}
+
+.designer-form input[type='text'] {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--ink);
+  padding: 7px 10px;
+  font: inherit;
+}
+
+.designer-out {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.designer-issues {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Cada límite se muestra CON su porqué. Es la diferencia entre "aguanta 180 bar"
+   y "aguanta 180 bar porque el pandeo de Euler va con I/L²": lo segundo enseña
+   a diseñar, lo primero solo se obedece. */
+.limits-table {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.limit-row {
+  background: var(--surface);
+  padding: 11px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.limit-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.limit-head strong {
+  font-variant-numeric: tabular-nums;
+  font-size: 15px;
+}
+
+.limit-why {
+  color: var(--ink-2);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.limit-fail {
+  color: var(--muted);
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ──────────────────────────── Montador 3D ──────────────────────────── */
+.main-asm { padding: 0; overflow: hidden; }
+
+.asm {
+  display: grid;
+  grid-template-columns: 260px 1fr 320px;
+  height: 100%;
+  min-height: 0;
+}
+
+.asm-piezas, .asm-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  overflow-y: auto;
+  background: var(--surface);
+}
+.asm-piezas { border-right: 1px solid var(--border); }
+.asm-panel { border-left: 1px solid var(--border); }
+
+/* El lienzo NO lleva padding: el visor 3D se come todo el hueco central, que es
+   donde pasa el trabajo de verdad. */
+.asm-vista { min-width: 0; min-height: 0; }
+.asm-vista canvas { display: block; }
+
+.asm-lista { display: flex; flex-direction: column; gap: 1px; }
+
+.asm-item {
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 7px 9px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.asm-item:hover { border-color: var(--border-strong); }
+.asm-item.sel { border-color: var(--accent); }
+
+.asm-item-cab { display: flex; align-items: center; gap: 7px; }
+
+/* Punto de color = rol. A un vistazo se ve si te falta marcar algo como pistón
+   sin tener que abrir cada desplegable. */
+.asm-punto { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
+
+.asm-nombre {
+  font-size: 12.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 auto;
+}
+
+.asm-item select { width: 100%; font-size: 12px; }
+
+.asm-botones { display: flex; flex-direction: column; gap: 6px; }
+.asm-marcadores { display: flex; flex-direction: column; gap: 4px; }
+.asm-marcadores .seg-btn { text-align: left; justify-content: flex-start; }
+
+.asm-medicion { display: flex; flex-direction: column; gap: 6px; }
+
+.asm-med {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12.5px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 4px;
+}
+.asm-med strong { font-variant-numeric: tabular-nums; }
+
+/* Lo que falta se muestra con la MISMA prominencia que lo medido, y con la
+   instrucción concreta debajo: un montaje a medias tiene que decir qué le falta,
+   no quedarse callado y dejar que la simulación invente. */
+.asm-falta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-left: 2px solid var(--status-warning);
+  padding: 4px 0 4px 8px;
+  font-size: 12px;
+}
+.asm-falta strong { color: var(--status-warning); }
+.asm-falta span { color: var(--ink-2); }
+.asm-falta em { color: var(--muted); font-style: normal; font-size: 11.5px; }
+
+/* ─────────────────────────── Pantalla de entrada ─────────────────────────── */
+.gate {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: 40px;
+}
+.gate-caja {
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: center;
+}
+.gate-caja h1 {
+  margin: 0;
+  font-size: 30px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.gate-botones { display: flex; gap: 10px; justify-content: center; }
+
+/* Con el montador abierto no hay barra de catalogo: ocupa el ancho entero. */
+.layout:has(.main-asm) { grid-template-columns: 1fr; }

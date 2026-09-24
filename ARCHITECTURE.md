@@ -139,3 +139,151 @@ el heap profiler de muestreo — investigación documentada en el propio bench).
 
 SI en todo el núcleo: m, kg, s, Pa, K, J, W, rad. Conversión a unidades "de taller"
 (bar, CV, Nm, °C, RPM) solo en la capa de presentación.
+
+## Empaquetado y distribución
+
+`npm run dist` compila con electron-vite y empaqueta con **electron-builder**
+(config en `electron-builder.yml`). Salida en `release/`, que está en `.gitignore`:
+
+| Artefacto | Qué es |
+|---|---|
+| `MotorForge-<ver>-x64.exe` | Instalador NSIS con pasos: deja elegir carpeta, crea accesos directos |
+| `MotorForge-<ver>-portable.exe` | Ejecutable suelto, no instala nada |
+
+`npm run dist:dir` deja la app descomprimida en `release/win-unpacked/` sin generar
+instalador — es lo que conviene usar para probar un cambio de empaquetado, porque
+tarda una fracción.
+
+### Dos cosas que hay que saber antes de tocar esto
+
+**No se copia `node_modules` al paquete.** El renderer lo empaqueta Vite en un
+bundle único, y `out/main` + `out/preload` solo importan `electron` y módulos
+nativos de node (comprobable con
+`grep -oE '(from|require\()\s*"[^"./][^"]*"' out/main/index.js`). Incluir
+`node_modules` sumaría cientos de MB de three, rapier y react que ya viven dentro
+del bundle. **Si algún día el proceso principal importa una dependencia de
+verdad, hay que añadirla a `files:` en `electron-builder.yml` o la app dejará de
+arrancar una vez empaquetada** — y no fallará en `dev`, solo en el instalador.
+
+**El esquema `app://` funciona dentro del asar.** El handler de `src/main/index.ts`
+resuelve con `net.fetch(pathToFileURL(...))` sobre una ruta que, ya empaquetado,
+cae dentro de `app.asar`. Está verificado arrancando el `.exe` generado: el
+renderer carga desde `app://bundle/assets/...` y el laboratorio de Rapier se
+inicializa. Si en el futuro algo dejara de cargar ahí, la salida es
+`asarUnpack: ['out/renderer/**']`, no desactivar el asar entero.
+
+### Icono
+
+`npm run icon` regenera `build/icon.ico` y `build/icon.png` con
+`scripts/gen-icon.py` (Pillow). Es un pistón dibujado con primitivas y
+supermuestreado ×4. El `.ico` lleva siete tamaños (16→256) a propósito: si solo
+llevara el de 256, Windows lo reduciría por su cuenta y saldría borroso en la
+barra de tareas. Las proporciones (corona gorda, dos ranuras en vez de tres,
+biela ancha) están elegidas para que la silueta aguante a 16 px, no para que
+luzca a 1024.
+
+### Firma
+
+No hay firma de código. Windows SmartScreen avisará la primera vez que alguien
+ejecute el instalador; es lo esperado en una app sin firmar y no indica un fallo
+del empaquetado.
+
+## Caja negra (registrador de banco)
+
+`src/shared/sim/hil/blackBox.ts` — el registrador de datos del gemelo digital.
+Funciona como la de un avión, no como un log: graba SIEMPRE en un anillo
+circular, así que cuando algo revienta ya tienes los segundos **anteriores** al
+fallo. Un log que empiezas cuando ves el problema llega tarde por definición.
+
+```
+parado ──arm()──> armado ──(disparo)──> disparado ──(postRoll)──> congelado
+```
+
+Se engancha con `loop.attachBlackBox()` y graba al final de cada tick, después
+de la física, para que la verdad y las lecturas de sensores de una misma fila
+del CSV correspondan al mismo instante. Es opcional y nula por defecto: el bench
+de rendimiento mide la física sin registrador.
+
+**Graba las tres capas a la vez**, que es lo que permite diagnosticar de verdad:
+la VERDAD física (`Src.Truth`), lo que la ECU CREE (`Src.Sensor`, con su ruido,
+retraso y ADC) y lo que la ECU ORDENÓ (`Src.Actuator`). Un MAP que se separa de
+la presión real es un sensor muriéndose; una inyección que no sigue a la orden
+es tensión o bomba. Más el estado interno y los campos por cilindro, que dicen
+QUÉ cilindro se rompió y no solo que el motor se rompió.
+
+`toCsv()` exporta con cabecera `nombre[unidad]`, tiempo absoluto y **tiempo
+relativo al disparo** (negativo antes del evento), que es la columna que se mira
+de verdad. `toManifest()` da los metadatos. Desde la app, `saveBlackBox()` en el
+preload escribe los dos archivos juntos.
+
+### Disparos: dos cosas aprendidas a base de falsos positivos
+
+**Habilitación (`gate`).** Un disparo se evalúa solo mientras su condición de
+habilitación se cumpla. Sin esto, media lista salta en cada arranque: a 200 rpm
+la presión de aceite es baja de verdad y el acelerómetro del bloque recoge el
+golpe del motor de arranque, y ninguna de las dos cosas es una avería. Es lo
+mismo que hace un cuadro real, que no enciende el testigo de aceite mientras das
+al contacto.
+
+**Umbrales calibrados contra el modelo, no contra la literatura.** El primer
+umbral de escape que se puso fueron los ~950 °C de manual, y disparaba en todos
+los ensayos: este modelo da 1230 K (957 °C) **ya al ralentí** y hasta 1358 K en
+marcha. La tabla de rangos medidos está en el comentario de `bankTriggers()`.
+Un disparo que salta siempre es peor que no tener disparo, porque enseña a
+ignorarlo.
+
+> Pendiente de mirar, y es del núcleo, no del registrador: 957 °C de escape al
+> ralentí es altísimo para un gasolina atmosférico (lo normal en el colector son
+> 300-400 °C). Parece que `Tap.ExhaustT` devuelve algo cercano a la temperatura
+> de combustión y no la del gas ya mezclado en el colector, que es lo que
+> mediría una sonda EGT real. Si se corrige, hay que bajar el umbral con ella.
+
+### Coste
+
+`record()` cumple ADR-001 §5: cero asignaciones por tick, verificado con un test
+que mide el heap sobre 100.000 ticks. Las muestras van en un único `Float32Array`
+de `capacidad × canales` (§3: anillo grande recorrido en bloque). Por defecto
+graba a 60 Hz diezmando el tick de 240; el picado necesita 240 si se va a
+analizar de verdad.
+
+## Diseñador de motores
+
+`src/shared/sim/designer.ts` + `renderer/src/components/EngineDesigner.tsx` —
+la pestaña **Diseñar motor** convierte una arquitectura (cilindros, disposición,
+calibre, carrera, relación biela/carrera, compresión, materiales) en un juego de
+piezas que el resto de la aplicación ya sabe simular.
+
+Antes de esto no se podía hacer un motor que no fuera el 2.0 del catálogo: solo
+había **dos bloques, los dos de 4 cilindros y 86 mm**. La física nunca fue el
+problema — `buildArchetype` acepta de 1 a 16 cilindros y deriva el orden de
+encendido y los desfases de banco solo. Lo que faltaba era la capa para
+**autoriar** el motor.
+
+Las piezas diseñadas entran por el mismo saco de "piezas importadas" que ya
+existía, así que banco, laboratorio, desgaste y proyectos funcionan con ellas sin
+un solo cambio propio.
+
+### Los límites se derivan, no se escriben
+
+Misma regla que `archetype.ts` ("sin valores hardcodeados por arquetipo"). Cada
+ley está calibrada para **reproducir el catálogo** en su punto de referencia
+(86 × 86 mm): si diseñas ese motor, salen sus números exactos, y hay un test que
+lo comprueba.
+
+| Pieza | Ley | Por qué |
+|---|---|---|
+| Cigüeñal | velocidad media de pistón constante | lo que rompe la muñequilla es la inercia alternativa; más carrera ⇒ menos vueltas |
+| Biela (compresión) | Euler: ∝ calibre⁴/L² | pandeo, no rotura |
+| Biela (tracción) | ∝ calibre² | sección pura |
+| Pistón (presión) | independiente del calibre | corona de espesor proporcional al radio: la tensión va con la presión, no con el tamaño |
+| Bloque | material, penalizado si es supercuadrado | a más calibre para la misma carrera, menos material entre cilindros |
+| Masas | pistón ∝ calibre³, biela ∝ L·calibre² | semejanza geométrica |
+
+La cámara de combustión se calcula **invirtiendo** la fórmula de compresión de
+`assembly.ts`, para que la relación que pides sea exactamente la que sale al
+resolver. Ojo: `HEAD_GASKET_THICKNESS` está duplicada en los dos archivos y
+**tiene que coincidir**, o la compresión pedida deja de ser la real.
+
+Cada límite se muestra en pantalla con su explicación y su modo de fallo. Es la
+diferencia entre "aguanta 180 bar" y "aguanta 180 bar porque el pandeo va con
+I/L²": lo segundo enseña a diseñar.

@@ -172,3 +172,68 @@ describe('HIL fase 3: lazo cerrado ECU ↔ sensores ↔ actuadores', () => {
     expect(runOnce()).toBe(runOnce())
   })
 })
+
+describe('HIL: caja negra enganchada al lazo real', () => {
+  it('graba un arranque y las tres capas cuadran entre sí', () => {
+    const loop = new SimLoop(stockCore(), defaultHarness(3), stockCalib())
+    const bb = loop.attachBlackBox({ rateHz: 60, preRollS: 5, postRollS: 1 })
+    loop.physical.ignitionKey = true
+    run(loop, 3, () => {
+      loop.physical.throttle = 0.35
+    })
+
+    expect(bb.frames).toBeGreaterThan(100)
+    const csv = bb.toCsv()
+    const cab = csv.split('\n')[0]!
+    expect(cab).toContain('rpm[rpm]')
+    expect(cab).toContain('map_real[bar]')
+    expect(cab).toContain('map_ecu[bar]')
+    expect(cab).toContain('cyl1_p[bar]')
+
+    // El motor tiene que haber arrancado de verdad, no quedarse en ceros.
+    const buf = new Float32Array(bb.channels.length)
+    bb.frameAt(bb.frames - 1, buf)
+    const iRpm = bb.channels.findIndex((c) => c.id === 'rpm')
+    expect(buf[iRpm]!).toBeGreaterThan(500)
+
+    // El sensor de MAP mide lo mismo que la verdad, pero NO exactamente: tiene
+    // ruido, retraso y cuantización. Si coincidieran clavados, el HIL estaría
+    // haciendo trampa y la caja negra no serviría para diagnosticar sensores.
+    const iReal = bb.channels.findIndex((c) => c.id === 'map_real')
+    const iEcu = bb.channels.findIndex((c) => c.id === 'map_ecu')
+    expect(buf[iEcu]!).toBeCloseTo(buf[iReal]!, 0)
+    expect(buf[iEcu]!).not.toBe(buf[iReal]!)
+  })
+
+  it('se dispara sola al pasarse de vueltas y conserva el ANTES del evento', () => {
+    // Limitador muy alto para que el motor pueda sobrepasar el umbral de la caja.
+    const loop = new SimLoop(stockCore(), defaultHarness(4), stockCalib({ revLimit: 9000 }))
+    const bb = loop.attachBlackBox({
+      rateHz: 60,
+      preRollS: 4,
+      postRollS: 0.5,
+      triggers: [{ channel: 'rpm', op: '>', threshold: 4000, holdTicks: 2, label: 'sobrerrégimen' }]
+    })
+    loop.physical.ignitionKey = true
+    run(loop, 8, () => {
+      loop.physical.throttle = 1
+    })
+
+    expect(bb.estado).toBe('congelado')
+    expect(bb.motivo).toBe('sobrerrégimen')
+    expect(bb.tiempoDisparo).toBeGreaterThan(0)
+
+    // La razón de ser de una caja negra: hay muestras ANTERIORES al disparo.
+    const filas = bb.toCsv().split('\n').slice(1)
+    const rel = filas.map((l) => Number(l.split(',')[1]))
+    expect(rel.filter((r) => r < 0).length).toBeGreaterThan(30)
+    expect(rel.filter((r) => r >= 0).length).toBeGreaterThan(10)
+  })
+
+  it('sin caja enganchada el lazo funciona igual', () => {
+    const loop = new SimLoop(stockCore(), defaultHarness(3), stockCalib())
+    expect(loop.blackBox).toBeNull()
+    loop.physical.ignitionKey = true
+    expect(() => run(loop, 1)).not.toThrow()
+  })
+})
